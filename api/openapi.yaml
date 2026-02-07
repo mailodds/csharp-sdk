@@ -1,0 +1,2216 @@
+openapi: 3.0.3
+info:
+  contact:
+    email: support@mailodds.com
+    name: MailOdds Support
+    url: https://mailodds.com/contact
+  description: "MailOdds provides email validation services to help maintain clean\
+    \ email lists \nand improve deliverability. The API performs multiple validation\
+    \ checks including \nformat verification, domain validation, MX record checking,\
+    \ and disposable email detection.\n\n## Authentication\n\nAll API requests require\
+    \ authentication using a Bearer token. Include your API key \nin the Authorization\
+    \ header:\n\n```\nAuthorization: Bearer YOUR_API_KEY\n```\n\nAPI keys can be created\
+    \ in the MailOdds dashboard.\n\n## Rate Limits\n\nRate limits vary by plan:\n\
+    - Free: 10 requests/minute\n- Starter: 60 requests/minute  \n- Pro: 300 requests/minute\n\
+    - Business: 1000 requests/minute\n- Enterprise: Custom limits\n\n## Response Format\n\
+    \nAll responses include:\n- `schema_version`: API schema version (currently \"\
+    1.0\")\n- `request_id`: Unique request identifier for debugging\n\nError responses\
+    \ include:\n- `error`: Machine-readable error code\n- `message`: Human-readable\
+    \ error description\n"
+  license:
+    name: Proprietary
+    url: https://mailodds.com/terms
+  termsOfService: https://mailodds.com/terms
+  title: MailOdds Email Validation API
+  version: 1.0.0
+servers:
+- description: Production server
+  url: https://api.mailodds.com/v1
+security:
+- BearerAuth: []
+tags:
+- description: Single email validation endpoints
+  name: Email Validation
+- description: Bulk email validation jobs
+  name: Bulk Validation
+- description: Manage email/domain suppression lists
+  name: Suppression Lists
+- description: Custom rules to modify validation results
+  name: Validation Policies
+- description: Webhook configuration
+  name: Webhooks
+- description: Health and status endpoints
+  name: System
+paths:
+  /v1/validate:
+    post:
+      description: "Validate a single email address. Returns detailed validation results\
+        \ including status, sub-status, and recommended action."
+      operationId: validateEmail
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ValidateRequest"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationResponse"
+          description: Validation result
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Forbidden - Insufficient permissions or no credits
+      summary: Validate single email
+      tags:
+      - Email Validation
+  /v1/jobs:
+    get:
+      description: List all validation jobs for the authenticated account.
+      operationId: listJobs
+      parameters:
+      - explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          type: integer
+        style: form
+      - explode: true
+        in: query
+        name: per_page
+        required: false
+        schema:
+          default: 20
+          maximum: 100
+          type: integer
+        style: form
+      - explode: true
+        in: query
+        name: status
+        required: false
+        schema:
+          enum:
+          - pending
+          - processing
+          - completed
+          - failed
+          - cancelled
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JobListResponse"
+          description: List of jobs
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+      summary: List validation jobs
+      tags:
+      - Bulk Validation
+    post:
+      description: Create a new bulk validation job by submitting a JSON array of
+        emails.
+      operationId: createJob
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateJobRequest"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JobResponse"
+          description: Job created
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+      summary: Create bulk validation job (JSON)
+      tags:
+      - Bulk Validation
+  /v1/jobs/upload:
+    post:
+      description: "Create a new bulk validation job by uploading a CSV, Excel, or\
+        \ TXT file."
+      operationId: createJobUpload
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/createJobUpload_request"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JobResponse"
+          description: Job created
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+      summary: Create bulk validation job (file upload)
+      tags:
+      - Bulk Validation
+  /v1/jobs/upload/presigned:
+    post:
+      description: Get a presigned URL for uploading large files (>10MB) directly
+        to S3.
+      operationId: getPresignedUpload
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/getPresignedUpload_request"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PresignedUploadResponse"
+          description: Presigned upload credentials
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: S3 not configured
+      summary: Get S3 presigned upload URL
+      tags:
+      - Bulk Validation
+  /v1/jobs/upload/s3:
+    post:
+      description: Create a validation job from a file previously uploaded to S3.
+      operationId: createJobFromS3
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/createJobFromS3_request"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JobResponse"
+          description: Job created
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+      summary: Create job from S3 upload
+      tags:
+      - Bulk Validation
+  /v1/jobs/{job_id}:
+    delete:
+      description: Permanently delete a completed or cancelled job and its results.
+      operationId: deleteJob
+      parameters:
+      - explode: false
+        in: path
+        name: job_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/deleteJob_200_response"
+          description: Job deleted
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Resource not found
+      summary: Delete a job
+      tags:
+      - Bulk Validation
+    get:
+      description: Get the status and details of a specific validation job.
+      operationId: getJob
+      parameters:
+      - explode: false
+        in: path
+        name: job_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JobResponse"
+          description: Job details
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Resource not found
+      summary: Get job status
+      tags:
+      - Bulk Validation
+  /v1/jobs/{job_id}/results:
+    get:
+      description: "Download validation results in JSON, CSV, or NDJSON format."
+      operationId: getJobResults
+      parameters:
+      - explode: false
+        in: path
+        name: job_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: true
+        in: query
+        name: format
+        required: false
+        schema:
+          default: json
+          enum:
+          - json
+          - csv
+          - ndjson
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: filter
+        required: false
+        schema:
+          enum:
+          - all
+          - valid_only
+          - invalid_only
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          type: integer
+        style: form
+      - explode: true
+        in: query
+        name: per_page
+        required: false
+        schema:
+          default: 1000
+          maximum: 10000
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResultsResponse"
+            text/csv:
+              schema:
+                type: string
+            application/x-ndjson:
+              schema:
+                type: string
+          description: Validation results
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Resource not found
+      summary: Get job results
+      tags:
+      - Bulk Validation
+  /v1/jobs/{job_id}/cancel:
+    post:
+      description: Cancel a pending or processing job. Partial results are preserved.
+      operationId: cancelJob
+      parameters:
+      - explode: false
+        in: path
+        name: job_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JobResponse"
+          description: Job cancelled
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Resource not found
+      summary: Cancel a job
+      tags:
+      - Bulk Validation
+  /v1/suppression:
+    delete:
+      description: Remove emails or domains from the suppression list.
+      operationId: removeSuppression
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/removeSuppression_request"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/removeSuppression_200_response"
+          description: Entries removed
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+      summary: Remove suppression entries
+      tags:
+      - Suppression Lists
+    get:
+      description: List all suppression entries for the account.
+      operationId: listSuppression
+      parameters:
+      - explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          type: integer
+        style: form
+      - explode: true
+        in: query
+        name: per_page
+        required: false
+        schema:
+          default: 50
+          type: integer
+        style: form
+      - explode: true
+        in: query
+        name: type
+        required: false
+        schema:
+          enum:
+          - email
+          - domain
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: search
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuppressionListResponse"
+          description: Suppression list
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+      summary: List suppression entries
+      tags:
+      - Suppression Lists
+    post:
+      description: Add emails or domains to the suppression list.
+      operationId: addSuppression
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddSuppressionRequest"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AddSuppressionResponse"
+          description: Entries added
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+      summary: Add suppression entries
+      tags:
+      - Suppression Lists
+  /v1/suppression/check:
+    post:
+      description: Check if an email is suppressed.
+      operationId: checkSuppression
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/checkSuppression_request"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuppressionCheckResponse"
+          description: Suppression check result
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+      summary: Check suppression status
+      tags:
+      - Suppression Lists
+  /v1/suppression/stats:
+    get:
+      description: Get statistics about the suppression list.
+      operationId: getSuppressionStats
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuppressionStatsResponse"
+          description: Suppression statistics
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+      summary: Get suppression statistics
+      tags:
+      - Suppression Lists
+  /v1/telemetry/summary:
+    get:
+      description: Get validation metrics for your account. Useful for building dashboards
+        and monitoring. Supports ETag caching.
+      operationId: getTelemetrySummary
+      parameters:
+      - description: Time window for metrics
+        explode: true
+        in: query
+        name: window
+        required: false
+        schema:
+          default: 24h
+          enum:
+          - 1h
+          - 24h
+          - 30d
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TelemetrySummary"
+          description: Telemetry summary
+          headers:
+            ETag:
+              description: Hash of response for caching
+              explode: false
+              schema:
+                type: string
+              style: simple
+            Cache-Control:
+              description: Caching directive
+              explode: false
+              schema:
+                type: string
+              style: simple
+        "304":
+          description: Not Modified - use cached response
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+      summary: Get validation telemetry
+      tags:
+      - System
+  /health:
+    get:
+      description: Check API health status. No authentication required.
+      operationId: healthCheck
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/healthCheck_200_response"
+          description: API is healthy
+      security: []
+      summary: Health check
+      tags:
+      - System
+  /v1/policies:
+    get:
+      description: List all validation policies for your account. Includes plan limits.
+      operationId: listPolicies
+      parameters:
+      - description: Include full rules in response
+        explode: true
+        in: query
+        name: include_rules
+        required: false
+        schema:
+          default: false
+          type: boolean
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PolicyListResponse"
+          description: List of policies
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+      summary: List policies
+      tags:
+      - Validation Policies
+    post:
+      description: Create a new validation policy with rules.
+      operationId: createPolicy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePolicyRequest"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PolicyResponse"
+          description: Policy created
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "403":
+          description: Plan limit exceeded
+      summary: Create policy
+      tags:
+      - Validation Policies
+  /v1/policies/presets:
+    get:
+      description: Get available preset templates for quick policy creation.
+      operationId: getPolicyPresets
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PolicyPresetsResponse"
+          description: Available presets
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+      summary: Get policy presets
+      tags:
+      - Validation Policies
+  /v1/policies/from-preset:
+    post:
+      description: Create a policy using a preset template.
+      operationId: createPolicyFromPreset
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/createPolicyFromPreset_request"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PolicyResponse"
+          description: Policy created
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+      summary: Create policy from preset
+      tags:
+      - Validation Policies
+  /v1/policies/{policy_id}:
+    delete:
+      description: Delete a policy and all its rules.
+      operationId: deletePolicy
+      parameters:
+      - explode: false
+        in: path
+        name: policy_id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/deletePolicy_200_response"
+          description: Policy deleted
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "404":
+          description: Policy not found
+      summary: Delete policy
+      tags:
+      - Validation Policies
+    get:
+      description: Get a single policy with its rules.
+      operationId: getPolicy
+      parameters:
+      - explode: false
+        in: path
+        name: policy_id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PolicyResponse"
+          description: Policy details
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "404":
+          description: Policy not found
+      summary: Get policy
+      tags:
+      - Validation Policies
+    put:
+      description: "Update a policy's settings (name, enabled, default)."
+      operationId: updatePolicy
+      parameters:
+      - explode: false
+        in: path
+        name: policy_id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/updatePolicy_request"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PolicyResponse"
+          description: Policy updated
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "404":
+          description: Policy not found
+      summary: Update policy
+      tags:
+      - Validation Policies
+  /v1/policies/{policy_id}/rules:
+    post:
+      description: Add a new rule to an existing policy.
+      operationId: addPolicyRule
+      parameters:
+      - explode: false
+        in: path
+        name: policy_id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PolicyRule"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/addPolicyRule_201_response"
+          description: Rule added
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "403":
+          description: Rule limit exceeded
+        "404":
+          description: Policy not found
+      summary: Add rule to policy
+      tags:
+      - Validation Policies
+  /v1/policies/{policy_id}/rules/{rule_id}:
+    delete:
+      description: Delete a rule from a policy.
+      operationId: deletePolicyRule
+      parameters:
+      - explode: false
+        in: path
+        name: policy_id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      - explode: false
+        in: path
+        name: rule_id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/deletePolicyRule_200_response"
+          description: Rule deleted
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "404":
+          description: Policy or rule not found
+      summary: Delete rule
+      tags:
+      - Validation Policies
+  /v1/policies/test:
+    post:
+      description: Test how a policy would evaluate a validation result without affecting
+        production.
+      operationId: testPolicy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/testPolicy_request"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PolicyTestResponse"
+          description: Test result
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "404":
+          description: Policy not found
+      summary: Test policy evaluation
+      tags:
+      - Validation Policies
+components:
+  responses:
+    BadRequest:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+      description: Bad request
+    Unauthorized:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+      description: Unauthorized - Invalid or missing API key
+    Forbidden:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+      description: Forbidden - Insufficient permissions or no credits
+    NotFound:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+      description: Resource not found
+  schemas:
+    ErrorResponse:
+      example:
+        schema_version: "1.0"
+        error: error
+        message: message
+      properties:
+        schema_version:
+          example: "1.0"
+          type: string
+        error:
+          description: Machine-readable error code
+          type: string
+        message:
+          description: Human-readable error message
+          type: string
+      required:
+      - error
+      - message
+      type: object
+    ValidateRequest:
+      example:
+        policy_id: 0
+        email: email
+      properties:
+        email:
+          description: Email address to validate
+          format: email
+          type: string
+        policy_id:
+          description: Optional policy ID to use instead of default policy
+          type: integer
+      required:
+      - email
+      type: object
+    ValidationResponse:
+      example:
+        schema_version: "1.0"
+        sub_status: sub_status
+        domain: domain
+        mx_found: true
+        role_account: true
+        action: accept
+        free_provider: true
+        smtp_check: true
+        suppression_match:
+          match_type: email
+          matched: true
+          match_value: match_value
+        email: email
+        disposable: true
+        status: valid
+      properties:
+        schema_version:
+          example: "1.0"
+          type: string
+        email:
+          type: string
+        status:
+          description: Validation status
+          enum:
+          - valid
+          - invalid
+          - catch_all
+          - do_not_mail
+          - unknown
+          type: string
+        sub_status:
+          description: Detailed status reason
+          type: string
+        action:
+          description: Recommended action
+          enum:
+          - accept
+          - accept_with_caution
+          - reject
+          - retry_later
+          type: string
+        domain:
+          type: string
+        mx_found:
+          type: boolean
+        smtp_check:
+          type: boolean
+        disposable:
+          type: boolean
+        role_account:
+          type: boolean
+        free_provider:
+          type: boolean
+        suppression_match:
+          $ref: "#/components/schemas/ValidationResponse_suppression_match"
+      required:
+      - action
+      - email
+      - status
+      type: object
+    CreateJobRequest:
+      description: "Bulk jobs use the account's default validation policy. To use\
+        \ a specific policy, set it as default via the Policies API."
+      example:
+        emails:
+        - emails
+        - emails
+        - emails
+        - emails
+        - emails
+        metadata: "{}"
+        webhook_url: https://openapi-generator.tech
+        idempotency_key: idempotency_key
+        dedup: false
+      properties:
+        emails:
+          description: List of emails to validate
+          items:
+            format: email
+            type: string
+          maxItems: 100000
+          type: array
+        dedup:
+          default: false
+          description: Remove duplicate emails
+          type: boolean
+        metadata:
+          description: Custom metadata for the job
+          type: object
+        webhook_url:
+          description: URL for completion webhook
+          format: uri
+          type: string
+        idempotency_key:
+          description: Unique key for idempotent requests
+          type: string
+      required:
+      - emails
+      type: object
+    JobResponse:
+      example:
+        schema_version: "1.0"
+        job:
+          summary:
+            valid: 5
+            do_not_mail: 2
+            invalid: 5
+            unknown: 7
+            cancelled_pending: 9
+          progress_percent: 14
+          completed_at: 2000-01-23T04:56:07.000+00:00
+          metadata: "{}"
+          total_count: 0
+          created_at: 2000-01-23T04:56:07.000+00:00
+          processed_count: 6
+          id: job_abc123xyz
+          status: pending
+      properties:
+        schema_version:
+          example: "1.0"
+          type: string
+        job:
+          $ref: "#/components/schemas/Job"
+      type: object
+    Job:
+      example:
+        summary:
+          valid: 5
+          do_not_mail: 2
+          invalid: 5
+          unknown: 7
+          cancelled_pending: 9
+        progress_percent: 14
+        completed_at: 2000-01-23T04:56:07.000+00:00
+        metadata: "{}"
+        total_count: 0
+        created_at: 2000-01-23T04:56:07.000+00:00
+        processed_count: 6
+        id: job_abc123xyz
+        status: pending
+      properties:
+        id:
+          example: job_abc123xyz
+          type: string
+        status:
+          enum:
+          - pending
+          - processing
+          - completed
+          - failed
+          - cancelled
+          type: string
+        total_count:
+          type: integer
+        processed_count:
+          type: integer
+        progress_percent:
+          maximum: 100
+          minimum: 0
+          type: integer
+        summary:
+          $ref: "#/components/schemas/Job_summary"
+        created_at:
+          format: date-time
+          type: string
+        completed_at:
+          format: date-time
+          type: string
+        metadata:
+          type: object
+      type: object
+    JobListResponse:
+      example:
+        schema_version: schema_version
+        pagination:
+          per_page: 2
+          total: 4
+          page: 3
+          total_pages: 7
+        jobs:
+        - summary:
+            valid: 5
+            do_not_mail: 2
+            invalid: 5
+            unknown: 7
+            cancelled_pending: 9
+          progress_percent: 14
+          completed_at: 2000-01-23T04:56:07.000+00:00
+          metadata: "{}"
+          total_count: 0
+          created_at: 2000-01-23T04:56:07.000+00:00
+          processed_count: 6
+          id: job_abc123xyz
+          status: pending
+        - summary:
+            valid: 5
+            do_not_mail: 2
+            invalid: 5
+            unknown: 7
+            cancelled_pending: 9
+          progress_percent: 14
+          completed_at: 2000-01-23T04:56:07.000+00:00
+          metadata: "{}"
+          total_count: 0
+          created_at: 2000-01-23T04:56:07.000+00:00
+          processed_count: 6
+          id: job_abc123xyz
+          status: pending
+      properties:
+        schema_version:
+          type: string
+        jobs:
+          items:
+            $ref: "#/components/schemas/Job"
+          type: array
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+      type: object
+    ResultsResponse:
+      example:
+        schema_version: schema_version
+        pagination:
+          per_page: 2
+          total: 4
+          page: 3
+          total_pages: 7
+        results:
+        - sub_status: sub_status
+          action: action
+          processed_at: 2000-01-23T04:56:07.000+00:00
+          email: email
+          status: status
+        - sub_status: sub_status
+          action: action
+          processed_at: 2000-01-23T04:56:07.000+00:00
+          email: email
+          status: status
+      properties:
+        schema_version:
+          type: string
+        results:
+          items:
+            $ref: "#/components/schemas/ValidationResult"
+          type: array
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+      type: object
+    ValidationResult:
+      example:
+        sub_status: sub_status
+        action: action
+        processed_at: 2000-01-23T04:56:07.000+00:00
+        email: email
+        status: status
+      properties:
+        email:
+          type: string
+        status:
+          type: string
+        sub_status:
+          type: string
+        action:
+          type: string
+        processed_at:
+          format: date-time
+          type: string
+      type: object
+    Pagination:
+      example:
+        per_page: 2
+        total: 4
+        page: 3
+        total_pages: 7
+      properties:
+        page:
+          type: integer
+        per_page:
+          type: integer
+        total:
+          type: integer
+        total_pages:
+          type: integer
+      type: object
+    PresignedUploadResponse:
+      example:
+        schema_version: schema_version
+        upload:
+          s3_key: s3_key
+          fields: "{}"
+          expires_in: 0
+          url: https://openapi-generator.tech
+      properties:
+        schema_version:
+          type: string
+        upload:
+          $ref: "#/components/schemas/PresignedUploadResponse_upload"
+      type: object
+    SuppressionListResponse:
+      example:
+        schema_version: schema_version
+        entries:
+        - reason: reason
+          created_at: 2000-01-23T04:56:07.000+00:00
+          id: 0
+          type: email
+          value: value
+        - reason: reason
+          created_at: 2000-01-23T04:56:07.000+00:00
+          id: 0
+          type: email
+          value: value
+        pagination:
+          per_page: 2
+          total: 4
+          page: 3
+          total_pages: 7
+      properties:
+        schema_version:
+          type: string
+        entries:
+          items:
+            $ref: "#/components/schemas/SuppressionEntry"
+          type: array
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+      type: object
+    SuppressionEntry:
+      example:
+        reason: reason
+        created_at: 2000-01-23T04:56:07.000+00:00
+        id: 0
+        type: email
+        value: value
+      properties:
+        id:
+          type: integer
+        type:
+          enum:
+          - email
+          - domain
+          type: string
+        value:
+          type: string
+        reason:
+          type: string
+        created_at:
+          format: date-time
+          type: string
+      type: object
+    AddSuppressionRequest:
+      example:
+        entries:
+        - reason: reason
+          type: email
+          value: value
+        - reason: reason
+          type: email
+          value: value
+      properties:
+        entries:
+          items:
+            $ref: "#/components/schemas/AddSuppressionRequest_entries_inner"
+          type: array
+      required:
+      - entries
+      type: object
+    AddSuppressionResponse:
+      example:
+        schema_version: schema_version
+        added: 0
+        skipped: 6
+      properties:
+        schema_version:
+          type: string
+        added:
+          type: integer
+        skipped:
+          type: integer
+      type: object
+    SuppressionCheckResponse:
+      example:
+        schema_version: schema_version
+        match_type: email
+        suppressed: true
+        match_value: match_value
+        email: email
+      properties:
+        schema_version:
+          type: string
+        email:
+          type: string
+        suppressed:
+          type: boolean
+        match_type:
+          enum:
+          - email
+          - domain
+          type: string
+        match_value:
+          type: string
+      type: object
+    SuppressionStatsResponse:
+      example:
+        schema_version: schema_version
+        total: 0
+        by_type:
+          domain: 1
+          email: 6
+      properties:
+        schema_version:
+          type: string
+        total:
+          type: integer
+        by_type:
+          $ref: "#/components/schemas/SuppressionStatsResponse_by_type"
+      type: object
+    TelemetrySummary:
+      description: Validation metrics for building dashboards and monitoring.
+      example:
+        schemaVersion: "1.0"
+        timezone: UTC
+        topReasons:
+        - reason: reason
+          count: 7
+        - reason: reason
+          count: 7
+        rates:
+          reject: 5.962133916683182
+          deliverable: 1.4658129805029452
+          suppressed: 2.3021358869347655
+          unknown: 5.637376656633329
+        generatedAt: 2000-01-23T04:56:07.000+00:00
+        window: 1h
+        totals:
+          validations: 0
+          creditsUsed: 6
+        topDomains:
+        - volume: 9
+          catchAll: 7.386281948385884
+          reject: 2.027123023002322
+          domain: domain
+          deliverable: 3.616076749251911
+          unknown: 4.145608029883936
+        - volume: 9
+          catchAll: 7.386281948385884
+          reject: 2.027123023002322
+          domain: domain
+          deliverable: 3.616076749251911
+          unknown: 4.145608029883936
+      properties:
+        schemaVersion:
+          example: "1.0"
+          type: string
+        window:
+          enum:
+          - 1h
+          - 24h
+          - 30d
+          type: string
+        generatedAt:
+          format: date-time
+          type: string
+        timezone:
+          example: UTC
+          type: string
+        totals:
+          $ref: "#/components/schemas/TelemetrySummary_totals"
+        rates:
+          $ref: "#/components/schemas/TelemetrySummary_rates"
+        topReasons:
+          description: Top rejection/status reasons
+          items:
+            $ref: "#/components/schemas/TelemetrySummary_topReasons_inner"
+          type: array
+        topDomains:
+          description: Top domains by volume
+          items:
+            $ref: "#/components/schemas/TelemetrySummary_topDomains_inner"
+          type: array
+      type: object
+    PolicyListResponse:
+      example:
+        schema_version: schema_version
+        policies:
+        - is_enabled: true
+          name: name
+          description: description
+          created_at: 2000-01-23T04:56:07.000+00:00
+          rules:
+          - is_enabled: true
+            sequence: 5
+            condition: "{}"
+            action:
+              action: accept
+            id: 5
+            type: status_override
+          - is_enabled: true
+            sequence: 5
+            condition: "{}"
+            action:
+              action: accept
+            id: 5
+            type: status_override
+          id: 0
+          is_default: true
+          priority: 6
+          rule_count: 1
+        - is_enabled: true
+          name: name
+          description: description
+          created_at: 2000-01-23T04:56:07.000+00:00
+          rules:
+          - is_enabled: true
+            sequence: 5
+            condition: "{}"
+            action:
+              action: accept
+            id: 5
+            type: status_override
+          - is_enabled: true
+            sequence: 5
+            condition: "{}"
+            action:
+              action: accept
+            id: 5
+            type: status_override
+          id: 0
+          is_default: true
+          priority: 6
+          rule_count: 1
+        limits:
+          max_rules_per_policy: 7
+          max_policies: 2
+          plan: plan
+      properties:
+        schema_version:
+          type: string
+        policies:
+          items:
+            $ref: "#/components/schemas/Policy"
+          type: array
+        limits:
+          $ref: "#/components/schemas/PolicyListResponse_limits"
+      type: object
+    Policy:
+      example:
+        is_enabled: true
+        name: name
+        description: description
+        created_at: 2000-01-23T04:56:07.000+00:00
+        rules:
+        - is_enabled: true
+          sequence: 5
+          condition: "{}"
+          action:
+            action: accept
+          id: 5
+          type: status_override
+        - is_enabled: true
+          sequence: 5
+          condition: "{}"
+          action:
+            action: accept
+          id: 5
+          type: status_override
+        id: 0
+        is_default: true
+        priority: 6
+        rule_count: 1
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        is_default:
+          type: boolean
+        is_enabled:
+          type: boolean
+        priority:
+          type: integer
+        rule_count:
+          type: integer
+        rules:
+          items:
+            $ref: "#/components/schemas/PolicyRule"
+          type: array
+        created_at:
+          format: date-time
+          type: string
+      type: object
+    PolicyRule:
+      example:
+        is_enabled: true
+        sequence: 5
+        condition: "{}"
+        action:
+          action: accept
+        id: 5
+        type: status_override
+      properties:
+        id:
+          type: integer
+        type:
+          description: Rule type determines how condition is evaluated
+          enum:
+          - status_override
+          - domain_filter
+          - check_requirement
+          - sub_status_override
+          type: string
+        condition:
+          description: "Condition depends on rule type. status_override: {status},\
+            \ domain_filter: {domain_mode, domains}, check_requirement: {check, required},\
+            \ sub_status_override: {sub_status}"
+          type: object
+        action:
+          $ref: "#/components/schemas/PolicyRule_action"
+        sequence:
+          type: integer
+        is_enabled:
+          type: boolean
+      required:
+      - action
+      - condition
+      - type
+      type: object
+    CreatePolicyRequest:
+      example:
+        name: name
+        description: description
+        rules:
+        - is_enabled: true
+          sequence: 5
+          condition: "{}"
+          action:
+            action: accept
+          id: 5
+          type: status_override
+        - is_enabled: true
+          sequence: 5
+          condition: "{}"
+          action:
+            action: accept
+          id: 5
+          type: status_override
+        is_default: false
+      properties:
+        name:
+          maxLength: 100
+          type: string
+        description:
+          maxLength: 500
+          type: string
+        is_default:
+          default: false
+          type: boolean
+        rules:
+          items:
+            $ref: "#/components/schemas/PolicyRule"
+          type: array
+      required:
+      - name
+      type: object
+    PolicyResponse:
+      example:
+        schema_version: schema_version
+        policy:
+          is_enabled: true
+          name: name
+          description: description
+          created_at: 2000-01-23T04:56:07.000+00:00
+          rules:
+          - is_enabled: true
+            sequence: 5
+            condition: "{}"
+            action:
+              action: accept
+            id: 5
+            type: status_override
+          - is_enabled: true
+            sequence: 5
+            condition: "{}"
+            action:
+              action: accept
+            id: 5
+            type: status_override
+          id: 0
+          is_default: true
+          priority: 6
+          rule_count: 1
+      properties:
+        schema_version:
+          type: string
+        policy:
+          $ref: "#/components/schemas/Policy"
+      type: object
+    PolicyPresetsResponse:
+      example:
+        schema_version: schema_version
+        presets:
+        - name: name
+          description: description
+          rules:
+          - is_enabled: true
+            sequence: 5
+            condition: "{}"
+            action:
+              action: accept
+            id: 5
+            type: status_override
+          - is_enabled: true
+            sequence: 5
+            condition: "{}"
+            action:
+              action: accept
+            id: 5
+            type: status_override
+          id: id
+        - name: name
+          description: description
+          rules:
+          - is_enabled: true
+            sequence: 5
+            condition: "{}"
+            action:
+              action: accept
+            id: 5
+            type: status_override
+          - is_enabled: true
+            sequence: 5
+            condition: "{}"
+            action:
+              action: accept
+            id: 5
+            type: status_override
+          id: id
+      properties:
+        schema_version:
+          type: string
+        presets:
+          items:
+            $ref: "#/components/schemas/PolicyPresetsResponse_presets_inner"
+          type: array
+      type: object
+    PolicyTestResponse:
+      example:
+        schema_version: schema_version
+        original: "{}"
+        modified: "{}"
+        matched_rule: "{}"
+        rules_evaluated: 0
+      properties:
+        schema_version:
+          type: string
+        original:
+          description: Original validation result before policy
+          type: object
+        modified:
+          description: Result after policy applied
+          type: object
+        matched_rule:
+          description: "The rule that matched, or null if none matched"
+          nullable: true
+          type: object
+        rules_evaluated:
+          type: integer
+      type: object
+    createJobUpload_request:
+      properties:
+        file:
+          description: "CSV, Excel (.xlsx, .xls), ODS, or TXT file"
+          format: binary
+          type: string
+        dedup:
+          default: false
+          description: Remove duplicate emails
+          type: boolean
+        metadata:
+          description: JSON metadata for the job
+          type: string
+      required:
+      - file
+      type: object
+    getPresignedUpload_request:
+      properties:
+        filename:
+          description: Original filename
+          type: string
+        content_type:
+          description: File MIME type
+          type: string
+      required:
+      - filename
+      type: object
+    createJobFromS3_request:
+      properties:
+        s3_key:
+          description: S3 key from presigned upload
+          type: string
+        dedup:
+          default: false
+          type: boolean
+      required:
+      - s3_key
+      type: object
+    deleteJob_200_response:
+      example:
+        schema_version: schema_version
+        deleted: true
+      properties:
+        schema_version:
+          type: string
+        deleted:
+          type: boolean
+      type: object
+    removeSuppression_request:
+      properties:
+        entries:
+          items:
+            type: string
+          type: array
+      required:
+      - entries
+      type: object
+    removeSuppression_200_response:
+      example:
+        schema_version: schema_version
+        removed: 0
+      properties:
+        schema_version:
+          type: string
+        removed:
+          type: integer
+      type: object
+    checkSuppression_request:
+      properties:
+        email:
+          format: email
+          type: string
+      required:
+      - email
+      type: object
+    healthCheck_200_response:
+      example:
+        status: healthy
+        timestamp: 2000-01-23T04:56:07.000+00:00
+      properties:
+        status:
+          example: healthy
+          type: string
+        timestamp:
+          format: date-time
+          type: string
+      type: object
+    createPolicyFromPreset_request:
+      properties:
+        preset_id:
+          enum:
+          - strict
+          - permissive
+          - smtp_required
+          type: string
+        name:
+          type: string
+        is_default:
+          default: false
+          type: boolean
+      required:
+      - name
+      - preset_id
+      type: object
+    updatePolicy_request:
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        is_enabled:
+          type: boolean
+        is_default:
+          type: boolean
+      type: object
+    deletePolicy_200_response:
+      example:
+        deleted: true
+        policy_id: 0
+      properties:
+        deleted:
+          type: boolean
+        policy_id:
+          type: integer
+      type: object
+    addPolicyRule_201_response:
+      example:
+        rule:
+          is_enabled: true
+          sequence: 5
+          condition: "{}"
+          action:
+            action: accept
+          id: 5
+          type: status_override
+      properties:
+        rule:
+          $ref: "#/components/schemas/PolicyRule"
+      type: object
+    deletePolicyRule_200_response:
+      example:
+        deleted: true
+      properties:
+        deleted:
+          type: boolean
+      type: object
+    testPolicy_request_test_result:
+      description: Mock validation result to test against
+      properties:
+        email:
+          type: string
+        status:
+          type: string
+        action:
+          type: string
+        domain:
+          type: string
+        sub_status:
+          type: string
+      type: object
+    testPolicy_request:
+      properties:
+        policy_id:
+          type: integer
+        test_result:
+          $ref: "#/components/schemas/testPolicy_request_test_result"
+      required:
+      - policy_id
+      - test_result
+      type: object
+    ValidationResponse_suppression_match:
+      example:
+        match_type: email
+        matched: true
+        match_value: match_value
+      properties:
+        matched:
+          type: boolean
+        match_type:
+          enum:
+          - email
+          - domain
+          type: string
+        match_value:
+          type: string
+      type: object
+    Job_summary:
+      example:
+        valid: 5
+        do_not_mail: 2
+        invalid: 5
+        unknown: 7
+        cancelled_pending: 9
+      properties:
+        valid:
+          type: integer
+        invalid:
+          type: integer
+        do_not_mail:
+          type: integer
+        unknown:
+          type: integer
+        cancelled_pending:
+          type: integer
+      type: object
+    PresignedUploadResponse_upload:
+      example:
+        s3_key: s3_key
+        fields: "{}"
+        expires_in: 0
+        url: https://openapi-generator.tech
+      properties:
+        url:
+          format: uri
+          type: string
+        fields:
+          type: object
+        s3_key:
+          type: string
+        expires_in:
+          type: integer
+      type: object
+    AddSuppressionRequest_entries_inner:
+      example:
+        reason: reason
+        type: email
+        value: value
+      properties:
+        type:
+          enum:
+          - email
+          - domain
+          type: string
+        value:
+          type: string
+        reason:
+          type: string
+      required:
+      - type
+      - value
+      type: object
+    SuppressionStatsResponse_by_type:
+      example:
+        domain: 1
+        email: 6
+      properties:
+        email:
+          type: integer
+        domain:
+          type: integer
+      type: object
+    TelemetrySummary_totals:
+      example:
+        validations: 0
+        creditsUsed: 6
+      properties:
+        validations:
+          description: Total validations in window
+          type: integer
+        creditsUsed:
+          description: Credits consumed
+          type: integer
+      type: object
+    TelemetrySummary_rates:
+      description: Status distribution as decimals (0-1)
+      example:
+        reject: 5.962133916683182
+        deliverable: 1.4658129805029452
+        suppressed: 2.3021358869347655
+        unknown: 5.637376656633329
+      properties:
+        deliverable:
+          description: Rate of valid + catch_all emails
+          type: number
+        reject:
+          description: Rate of invalid + do_not_mail emails
+          type: number
+        unknown:
+          description: Rate of unknown status
+          type: number
+        suppressed:
+          description: Rate of suppressed emails
+          type: number
+      type: object
+    TelemetrySummary_topReasons_inner:
+      example:
+        reason: reason
+        count: 7
+      properties:
+        reason:
+          type: string
+        count:
+          type: integer
+      type: object
+    TelemetrySummary_topDomains_inner:
+      example:
+        volume: 9
+        catchAll: 7.386281948385884
+        reject: 2.027123023002322
+        domain: domain
+        deliverable: 3.616076749251911
+        unknown: 4.145608029883936
+      properties:
+        domain:
+          type: string
+        volume:
+          type: integer
+        deliverable:
+          type: number
+        reject:
+          type: number
+        unknown:
+          type: number
+        catchAll:
+          type: number
+      type: object
+    PolicyListResponse_limits:
+      example:
+        max_rules_per_policy: 7
+        max_policies: 2
+        plan: plan
+      properties:
+        max_policies:
+          description: -1 means unlimited
+          type: integer
+        max_rules_per_policy:
+          type: integer
+        plan:
+          type: string
+      type: object
+    PolicyRule_action:
+      example:
+        action: accept
+      properties:
+        action:
+          enum:
+          - accept
+          - reject
+          - accept_with_caution
+          - do_not_mail
+          - review
+          type: string
+      type: object
+    PolicyPresetsResponse_presets_inner:
+      example:
+        name: name
+        description: description
+        rules:
+        - is_enabled: true
+          sequence: 5
+          condition: "{}"
+          action:
+            action: accept
+          id: 5
+          type: status_override
+        - is_enabled: true
+          sequence: 5
+          condition: "{}"
+          action:
+            action: accept
+          id: 5
+          type: status_override
+        id: id
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        rules:
+          items:
+            $ref: "#/components/schemas/PolicyRule"
+          type: array
+      type: object
+  securitySchemes:
+    BearerAuth:
+      description: API key authentication
+      scheme: bearer
+      type: http
+
