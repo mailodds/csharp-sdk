@@ -16,6 +16,11 @@ void Check(string label, string? expected, string? actual) {
     else { failed++; Console.WriteLine($"  FAIL: {label} expected={expected} got={actual}"); }
 }
 
+void CheckBool(string label, bool expected, bool? actual) {
+    if (actual != null && expected == actual) passed++;
+    else { failed++; Console.WriteLine($"  FAIL: {label} expected={expected} got={actual}"); }
+}
+
 // Set up DI container with SDK
 var services = new ServiceCollection();
 services.AddLogging(b => b.SetMinimumLevel(LogLevel.Warning));
@@ -36,7 +41,19 @@ var cases = new (string email, string status, string action, string? sub)[] {
     ("test@freeprovider.mailodds.com", "valid", "accept", null),
 };
 
-foreach (var (email, expStatus, expAction, expSub) in cases) {
+// (free_provider, disposable, role_account, mx_found)
+var boolCases = new (bool free, bool disp, bool role, bool mx)[] {
+    (false, false, false, true),  // deliverable
+    (false, false, false, true),  // invalid
+    (false, false, false, true),  // risky
+    (false, true, false, true),   // disposable
+    (false, false, true, true),   // role
+    (false, false, false, true),  // timeout
+    (true, false, false, true),   // freeprovider
+};
+
+for (int i = 0; i < cases.Length; i++) {
+    var (email, expStatus, expAction, expSub) = cases[i];
     var domain = email.Split('@')[1].Split('.')[0];
     try {
         var resp = await api.ValidateEmailAsync(new ValidateRequest(email: email));
@@ -45,6 +62,10 @@ foreach (var (email, expStatus, expAction, expSub) in cases) {
             Check($"{domain}.status", expStatus, ValidationResponse.StatusEnumToJsonValue(data.Status));
             Check($"{domain}.action", expAction, ValidationResponse.ActionEnumToJsonValue(data.Action));
             Check($"{domain}.sub_status", expSub, data.SubStatus);
+            CheckBool($"{domain}.free_provider", boolCases[i].free, data.FreeProvider);
+            CheckBool($"{domain}.disposable", boolCases[i].disp, data.Disposable);
+            CheckBool($"{domain}.role_account", boolCases[i].role, data.RoleAccount);
+            CheckBool($"{domain}.mx_found", boolCases[i].mx, data.MxFound);
         } else {
             failed++;
             Console.WriteLine($"  FAIL: {domain} unexpected status: {resp.StatusCode}");
