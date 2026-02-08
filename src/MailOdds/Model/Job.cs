@@ -22,6 +22,7 @@ using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.ComponentModel.DataAnnotations;
+
 using MailOdds.Client;
 
 namespace MailOdds.Model
@@ -312,18 +313,18 @@ namespace MailOdds.Model
         /// </summary>
         /// <param name="validationContext">Validation context</param>
         /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
+        IEnumerable<System.ComponentModel.DataAnnotations.ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
         {
             // ProgressPercent (int) maximum
             if (this.ProgressPercentOption.IsSet && this.ProgressPercentOption.Value > (int)100)
             {
-                yield return new ValidationResult("Invalid value for ProgressPercent, must be a value less than or equal to 100.", new [] { "ProgressPercent" });
+                yield return new System.ComponentModel.DataAnnotations.ValidationResult("Invalid value for ProgressPercent, must be a value less than or equal to 100.", new [] { "ProgressPercent" });
             }
 
             // ProgressPercent (int) minimum
             if (this.ProgressPercentOption.IsSet && this.ProgressPercentOption.Value < (int)0)
             {
-                yield return new ValidationResult("Invalid value for ProgressPercent, must be a value greater than or equal to 0.", new [] { "ProgressPercent" });
+                yield return new System.ComponentModel.DataAnnotations.ValidationResult("Invalid value for ProgressPercent, must be a value greater than or equal to 0.", new [] { "ProgressPercent" });
             }
 
             yield break;
