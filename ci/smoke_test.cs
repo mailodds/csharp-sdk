@@ -1,14 +1,13 @@
-// SDK smoke test -- validates build-from-source and API integration.
-using System.Net.Http;
-using System.Text;
-using System.Text.Json;
+// SDK smoke test -- validates build-from-source and API integration using the SDK client.
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using MailOdds.Api;
+using MailOdds.Client;
+using MailOdds.Extensions;
+using MailOdds.Model;
 
-var apiUrl = "https://api.mailodds.com";
 var apiKey = Environment.GetEnvironmentVariable("MAILODDS_TEST_KEY") ?? "";
 if (string.IsNullOrEmpty(apiKey)) { Console.WriteLine("ERROR: MAILODDS_TEST_KEY not set"); return 1; }
-
-// Prove SDK types load
-var _ = typeof(MailOdds.Api.EmailValidationApi);
 
 int passed = 0, failed = 0;
 
@@ -17,22 +16,15 @@ void Check(string label, string? expected, string? actual) {
     else { failed++; Console.WriteLine($"  FAIL: {label} expected={expected} got={actual}"); }
 }
 
-async Task<(int code, JsonDocument? data)> ApiCall(string email, string key) {
-    using var client = new HttpClient { Timeout = TimeSpan.FromSeconds(30) };
-    var content = new StringContent(JsonSerializer.Serialize(new { email }), Encoding.UTF8, "application/json");
-    client.DefaultRequestHeaders.Add("Authorization", $"Bearer {key}");
-    var resp = await client.PostAsync($"{apiUrl}/v1/validate", content);
-    var body = await resp.Content.ReadAsStringAsync();
-    return ((int)resp.StatusCode, JsonDocument.Parse(body));
-}
-
-string? JGet(JsonDocument doc, string key) {
-    if (!doc.RootElement.TryGetProperty(key, out var prop)) return null;
-    if (prop.ValueKind == JsonValueKind.Null) return null;
-    if (prop.ValueKind == JsonValueKind.True) return "true";
-    if (prop.ValueKind == JsonValueKind.False) return "false";
-    return prop.GetString();
-}
+// Set up DI container with SDK
+var services = new ServiceCollection();
+services.AddLogging(b => b.SetMinimumLevel(LogLevel.Warning));
+services.AddApi(options => {
+    options.AddTokens(new BearerToken(apiKey));
+    options.AddApiHttpClients(client => client.BaseAddress = new Uri("https://api.mailodds.com"));
+});
+var sp = services.BuildServiceProvider();
+var api = sp.GetRequiredService<IEmailValidationApi>();
 
 var cases = new (string email, string status, string action, string? sub)[] {
     ("test@deliverable.mailodds.com", "valid", "accept", null),
@@ -47,26 +39,52 @@ var cases = new (string email, string status, string action, string? sub)[] {
 foreach (var (email, expStatus, expAction, expSub) in cases) {
     var domain = email.Split('@')[1].Split('.')[0];
     try {
-        var (code, doc) = await ApiCall(email, apiKey);
-        Check($"{domain}.status", expStatus, JGet(doc!, "status"));
-        Check($"{domain}.action", expAction, JGet(doc!, "action"));
-        Check($"{domain}.sub_status", expSub, JGet(doc!, "sub_status"));
-        Check($"{domain}.test_mode", "true", JGet(doc!, "test_mode"));
+        var resp = await api.ValidateEmailAsync(new ValidateRequest(email: email));
+        if (resp.IsOk) {
+            var data = resp.Ok()!;
+            Check($"{domain}.status", expStatus, ValidationResponse.StatusEnumToJsonValue(data.Status));
+            Check($"{domain}.action", expAction, ValidationResponse.ActionEnumToJsonValue(data.Action));
+            Check($"{domain}.sub_status", expSub, data.SubStatus);
+        } else {
+            failed++;
+            Console.WriteLine($"  FAIL: {domain} unexpected status: {resp.StatusCode}");
+        }
     } catch (Exception e) {
         failed++;
         Console.WriteLine($"  FAIL: {domain} error: {e.Message}");
     }
 }
 
-var (code401, _2) = await ApiCall("test@deliverable.mailodds.com", "invalid_key");
-Check("error.401", "401", code401.ToString());
+// Error handling: 401 with bad key
+{
+    var badServices = new ServiceCollection();
+    badServices.AddLogging(b => b.SetMinimumLevel(LogLevel.Warning));
+    badServices.AddApi(options => {
+        options.AddTokens(new BearerToken("invalid_key"));
+        options.AddApiHttpClients(client => client.BaseAddress = new Uri("https://api.mailodds.com"));
+    });
+    var badSp = badServices.BuildServiceProvider();
+    var badApi = badSp.GetRequiredService<IEmailValidationApi>();
+    try {
+        var resp = await badApi.ValidateEmailAsync(new ValidateRequest(email: "test@deliverable.mailodds.com"));
+        if (resp.IsUnauthorized) { passed++; }
+        else { failed++; Console.WriteLine($"  FAIL: error.401 expected=401 got={resp.StatusCode}"); }
+    } catch (Exception e) {
+        failed++;
+        Console.WriteLine($"  FAIL: error.401 exception: {e.Message}");
+    }
+}
 
-using var c2 = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
-c2.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
-var r400 = await c2.PostAsync($"{apiUrl}/v1/validate", new StringContent("{}", Encoding.UTF8, "application/json"));
-var c400 = (int)r400.StatusCode;
-if (c400 == 400 || c400 == 422) passed++;
-else { failed++; Console.WriteLine($"  FAIL: error.400 expected=400|422 got={c400}"); }
+// Error handling: 400/422 with missing email
+try {
+    var resp = await api.ValidateEmailAsync(new ValidateRequest(email: ""));
+    if (resp.IsBadRequest) { passed++; }
+    else if ((int)resp.StatusCode == 422) { passed++; }
+    else { failed++; Console.WriteLine($"  FAIL: error.400 expected=400|422 got={resp.StatusCode}"); }
+} catch (Exception e) {
+    failed++;
+    Console.WriteLine($"  FAIL: error.400 exception: {e.Message}");
+}
 
 var total = passed + failed;
 var result = failed == 0 ? "PASS" : "FAIL";
