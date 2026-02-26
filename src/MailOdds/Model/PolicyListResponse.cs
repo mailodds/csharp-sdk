@@ -22,7 +22,6 @@ using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.ComponentModel.DataAnnotations;
-
 using MailOdds.Client;
 
 namespace MailOdds.Model
@@ -36,12 +35,14 @@ namespace MailOdds.Model
         /// Initializes a new instance of the <see cref="PolicyListResponse" /> class.
         /// </summary>
         /// <param name="schemaVersion">schemaVersion</param>
+        /// <param name="requestId">Unique request identifier</param>
         /// <param name="policies">policies</param>
         /// <param name="limits">limits</param>
         [JsonConstructor]
-        public PolicyListResponse(Option<string?> schemaVersion = default, Option<List<Policy>?> policies = default, Option<PolicyListResponseLimits?> limits = default)
+        public PolicyListResponse(Option<string?> schemaVersion = default, Option<string?> requestId = default, Option<List<Policy>?> policies = default, Option<PolicyListResponseLimits?> limits = default)
         {
             SchemaVersionOption = schemaVersion;
+            RequestIdOption = requestId;
             PoliciesOption = policies;
             LimitsOption = limits;
             OnCreated();
@@ -61,6 +62,20 @@ namespace MailOdds.Model
         /// </summary>
         [JsonPropertyName("schema_version")]
         public string? SchemaVersion { get { return this.SchemaVersionOption; } set { this.SchemaVersionOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of RequestId
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> RequestIdOption { get; private set; }
+
+        /// <summary>
+        /// Unique request identifier
+        /// </summary>
+        /// <value>Unique request identifier</value>
+        [JsonPropertyName("request_id")]
+        public string? RequestId { get { return this.RequestIdOption; } set { this.RequestIdOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Policies
@@ -97,6 +112,7 @@ namespace MailOdds.Model
             StringBuilder sb = new StringBuilder();
             sb.Append("class PolicyListResponse {\n");
             sb.Append("  SchemaVersion: ").Append(SchemaVersion).Append("\n");
+            sb.Append("  RequestId: ").Append(RequestId).Append("\n");
             sb.Append("  Policies: ").Append(Policies).Append("\n");
             sb.Append("  Limits: ").Append(Limits).Append("\n");
             sb.Append("}\n");
@@ -137,6 +153,7 @@ namespace MailOdds.Model
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
             Option<string?> schemaVersion = default;
+            Option<string?> requestId = default;
             Option<List<Policy>?> policies = default;
             Option<PolicyListResponseLimits?> limits = default;
 
@@ -158,6 +175,9 @@ namespace MailOdds.Model
                         case "schema_version":
                             schemaVersion = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
+                        case "request_id":
+                            requestId = new Option<string?>(utf8JsonReader.GetString()!);
+                            break;
                         case "policies":
                             policies = new Option<List<Policy>?>(JsonSerializer.Deserialize<List<Policy>>(ref utf8JsonReader, jsonSerializerOptions)!);
                             break;
@@ -173,13 +193,16 @@ namespace MailOdds.Model
             if (schemaVersion.IsSet && schemaVersion.Value == null)
                 throw new ArgumentNullException(nameof(schemaVersion), "Property is not nullable for class PolicyListResponse.");
 
+            if (requestId.IsSet && requestId.Value == null)
+                throw new ArgumentNullException(nameof(requestId), "Property is not nullable for class PolicyListResponse.");
+
             if (policies.IsSet && policies.Value == null)
                 throw new ArgumentNullException(nameof(policies), "Property is not nullable for class PolicyListResponse.");
 
             if (limits.IsSet && limits.Value == null)
                 throw new ArgumentNullException(nameof(limits), "Property is not nullable for class PolicyListResponse.");
 
-            return new PolicyListResponse(schemaVersion, policies, limits);
+            return new PolicyListResponse(schemaVersion, requestId, policies, limits);
         }
 
         /// <summary>
@@ -209,6 +232,9 @@ namespace MailOdds.Model
             if (policyListResponse.SchemaVersionOption.IsSet && policyListResponse.SchemaVersion == null)
                 throw new ArgumentNullException(nameof(policyListResponse.SchemaVersion), "Property is required for class PolicyListResponse.");
 
+            if (policyListResponse.RequestIdOption.IsSet && policyListResponse.RequestId == null)
+                throw new ArgumentNullException(nameof(policyListResponse.RequestId), "Property is required for class PolicyListResponse.");
+
             if (policyListResponse.PoliciesOption.IsSet && policyListResponse.Policies == null)
                 throw new ArgumentNullException(nameof(policyListResponse.Policies), "Property is required for class PolicyListResponse.");
 
@@ -217,6 +243,9 @@ namespace MailOdds.Model
 
             if (policyListResponse.SchemaVersionOption.IsSet)
                 writer.WriteString("schema_version", policyListResponse.SchemaVersion);
+
+            if (policyListResponse.RequestIdOption.IsSet)
+                writer.WriteString("request_id", policyListResponse.RequestId);
 
             if (policyListResponse.PoliciesOption.IsSet)
             {

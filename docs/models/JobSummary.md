@@ -6,6 +6,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Valid** | **int** |  | [optional] 
 **Invalid** | **int** |  | [optional] 
+**CatchAll** | **int** |  | [optional] 
 **DoNotMail** | **int** |  | [optional] 
 **Unknown** | **int** |  | [optional] 
 **CancelledPending** | **int** |  | [optional] 

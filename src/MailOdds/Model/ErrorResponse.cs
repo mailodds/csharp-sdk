@@ -22,7 +22,6 @@ using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.ComponentModel.DataAnnotations;
-
 using MailOdds.Client;
 
 namespace MailOdds.Model
@@ -36,14 +35,16 @@ namespace MailOdds.Model
         /// Initializes a new instance of the <see cref="ErrorResponse" /> class.
         /// </summary>
         /// <param name="error">Machine-readable error code</param>
-        /// <param name="message">Human-readable error message</param>
         /// <param name="schemaVersion">schemaVersion</param>
+        /// <param name="requestId">Unique request identifier</param>
+        /// <param name="message">Human-readable error message</param>
         [JsonConstructor]
-        public ErrorResponse(string error, string message, Option<string?> schemaVersion = default)
+        public ErrorResponse(string error, Option<string?> schemaVersion = default, Option<string?> requestId = default, Option<string?> message = default)
         {
             Error = error;
-            Message = message;
             SchemaVersionOption = schemaVersion;
+            RequestIdOption = requestId;
+            MessageOption = message;
             OnCreated();
         }
 
@@ -55,13 +56,6 @@ namespace MailOdds.Model
         /// <value>Machine-readable error code</value>
         [JsonPropertyName("error")]
         public string Error { get; set; }
-
-        /// <summary>
-        /// Human-readable error message
-        /// </summary>
-        /// <value>Human-readable error message</value>
-        [JsonPropertyName("message")]
-        public string Message { get; set; }
 
         /// <summary>
         /// Used to track the state of SchemaVersion
@@ -78,6 +72,34 @@ namespace MailOdds.Model
         public string? SchemaVersion { get { return this.SchemaVersionOption; } set { this.SchemaVersionOption = new(value); } }
 
         /// <summary>
+        /// Used to track the state of RequestId
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> RequestIdOption { get; private set; }
+
+        /// <summary>
+        /// Unique request identifier
+        /// </summary>
+        /// <value>Unique request identifier</value>
+        [JsonPropertyName("request_id")]
+        public string? RequestId { get { return this.RequestIdOption; } set { this.RequestIdOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of Message
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> MessageOption { get; private set; }
+
+        /// <summary>
+        /// Human-readable error message
+        /// </summary>
+        /// <value>Human-readable error message</value>
+        [JsonPropertyName("message")]
+        public string? Message { get { return this.MessageOption; } set { this.MessageOption = new(value); } }
+
+        /// <summary>
         /// Returns the string presentation of the object
         /// </summary>
         /// <returns>String presentation of the object</returns>
@@ -86,8 +108,9 @@ namespace MailOdds.Model
             StringBuilder sb = new StringBuilder();
             sb.Append("class ErrorResponse {\n");
             sb.Append("  Error: ").Append(Error).Append("\n");
-            sb.Append("  Message: ").Append(Message).Append("\n");
             sb.Append("  SchemaVersion: ").Append(SchemaVersion).Append("\n");
+            sb.Append("  RequestId: ").Append(RequestId).Append("\n");
+            sb.Append("  Message: ").Append(Message).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -126,8 +149,9 @@ namespace MailOdds.Model
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
             Option<string?> error = default;
-            Option<string?> message = default;
             Option<string?> schemaVersion = default;
+            Option<string?> requestId = default;
+            Option<string?> message = default;
 
             while (utf8JsonReader.Read())
             {
@@ -147,11 +171,14 @@ namespace MailOdds.Model
                         case "error":
                             error = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
-                        case "message":
-                            message = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
                         case "schema_version":
                             schemaVersion = new Option<string?>(utf8JsonReader.GetString()!);
+                            break;
+                        case "request_id":
+                            requestId = new Option<string?>(utf8JsonReader.GetString()!);
+                            break;
+                        case "message":
+                            message = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         default:
                             break;
@@ -162,19 +189,19 @@ namespace MailOdds.Model
             if (!error.IsSet)
                 throw new ArgumentException("Property is required for class ErrorResponse.", nameof(error));
 
-            if (!message.IsSet)
-                throw new ArgumentException("Property is required for class ErrorResponse.", nameof(message));
-
             if (error.IsSet && error.Value == null)
                 throw new ArgumentNullException(nameof(error), "Property is not nullable for class ErrorResponse.");
-
-            if (message.IsSet && message.Value == null)
-                throw new ArgumentNullException(nameof(message), "Property is not nullable for class ErrorResponse.");
 
             if (schemaVersion.IsSet && schemaVersion.Value == null)
                 throw new ArgumentNullException(nameof(schemaVersion), "Property is not nullable for class ErrorResponse.");
 
-            return new ErrorResponse(error.Value!, message.Value!, schemaVersion);
+            if (requestId.IsSet && requestId.Value == null)
+                throw new ArgumentNullException(nameof(requestId), "Property is not nullable for class ErrorResponse.");
+
+            if (message.IsSet && message.Value == null)
+                throw new ArgumentNullException(nameof(message), "Property is not nullable for class ErrorResponse.");
+
+            return new ErrorResponse(error.Value!, schemaVersion, requestId, message);
         }
 
         /// <summary>
@@ -204,18 +231,25 @@ namespace MailOdds.Model
             if (errorResponse.Error == null)
                 throw new ArgumentNullException(nameof(errorResponse.Error), "Property is required for class ErrorResponse.");
 
-            if (errorResponse.Message == null)
-                throw new ArgumentNullException(nameof(errorResponse.Message), "Property is required for class ErrorResponse.");
-
             if (errorResponse.SchemaVersionOption.IsSet && errorResponse.SchemaVersion == null)
                 throw new ArgumentNullException(nameof(errorResponse.SchemaVersion), "Property is required for class ErrorResponse.");
 
-            writer.WriteString("error", errorResponse.Error);
+            if (errorResponse.RequestIdOption.IsSet && errorResponse.RequestId == null)
+                throw new ArgumentNullException(nameof(errorResponse.RequestId), "Property is required for class ErrorResponse.");
 
-            writer.WriteString("message", errorResponse.Message);
+            if (errorResponse.MessageOption.IsSet && errorResponse.Message == null)
+                throw new ArgumentNullException(nameof(errorResponse.Message), "Property is required for class ErrorResponse.");
+
+            writer.WriteString("error", errorResponse.Error);
 
             if (errorResponse.SchemaVersionOption.IsSet)
                 writer.WriteString("schema_version", errorResponse.SchemaVersion);
+
+            if (errorResponse.RequestIdOption.IsSet)
+                writer.WriteString("request_id", errorResponse.RequestId);
+
+            if (errorResponse.MessageOption.IsSet)
+                writer.WriteString("message", errorResponse.Message);
         }
     }
 }

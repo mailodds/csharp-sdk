@@ -114,26 +114,52 @@ namespace MailOdds.Client
                     : "false";
             if (obj is AddSuppressionRequestEntriesInner.TypeEnum addSuppressionRequestEntriesInnerTypeEnum)
                 return AddSuppressionRequestEntriesInner.TypeEnumToJsonValue(addSuppressionRequestEntriesInnerTypeEnum);
+            if (obj is BatchDeliverResponse.StatusEnum batchDeliverResponseStatusEnum)
+                return BatchDeliverResponse.StatusEnumToJsonValue(batchDeliverResponseStatusEnum);
             if (obj is CreatePolicyFromPresetRequest.PresetIdEnum createPolicyFromPresetRequestPresetIdEnum)
                 return CreatePolicyFromPresetRequest.PresetIdEnumToJsonValue(createPolicyFromPresetRequestPresetIdEnum);
+            if (obj is DeliverRequest.CampaignTypeEnum deliverRequestCampaignTypeEnum)
+                return DeliverRequest.CampaignTypeEnumToJsonValue(deliverRequestCampaignTypeEnum);
+            if (obj is DeliverResponse.StatusEnum deliverResponseStatusEnum)
+                return DeliverResponse.StatusEnumToJsonValue(deliverResponseStatusEnum);
             if (obj is Job.StatusEnum jobStatusEnum)
                 return Job.StatusEnumToJsonValue(jobStatusEnum);
             if (obj is PolicyRule.TypeEnum policyRuleTypeEnum)
                 return PolicyRule.TypeEnumToJsonValue(policyRuleTypeEnum);
             if (obj is PolicyRuleAction.ActionEnum policyRuleActionActionEnum)
                 return PolicyRuleAction.ActionEnumToJsonValue(policyRuleActionActionEnum);
+            if (obj is SendingDomain.StatusEnum sendingDomainStatusEnum)
+                return SendingDomain.StatusEnumToJsonValue(sendingDomainStatusEnum);
+            if (obj is SendingDomainDnsRecordsNs.StatusEnum sendingDomainDnsRecordsNsStatusEnum)
+                return SendingDomainDnsRecordsNs.StatusEnumToJsonValue(sendingDomainDnsRecordsNsStatusEnum);
+            if (obj is Subscriber.StatusEnum subscriberStatusEnum)
+                return Subscriber.StatusEnumToJsonValue(subscriberStatusEnum);
             if (obj is SuppressionCheckResponse.MatchTypeEnum suppressionCheckResponseMatchTypeEnum)
                 return SuppressionCheckResponse.MatchTypeEnumToJsonValue(suppressionCheckResponseMatchTypeEnum);
             if (obj is SuppressionEntry.TypeEnum suppressionEntryTypeEnum)
                 return SuppressionEntry.TypeEnumToJsonValue(suppressionEntryTypeEnum);
             if (obj is TelemetrySummary.WindowEnum telemetrySummaryWindowEnum)
                 return TelemetrySummary.WindowEnumToJsonValue(telemetrySummaryWindowEnum);
+            if (obj is ValidateBatchRequest.DepthEnum validateBatchRequestDepthEnum)
+                return ValidateBatchRequest.DepthEnumToJsonValue(validateBatchRequestDepthEnum);
+            if (obj is ValidateRequest.DepthEnum validateRequestDepthEnum)
+                return ValidateRequest.DepthEnumToJsonValue(validateRequestDepthEnum);
             if (obj is ValidationResponse.StatusEnum validationResponseStatusEnum)
                 return ValidationResponse.StatusEnumToJsonValue(validationResponseStatusEnum);
             if (obj is ValidationResponse.ActionEnum validationResponseActionEnum)
                 return ValidationResponse.ActionEnumToJsonValue(validationResponseActionEnum);
+            if (obj is ValidationResponse.DepthEnum validationResponseDepthEnum)
+                return ValidationResponse.DepthEnumToJsonValue(validationResponseDepthEnum);
+            if (obj is ValidationResponse.SubStatusEnum validationResponseSubStatusEnum)
+                return ValidationResponse.SubStatusEnumToJsonValue(validationResponseSubStatusEnum);
+            if (obj is ValidationResponse.DmarcPolicyEnum validationResponseDmarcPolicyEnum)
+                return ValidationResponse.DmarcPolicyEnumToJsonValue(validationResponseDmarcPolicyEnum);
             if (obj is ValidationResponseSuppressionMatch.MatchTypeEnum validationResponseSuppressionMatchMatchTypeEnum)
                 return ValidationResponseSuppressionMatch.MatchTypeEnumToJsonValue(validationResponseSuppressionMatchMatchTypeEnum);
+            if (obj is ValidationResult.StatusEnum validationResultStatusEnum)
+                return ValidationResult.StatusEnumToJsonValue(validationResultStatusEnum);
+            if (obj is ValidationResult.ActionEnum validationResultActionEnum)
+                return ValidationResult.ActionEnumToJsonValue(validationResultActionEnum);
             if (obj is ICollection collection)
             {
                 List<string?> entries = new();

@@ -74,8 +74,17 @@ namespace MailOdds.Test.Api
             var bulkValidationApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<IBulkValidationApi>();
             Assert.True(bulkValidationApi.HttpClient.BaseAddress != null);
 
+            var emailSendingApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<IEmailSendingApi>();
+            Assert.True(emailSendingApi.HttpClient.BaseAddress != null);
+
             var emailValidationApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<IEmailValidationApi>();
             Assert.True(emailValidationApi.HttpClient.BaseAddress != null);
+
+            var sendingDomainsApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<ISendingDomainsApi>();
+            Assert.True(sendingDomainsApi.HttpClient.BaseAddress != null);
+
+            var subscriberListsApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<ISubscriberListsApi>();
+            Assert.True(subscriberListsApi.HttpClient.BaseAddress != null);
 
             var suppressionListsApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<ISuppressionListsApi>();
             Assert.True(suppressionListsApi.HttpClient.BaseAddress != null);
@@ -96,8 +105,17 @@ namespace MailOdds.Test.Api
             var bulkValidationApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<IBulkValidationApi>();
             Assert.True(bulkValidationApi.HttpClient.BaseAddress != null);
 
+            var emailSendingApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<IEmailSendingApi>();
+            Assert.True(emailSendingApi.HttpClient.BaseAddress != null);
+
             var emailValidationApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<IEmailValidationApi>();
             Assert.True(emailValidationApi.HttpClient.BaseAddress != null);
+
+            var sendingDomainsApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<ISendingDomainsApi>();
+            Assert.True(sendingDomainsApi.HttpClient.BaseAddress != null);
+
+            var subscriberListsApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<ISubscriberListsApi>();
+            Assert.True(subscriberListsApi.HttpClient.BaseAddress != null);
 
             var suppressionListsApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<ISuppressionListsApi>();
             Assert.True(suppressionListsApi.HttpClient.BaseAddress != null);
@@ -118,8 +136,17 @@ namespace MailOdds.Test.Api
             var bulkValidationApi = _hostUsingAddWithAClient.Services.GetRequiredService<IBulkValidationApi>();
             Assert.True(bulkValidationApi.HttpClient.BaseAddress != null);
             
+            var emailSendingApi = _hostUsingAddWithAClient.Services.GetRequiredService<IEmailSendingApi>();
+            Assert.True(emailSendingApi.HttpClient.BaseAddress != null);
+            
             var emailValidationApi = _hostUsingAddWithAClient.Services.GetRequiredService<IEmailValidationApi>();
             Assert.True(emailValidationApi.HttpClient.BaseAddress != null);
+            
+            var sendingDomainsApi = _hostUsingAddWithAClient.Services.GetRequiredService<ISendingDomainsApi>();
+            Assert.True(sendingDomainsApi.HttpClient.BaseAddress != null);
+            
+            var subscriberListsApi = _hostUsingAddWithAClient.Services.GetRequiredService<ISubscriberListsApi>();
+            Assert.True(subscriberListsApi.HttpClient.BaseAddress != null);
             
             var suppressionListsApi = _hostUsingAddWithAClient.Services.GetRequiredService<ISuppressionListsApi>();
             Assert.True(suppressionListsApi.HttpClient.BaseAddress != null);
@@ -140,8 +167,17 @@ namespace MailOdds.Test.Api
             var bulkValidationApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<IBulkValidationApi>();
             Assert.True(bulkValidationApi.HttpClient.BaseAddress != null);
 
+            var emailSendingApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<IEmailSendingApi>();
+            Assert.True(emailSendingApi.HttpClient.BaseAddress != null);
+
             var emailValidationApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<IEmailValidationApi>();
             Assert.True(emailValidationApi.HttpClient.BaseAddress != null);
+
+            var sendingDomainsApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<ISendingDomainsApi>();
+            Assert.True(sendingDomainsApi.HttpClient.BaseAddress != null);
+
+            var subscriberListsApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<ISubscriberListsApi>();
+            Assert.True(subscriberListsApi.HttpClient.BaseAddress != null);
 
             var suppressionListsApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<ISuppressionListsApi>();
             Assert.True(suppressionListsApi.HttpClient.BaseAddress != null);

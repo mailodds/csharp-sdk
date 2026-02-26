@@ -22,7 +22,6 @@ using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.ComponentModel.DataAnnotations;
-
 using MailOdds.Client;
 
 namespace MailOdds.Model
@@ -36,11 +35,13 @@ namespace MailOdds.Model
         /// Initializes a new instance of the <see cref="PolicyResponse" /> class.
         /// </summary>
         /// <param name="schemaVersion">schemaVersion</param>
+        /// <param name="requestId">Unique request identifier</param>
         /// <param name="policy">policy</param>
         [JsonConstructor]
-        public PolicyResponse(Option<string?> schemaVersion = default, Option<Policy?> policy = default)
+        public PolicyResponse(Option<string?> schemaVersion = default, Option<string?> requestId = default, Option<Policy?> policy = default)
         {
             SchemaVersionOption = schemaVersion;
+            RequestIdOption = requestId;
             PolicyOption = policy;
             OnCreated();
         }
@@ -59,6 +60,20 @@ namespace MailOdds.Model
         /// </summary>
         [JsonPropertyName("schema_version")]
         public string? SchemaVersion { get { return this.SchemaVersionOption; } set { this.SchemaVersionOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of RequestId
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> RequestIdOption { get; private set; }
+
+        /// <summary>
+        /// Unique request identifier
+        /// </summary>
+        /// <value>Unique request identifier</value>
+        [JsonPropertyName("request_id")]
+        public string? RequestId { get { return this.RequestIdOption; } set { this.RequestIdOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Policy
@@ -82,6 +97,7 @@ namespace MailOdds.Model
             StringBuilder sb = new StringBuilder();
             sb.Append("class PolicyResponse {\n");
             sb.Append("  SchemaVersion: ").Append(SchemaVersion).Append("\n");
+            sb.Append("  RequestId: ").Append(RequestId).Append("\n");
             sb.Append("  Policy: ").Append(Policy).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
@@ -121,6 +137,7 @@ namespace MailOdds.Model
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
             Option<string?> schemaVersion = default;
+            Option<string?> requestId = default;
             Option<Policy?> policy = default;
 
             while (utf8JsonReader.Read())
@@ -141,6 +158,9 @@ namespace MailOdds.Model
                         case "schema_version":
                             schemaVersion = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
+                        case "request_id":
+                            requestId = new Option<string?>(utf8JsonReader.GetString()!);
+                            break;
                         case "policy":
                             policy = new Option<Policy?>(JsonSerializer.Deserialize<Policy>(ref utf8JsonReader, jsonSerializerOptions)!);
                             break;
@@ -153,10 +173,13 @@ namespace MailOdds.Model
             if (schemaVersion.IsSet && schemaVersion.Value == null)
                 throw new ArgumentNullException(nameof(schemaVersion), "Property is not nullable for class PolicyResponse.");
 
+            if (requestId.IsSet && requestId.Value == null)
+                throw new ArgumentNullException(nameof(requestId), "Property is not nullable for class PolicyResponse.");
+
             if (policy.IsSet && policy.Value == null)
                 throw new ArgumentNullException(nameof(policy), "Property is not nullable for class PolicyResponse.");
 
-            return new PolicyResponse(schemaVersion, policy);
+            return new PolicyResponse(schemaVersion, requestId, policy);
         }
 
         /// <summary>
@@ -186,11 +209,17 @@ namespace MailOdds.Model
             if (policyResponse.SchemaVersionOption.IsSet && policyResponse.SchemaVersion == null)
                 throw new ArgumentNullException(nameof(policyResponse.SchemaVersion), "Property is required for class PolicyResponse.");
 
+            if (policyResponse.RequestIdOption.IsSet && policyResponse.RequestId == null)
+                throw new ArgumentNullException(nameof(policyResponse.RequestId), "Property is required for class PolicyResponse.");
+
             if (policyResponse.PolicyOption.IsSet && policyResponse.Policy == null)
                 throw new ArgumentNullException(nameof(policyResponse.Policy), "Property is required for class PolicyResponse.");
 
             if (policyResponse.SchemaVersionOption.IsSet)
                 writer.WriteString("schema_version", policyResponse.SchemaVersion);
+
+            if (policyResponse.RequestIdOption.IsSet)
+                writer.WriteString("request_id", policyResponse.RequestId);
 
             if (policyResponse.PolicyOption.IsSet)
             {

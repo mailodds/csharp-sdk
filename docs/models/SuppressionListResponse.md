@@ -5,6 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **SchemaVersion** | **string** |  | [optional] 
+**RequestId** | **string** | Unique request identifier | [optional] 
 **Entries** | [**List&lt;SuppressionEntry&gt;**](SuppressionEntry.md) |  | [optional] 
 **Pagination** | [**Pagination**](Pagination.md) |  | [optional] 
 

@@ -5,6 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **SchemaVersion** | **string** |  | [optional] 
+**RequestId** | **string** | Unique request identifier | [optional] 
 **Email** | **string** |  | [optional] 
 **Suppressed** | **bool** |  | [optional] 
 **MatchType** | **string** |  | [optional] 

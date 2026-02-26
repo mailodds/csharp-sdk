@@ -5,6 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **SchemaVersion** | **string** |  | [optional] 
+**RequestId** | **string** | Unique request identifier | [optional] 
 **Policies** | [**List&lt;Policy&gt;**](Policy.md) |  | [optional] 
 **Limits** | [**PolicyListResponseLimits**](PolicyListResponseLimits.md) |  | [optional] 
 

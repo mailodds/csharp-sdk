@@ -5,6 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **SchemaVersion** | **string** |  | [optional] 
+**RequestId** | **string** | Unique request identifier | [optional] 
 **Original** | **Object** | Original validation result before policy | [optional] 
 **Modified** | **Object** | Result after policy applied | [optional] 
 **MatchedRule** | **Object** | The rule that matched, or null if none matched | [optional] 

@@ -22,7 +22,6 @@ using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.ComponentModel.DataAnnotations;
-
 using MailOdds.Client;
 
 namespace MailOdds.Model
@@ -36,11 +35,13 @@ namespace MailOdds.Model
         /// Initializes a new instance of the <see cref="PresignedUploadResponse" /> class.
         /// </summary>
         /// <param name="schemaVersion">schemaVersion</param>
+        /// <param name="requestId">Unique request identifier</param>
         /// <param name="upload">upload</param>
         [JsonConstructor]
-        public PresignedUploadResponse(Option<string?> schemaVersion = default, Option<PresignedUploadResponseUpload?> upload = default)
+        public PresignedUploadResponse(Option<string?> schemaVersion = default, Option<string?> requestId = default, Option<PresignedUploadResponseUpload?> upload = default)
         {
             SchemaVersionOption = schemaVersion;
+            RequestIdOption = requestId;
             UploadOption = upload;
             OnCreated();
         }
@@ -59,6 +60,20 @@ namespace MailOdds.Model
         /// </summary>
         [JsonPropertyName("schema_version")]
         public string? SchemaVersion { get { return this.SchemaVersionOption; } set { this.SchemaVersionOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of RequestId
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> RequestIdOption { get; private set; }
+
+        /// <summary>
+        /// Unique request identifier
+        /// </summary>
+        /// <value>Unique request identifier</value>
+        [JsonPropertyName("request_id")]
+        public string? RequestId { get { return this.RequestIdOption; } set { this.RequestIdOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Upload
@@ -82,6 +97,7 @@ namespace MailOdds.Model
             StringBuilder sb = new StringBuilder();
             sb.Append("class PresignedUploadResponse {\n");
             sb.Append("  SchemaVersion: ").Append(SchemaVersion).Append("\n");
+            sb.Append("  RequestId: ").Append(RequestId).Append("\n");
             sb.Append("  Upload: ").Append(Upload).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
@@ -121,6 +137,7 @@ namespace MailOdds.Model
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
             Option<string?> schemaVersion = default;
+            Option<string?> requestId = default;
             Option<PresignedUploadResponseUpload?> upload = default;
 
             while (utf8JsonReader.Read())
@@ -141,6 +158,9 @@ namespace MailOdds.Model
                         case "schema_version":
                             schemaVersion = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
+                        case "request_id":
+                            requestId = new Option<string?>(utf8JsonReader.GetString()!);
+                            break;
                         case "upload":
                             upload = new Option<PresignedUploadResponseUpload?>(JsonSerializer.Deserialize<PresignedUploadResponseUpload>(ref utf8JsonReader, jsonSerializerOptions)!);
                             break;
@@ -153,10 +173,13 @@ namespace MailOdds.Model
             if (schemaVersion.IsSet && schemaVersion.Value == null)
                 throw new ArgumentNullException(nameof(schemaVersion), "Property is not nullable for class PresignedUploadResponse.");
 
+            if (requestId.IsSet && requestId.Value == null)
+                throw new ArgumentNullException(nameof(requestId), "Property is not nullable for class PresignedUploadResponse.");
+
             if (upload.IsSet && upload.Value == null)
                 throw new ArgumentNullException(nameof(upload), "Property is not nullable for class PresignedUploadResponse.");
 
-            return new PresignedUploadResponse(schemaVersion, upload);
+            return new PresignedUploadResponse(schemaVersion, requestId, upload);
         }
 
         /// <summary>
@@ -186,11 +209,17 @@ namespace MailOdds.Model
             if (presignedUploadResponse.SchemaVersionOption.IsSet && presignedUploadResponse.SchemaVersion == null)
                 throw new ArgumentNullException(nameof(presignedUploadResponse.SchemaVersion), "Property is required for class PresignedUploadResponse.");
 
+            if (presignedUploadResponse.RequestIdOption.IsSet && presignedUploadResponse.RequestId == null)
+                throw new ArgumentNullException(nameof(presignedUploadResponse.RequestId), "Property is required for class PresignedUploadResponse.");
+
             if (presignedUploadResponse.UploadOption.IsSet && presignedUploadResponse.Upload == null)
                 throw new ArgumentNullException(nameof(presignedUploadResponse.Upload), "Property is required for class PresignedUploadResponse.");
 
             if (presignedUploadResponse.SchemaVersionOption.IsSet)
                 writer.WriteString("schema_version", presignedUploadResponse.SchemaVersion);
+
+            if (presignedUploadResponse.RequestIdOption.IsSet)
+                writer.WriteString("request_id", presignedUploadResponse.RequestId);
 
             if (presignedUploadResponse.UploadOption.IsSet)
             {

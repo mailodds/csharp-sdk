@@ -22,7 +22,6 @@ using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.ComponentModel.DataAnnotations;
-
 using MailOdds.Client;
 
 namespace MailOdds.Model
@@ -36,11 +35,13 @@ namespace MailOdds.Model
         /// Initializes a new instance of the <see cref="RemoveSuppression200Response" /> class.
         /// </summary>
         /// <param name="schemaVersion">schemaVersion</param>
+        /// <param name="requestId">Unique request identifier</param>
         /// <param name="removed">removed</param>
         [JsonConstructor]
-        public RemoveSuppression200Response(Option<string?> schemaVersion = default, Option<int?> removed = default)
+        public RemoveSuppression200Response(Option<string?> schemaVersion = default, Option<string?> requestId = default, Option<int?> removed = default)
         {
             SchemaVersionOption = schemaVersion;
+            RequestIdOption = requestId;
             RemovedOption = removed;
             OnCreated();
         }
@@ -59,6 +60,20 @@ namespace MailOdds.Model
         /// </summary>
         [JsonPropertyName("schema_version")]
         public string? SchemaVersion { get { return this.SchemaVersionOption; } set { this.SchemaVersionOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of RequestId
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> RequestIdOption { get; private set; }
+
+        /// <summary>
+        /// Unique request identifier
+        /// </summary>
+        /// <value>Unique request identifier</value>
+        [JsonPropertyName("request_id")]
+        public string? RequestId { get { return this.RequestIdOption; } set { this.RequestIdOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Removed
@@ -82,6 +97,7 @@ namespace MailOdds.Model
             StringBuilder sb = new StringBuilder();
             sb.Append("class RemoveSuppression200Response {\n");
             sb.Append("  SchemaVersion: ").Append(SchemaVersion).Append("\n");
+            sb.Append("  RequestId: ").Append(RequestId).Append("\n");
             sb.Append("  Removed: ").Append(Removed).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
@@ -121,6 +137,7 @@ namespace MailOdds.Model
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
             Option<string?> schemaVersion = default;
+            Option<string?> requestId = default;
             Option<int?> removed = default;
 
             while (utf8JsonReader.Read())
@@ -141,6 +158,9 @@ namespace MailOdds.Model
                         case "schema_version":
                             schemaVersion = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
+                        case "request_id":
+                            requestId = new Option<string?>(utf8JsonReader.GetString()!);
+                            break;
                         case "removed":
                             removed = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
                             break;
@@ -153,10 +173,13 @@ namespace MailOdds.Model
             if (schemaVersion.IsSet && schemaVersion.Value == null)
                 throw new ArgumentNullException(nameof(schemaVersion), "Property is not nullable for class RemoveSuppression200Response.");
 
+            if (requestId.IsSet && requestId.Value == null)
+                throw new ArgumentNullException(nameof(requestId), "Property is not nullable for class RemoveSuppression200Response.");
+
             if (removed.IsSet && removed.Value == null)
                 throw new ArgumentNullException(nameof(removed), "Property is not nullable for class RemoveSuppression200Response.");
 
-            return new RemoveSuppression200Response(schemaVersion, removed);
+            return new RemoveSuppression200Response(schemaVersion, requestId, removed);
         }
 
         /// <summary>
@@ -186,8 +209,14 @@ namespace MailOdds.Model
             if (removeSuppression200Response.SchemaVersionOption.IsSet && removeSuppression200Response.SchemaVersion == null)
                 throw new ArgumentNullException(nameof(removeSuppression200Response.SchemaVersion), "Property is required for class RemoveSuppression200Response.");
 
+            if (removeSuppression200Response.RequestIdOption.IsSet && removeSuppression200Response.RequestId == null)
+                throw new ArgumentNullException(nameof(removeSuppression200Response.RequestId), "Property is required for class RemoveSuppression200Response.");
+
             if (removeSuppression200Response.SchemaVersionOption.IsSet)
                 writer.WriteString("schema_version", removeSuppression200Response.SchemaVersion);
+
+            if (removeSuppression200Response.RequestIdOption.IsSet)
+                writer.WriteString("request_id", removeSuppression200Response.RequestId);
 
             if (removeSuppression200Response.RemovedOption.IsSet)
                 writer.WriteNumber("removed", removeSuppression200Response.RemovedOption.Value!.Value);

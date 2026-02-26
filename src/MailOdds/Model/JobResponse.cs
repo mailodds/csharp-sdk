@@ -22,7 +22,6 @@ using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.ComponentModel.DataAnnotations;
-
 using MailOdds.Client;
 
 namespace MailOdds.Model
@@ -36,11 +35,13 @@ namespace MailOdds.Model
         /// Initializes a new instance of the <see cref="JobResponse" /> class.
         /// </summary>
         /// <param name="schemaVersion">schemaVersion</param>
+        /// <param name="requestId">Unique request identifier</param>
         /// <param name="job">job</param>
         [JsonConstructor]
-        public JobResponse(Option<string?> schemaVersion = default, Option<Job?> job = default)
+        public JobResponse(Option<string?> schemaVersion = default, Option<string?> requestId = default, Option<Job?> job = default)
         {
             SchemaVersionOption = schemaVersion;
+            RequestIdOption = requestId;
             JobOption = job;
             OnCreated();
         }
@@ -60,6 +61,20 @@ namespace MailOdds.Model
         /* <example>1.0</example> */
         [JsonPropertyName("schema_version")]
         public string? SchemaVersion { get { return this.SchemaVersionOption; } set { this.SchemaVersionOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of RequestId
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> RequestIdOption { get; private set; }
+
+        /// <summary>
+        /// Unique request identifier
+        /// </summary>
+        /// <value>Unique request identifier</value>
+        [JsonPropertyName("request_id")]
+        public string? RequestId { get { return this.RequestIdOption; } set { this.RequestIdOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Job
@@ -83,6 +98,7 @@ namespace MailOdds.Model
             StringBuilder sb = new StringBuilder();
             sb.Append("class JobResponse {\n");
             sb.Append("  SchemaVersion: ").Append(SchemaVersion).Append("\n");
+            sb.Append("  RequestId: ").Append(RequestId).Append("\n");
             sb.Append("  Job: ").Append(Job).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
@@ -122,6 +138,7 @@ namespace MailOdds.Model
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
             Option<string?> schemaVersion = default;
+            Option<string?> requestId = default;
             Option<Job?> job = default;
 
             while (utf8JsonReader.Read())
@@ -142,6 +159,9 @@ namespace MailOdds.Model
                         case "schema_version":
                             schemaVersion = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
+                        case "request_id":
+                            requestId = new Option<string?>(utf8JsonReader.GetString()!);
+                            break;
                         case "job":
                             job = new Option<Job?>(JsonSerializer.Deserialize<Job>(ref utf8JsonReader, jsonSerializerOptions)!);
                             break;
@@ -154,10 +174,13 @@ namespace MailOdds.Model
             if (schemaVersion.IsSet && schemaVersion.Value == null)
                 throw new ArgumentNullException(nameof(schemaVersion), "Property is not nullable for class JobResponse.");
 
+            if (requestId.IsSet && requestId.Value == null)
+                throw new ArgumentNullException(nameof(requestId), "Property is not nullable for class JobResponse.");
+
             if (job.IsSet && job.Value == null)
                 throw new ArgumentNullException(nameof(job), "Property is not nullable for class JobResponse.");
 
-            return new JobResponse(schemaVersion, job);
+            return new JobResponse(schemaVersion, requestId, job);
         }
 
         /// <summary>
@@ -187,11 +210,17 @@ namespace MailOdds.Model
             if (jobResponse.SchemaVersionOption.IsSet && jobResponse.SchemaVersion == null)
                 throw new ArgumentNullException(nameof(jobResponse.SchemaVersion), "Property is required for class JobResponse.");
 
+            if (jobResponse.RequestIdOption.IsSet && jobResponse.RequestId == null)
+                throw new ArgumentNullException(nameof(jobResponse.RequestId), "Property is required for class JobResponse.");
+
             if (jobResponse.JobOption.IsSet && jobResponse.Job == null)
                 throw new ArgumentNullException(nameof(jobResponse.Job), "Property is required for class JobResponse.");
 
             if (jobResponse.SchemaVersionOption.IsSet)
                 writer.WriteString("schema_version", jobResponse.SchemaVersion);
+
+            if (jobResponse.RequestIdOption.IsSet)
+                writer.WriteString("request_id", jobResponse.RequestId);
 
             if (jobResponse.JobOption.IsSet)
             {

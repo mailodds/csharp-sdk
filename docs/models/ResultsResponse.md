@@ -5,6 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **SchemaVersion** | **string** |  | [optional] 
+**RequestId** | **string** | Unique request identifier | [optional] 
 **Results** | [**List&lt;ValidationResult&gt;**](ValidationResult.md) |  | [optional] 
 **Pagination** | [**Pagination**](Pagination.md) |  | [optional] 
 

@@ -22,7 +22,6 @@ using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.ComponentModel.DataAnnotations;
-
 using MailOdds.Client;
 
 namespace MailOdds.Model
@@ -36,12 +35,14 @@ namespace MailOdds.Model
         /// Initializes a new instance of the <see cref="SuppressionListResponse" /> class.
         /// </summary>
         /// <param name="schemaVersion">schemaVersion</param>
+        /// <param name="requestId">Unique request identifier</param>
         /// <param name="entries">entries</param>
         /// <param name="pagination">pagination</param>
         [JsonConstructor]
-        public SuppressionListResponse(Option<string?> schemaVersion = default, Option<List<SuppressionEntry>?> entries = default, Option<Pagination?> pagination = default)
+        public SuppressionListResponse(Option<string?> schemaVersion = default, Option<string?> requestId = default, Option<List<SuppressionEntry>?> entries = default, Option<Pagination?> pagination = default)
         {
             SchemaVersionOption = schemaVersion;
+            RequestIdOption = requestId;
             EntriesOption = entries;
             PaginationOption = pagination;
             OnCreated();
@@ -61,6 +62,20 @@ namespace MailOdds.Model
         /// </summary>
         [JsonPropertyName("schema_version")]
         public string? SchemaVersion { get { return this.SchemaVersionOption; } set { this.SchemaVersionOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of RequestId
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> RequestIdOption { get; private set; }
+
+        /// <summary>
+        /// Unique request identifier
+        /// </summary>
+        /// <value>Unique request identifier</value>
+        [JsonPropertyName("request_id")]
+        public string? RequestId { get { return this.RequestIdOption; } set { this.RequestIdOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Entries
@@ -97,6 +112,7 @@ namespace MailOdds.Model
             StringBuilder sb = new StringBuilder();
             sb.Append("class SuppressionListResponse {\n");
             sb.Append("  SchemaVersion: ").Append(SchemaVersion).Append("\n");
+            sb.Append("  RequestId: ").Append(RequestId).Append("\n");
             sb.Append("  Entries: ").Append(Entries).Append("\n");
             sb.Append("  Pagination: ").Append(Pagination).Append("\n");
             sb.Append("}\n");
@@ -137,6 +153,7 @@ namespace MailOdds.Model
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
             Option<string?> schemaVersion = default;
+            Option<string?> requestId = default;
             Option<List<SuppressionEntry>?> entries = default;
             Option<Pagination?> pagination = default;
 
@@ -158,6 +175,9 @@ namespace MailOdds.Model
                         case "schema_version":
                             schemaVersion = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
+                        case "request_id":
+                            requestId = new Option<string?>(utf8JsonReader.GetString()!);
+                            break;
                         case "entries":
                             entries = new Option<List<SuppressionEntry>?>(JsonSerializer.Deserialize<List<SuppressionEntry>>(ref utf8JsonReader, jsonSerializerOptions)!);
                             break;
@@ -173,13 +193,16 @@ namespace MailOdds.Model
             if (schemaVersion.IsSet && schemaVersion.Value == null)
                 throw new ArgumentNullException(nameof(schemaVersion), "Property is not nullable for class SuppressionListResponse.");
 
+            if (requestId.IsSet && requestId.Value == null)
+                throw new ArgumentNullException(nameof(requestId), "Property is not nullable for class SuppressionListResponse.");
+
             if (entries.IsSet && entries.Value == null)
                 throw new ArgumentNullException(nameof(entries), "Property is not nullable for class SuppressionListResponse.");
 
             if (pagination.IsSet && pagination.Value == null)
                 throw new ArgumentNullException(nameof(pagination), "Property is not nullable for class SuppressionListResponse.");
 
-            return new SuppressionListResponse(schemaVersion, entries, pagination);
+            return new SuppressionListResponse(schemaVersion, requestId, entries, pagination);
         }
 
         /// <summary>
@@ -209,6 +232,9 @@ namespace MailOdds.Model
             if (suppressionListResponse.SchemaVersionOption.IsSet && suppressionListResponse.SchemaVersion == null)
                 throw new ArgumentNullException(nameof(suppressionListResponse.SchemaVersion), "Property is required for class SuppressionListResponse.");
 
+            if (suppressionListResponse.RequestIdOption.IsSet && suppressionListResponse.RequestId == null)
+                throw new ArgumentNullException(nameof(suppressionListResponse.RequestId), "Property is required for class SuppressionListResponse.");
+
             if (suppressionListResponse.EntriesOption.IsSet && suppressionListResponse.Entries == null)
                 throw new ArgumentNullException(nameof(suppressionListResponse.Entries), "Property is required for class SuppressionListResponse.");
 
@@ -217,6 +243,9 @@ namespace MailOdds.Model
 
             if (suppressionListResponse.SchemaVersionOption.IsSet)
                 writer.WriteString("schema_version", suppressionListResponse.SchemaVersion);
+
+            if (suppressionListResponse.RequestIdOption.IsSet)
+                writer.WriteString("request_id", suppressionListResponse.RequestId);
 
             if (suppressionListResponse.EntriesOption.IsSet)
             {

@@ -22,7 +22,6 @@ using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.ComponentModel.DataAnnotations;
-
 using MailOdds.Client;
 
 namespace MailOdds.Model
@@ -36,14 +35,20 @@ namespace MailOdds.Model
         /// Initializes a new instance of the <see cref="AddSuppressionResponse" /> class.
         /// </summary>
         /// <param name="schemaVersion">schemaVersion</param>
-        /// <param name="added">added</param>
-        /// <param name="skipped">skipped</param>
+        /// <param name="requestId">Unique request identifier</param>
+        /// <param name="added">Number of entries successfully added</param>
+        /// <param name="duplicates">Number of duplicate entries skipped</param>
+        /// <param name="invalid">Number of invalid entries rejected</param>
+        /// <param name="total">Total entries in the request</param>
         [JsonConstructor]
-        public AddSuppressionResponse(Option<string?> schemaVersion = default, Option<int?> added = default, Option<int?> skipped = default)
+        public AddSuppressionResponse(Option<string?> schemaVersion = default, Option<string?> requestId = default, Option<int?> added = default, Option<int?> duplicates = default, Option<int?> invalid = default, Option<int?> total = default)
         {
             SchemaVersionOption = schemaVersion;
+            RequestIdOption = requestId;
             AddedOption = added;
-            SkippedOption = skipped;
+            DuplicatesOption = duplicates;
+            InvalidOption = invalid;
+            TotalOption = total;
             OnCreated();
         }
 
@@ -63,6 +68,20 @@ namespace MailOdds.Model
         public string? SchemaVersion { get { return this.SchemaVersionOption; } set { this.SchemaVersionOption = new(value); } }
 
         /// <summary>
+        /// Used to track the state of RequestId
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> RequestIdOption { get; private set; }
+
+        /// <summary>
+        /// Unique request identifier
+        /// </summary>
+        /// <value>Unique request identifier</value>
+        [JsonPropertyName("request_id")]
+        public string? RequestId { get { return this.RequestIdOption; } set { this.RequestIdOption = new(value); } }
+
+        /// <summary>
         /// Used to track the state of Added
         /// </summary>
         [JsonIgnore]
@@ -70,23 +89,53 @@ namespace MailOdds.Model
         public Option<int?> AddedOption { get; private set; }
 
         /// <summary>
-        /// Gets or Sets Added
+        /// Number of entries successfully added
         /// </summary>
+        /// <value>Number of entries successfully added</value>
         [JsonPropertyName("added")]
         public int? Added { get { return this.AddedOption; } set { this.AddedOption = new(value); } }
 
         /// <summary>
-        /// Used to track the state of Skipped
+        /// Used to track the state of Duplicates
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> SkippedOption { get; private set; }
+        public Option<int?> DuplicatesOption { get; private set; }
 
         /// <summary>
-        /// Gets or Sets Skipped
+        /// Number of duplicate entries skipped
         /// </summary>
-        [JsonPropertyName("skipped")]
-        public int? Skipped { get { return this.SkippedOption; } set { this.SkippedOption = new(value); } }
+        /// <value>Number of duplicate entries skipped</value>
+        [JsonPropertyName("duplicates")]
+        public int? Duplicates { get { return this.DuplicatesOption; } set { this.DuplicatesOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of Invalid
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<int?> InvalidOption { get; private set; }
+
+        /// <summary>
+        /// Number of invalid entries rejected
+        /// </summary>
+        /// <value>Number of invalid entries rejected</value>
+        [JsonPropertyName("invalid")]
+        public int? Invalid { get { return this.InvalidOption; } set { this.InvalidOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of Total
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<int?> TotalOption { get; private set; }
+
+        /// <summary>
+        /// Total entries in the request
+        /// </summary>
+        /// <value>Total entries in the request</value>
+        [JsonPropertyName("total")]
+        public int? Total { get { return this.TotalOption; } set { this.TotalOption = new(value); } }
 
         /// <summary>
         /// Returns the string presentation of the object
@@ -97,8 +146,11 @@ namespace MailOdds.Model
             StringBuilder sb = new StringBuilder();
             sb.Append("class AddSuppressionResponse {\n");
             sb.Append("  SchemaVersion: ").Append(SchemaVersion).Append("\n");
+            sb.Append("  RequestId: ").Append(RequestId).Append("\n");
             sb.Append("  Added: ").Append(Added).Append("\n");
-            sb.Append("  Skipped: ").Append(Skipped).Append("\n");
+            sb.Append("  Duplicates: ").Append(Duplicates).Append("\n");
+            sb.Append("  Invalid: ").Append(Invalid).Append("\n");
+            sb.Append("  Total: ").Append(Total).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -137,8 +189,11 @@ namespace MailOdds.Model
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
             Option<string?> schemaVersion = default;
+            Option<string?> requestId = default;
             Option<int?> added = default;
-            Option<int?> skipped = default;
+            Option<int?> duplicates = default;
+            Option<int?> invalid = default;
+            Option<int?> total = default;
 
             while (utf8JsonReader.Read())
             {
@@ -158,11 +213,20 @@ namespace MailOdds.Model
                         case "schema_version":
                             schemaVersion = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
+                        case "request_id":
+                            requestId = new Option<string?>(utf8JsonReader.GetString()!);
+                            break;
                         case "added":
                             added = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
                             break;
-                        case "skipped":
-                            skipped = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
+                        case "duplicates":
+                            duplicates = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
+                            break;
+                        case "invalid":
+                            invalid = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
+                            break;
+                        case "total":
+                            total = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
                             break;
                         default:
                             break;
@@ -173,13 +237,22 @@ namespace MailOdds.Model
             if (schemaVersion.IsSet && schemaVersion.Value == null)
                 throw new ArgumentNullException(nameof(schemaVersion), "Property is not nullable for class AddSuppressionResponse.");
 
+            if (requestId.IsSet && requestId.Value == null)
+                throw new ArgumentNullException(nameof(requestId), "Property is not nullable for class AddSuppressionResponse.");
+
             if (added.IsSet && added.Value == null)
                 throw new ArgumentNullException(nameof(added), "Property is not nullable for class AddSuppressionResponse.");
 
-            if (skipped.IsSet && skipped.Value == null)
-                throw new ArgumentNullException(nameof(skipped), "Property is not nullable for class AddSuppressionResponse.");
+            if (duplicates.IsSet && duplicates.Value == null)
+                throw new ArgumentNullException(nameof(duplicates), "Property is not nullable for class AddSuppressionResponse.");
 
-            return new AddSuppressionResponse(schemaVersion, added, skipped);
+            if (invalid.IsSet && invalid.Value == null)
+                throw new ArgumentNullException(nameof(invalid), "Property is not nullable for class AddSuppressionResponse.");
+
+            if (total.IsSet && total.Value == null)
+                throw new ArgumentNullException(nameof(total), "Property is not nullable for class AddSuppressionResponse.");
+
+            return new AddSuppressionResponse(schemaVersion, requestId, added, duplicates, invalid, total);
         }
 
         /// <summary>
@@ -209,14 +282,26 @@ namespace MailOdds.Model
             if (addSuppressionResponse.SchemaVersionOption.IsSet && addSuppressionResponse.SchemaVersion == null)
                 throw new ArgumentNullException(nameof(addSuppressionResponse.SchemaVersion), "Property is required for class AddSuppressionResponse.");
 
+            if (addSuppressionResponse.RequestIdOption.IsSet && addSuppressionResponse.RequestId == null)
+                throw new ArgumentNullException(nameof(addSuppressionResponse.RequestId), "Property is required for class AddSuppressionResponse.");
+
             if (addSuppressionResponse.SchemaVersionOption.IsSet)
                 writer.WriteString("schema_version", addSuppressionResponse.SchemaVersion);
+
+            if (addSuppressionResponse.RequestIdOption.IsSet)
+                writer.WriteString("request_id", addSuppressionResponse.RequestId);
 
             if (addSuppressionResponse.AddedOption.IsSet)
                 writer.WriteNumber("added", addSuppressionResponse.AddedOption.Value!.Value);
 
-            if (addSuppressionResponse.SkippedOption.IsSet)
-                writer.WriteNumber("skipped", addSuppressionResponse.SkippedOption.Value!.Value);
+            if (addSuppressionResponse.DuplicatesOption.IsSet)
+                writer.WriteNumber("duplicates", addSuppressionResponse.DuplicatesOption.Value!.Value);
+
+            if (addSuppressionResponse.InvalidOption.IsSet)
+                writer.WriteNumber("invalid", addSuppressionResponse.InvalidOption.Value!.Value);
+
+            if (addSuppressionResponse.TotalOption.IsSet)
+                writer.WriteNumber("total", addSuppressionResponse.TotalOption.Value!.Value);
         }
     }
 }

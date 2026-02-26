@@ -22,46 +22,69 @@ using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.ComponentModel.DataAnnotations;
-
 using MailOdds.Client;
 
 namespace MailOdds.Model
 {
     /// <summary>
-    /// ValidationResponse
+    /// Flat validation response. Conditional fields are omitted (not null) when not applicable.
     /// </summary>
     public partial class ValidationResponse : IValidatableObject
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ValidationResponse" /> class.
         /// </summary>
+        /// <param name="schemaVersion">schemaVersion</param>
         /// <param name="email">email</param>
         /// <param name="status">Validation status</param>
         /// <param name="action">Recommended action</param>
-        /// <param name="schemaVersion">schemaVersion</param>
-        /// <param name="subStatus">Detailed status reason</param>
         /// <param name="domain">domain</param>
-        /// <param name="mxFound">mxFound</param>
-        /// <param name="smtpCheck">smtpCheck</param>
-        /// <param name="disposable">disposable</param>
-        /// <param name="roleAccount">roleAccount</param>
-        /// <param name="freeProvider">freeProvider</param>
+        /// <param name="mxFound">Whether MX records were found for the domain</param>
+        /// <param name="disposable">Whether domain is a known disposable email provider</param>
+        /// <param name="roleAccount">Whether address is a role account (e.g., info@, admin@)</param>
+        /// <param name="freeProvider">Whether domain is a known free email provider (e.g., gmail.com)</param>
+        /// <param name="depth">Validation depth used for this check</param>
+        /// <param name="processedAt">ISO 8601 timestamp of validation</param>
+        /// <param name="requestId">Unique request identifier</param>
+        /// <param name="subStatus">Detailed status reason. Omitted when none.</param>
+        /// <param name="mxHost">Primary MX hostname. Omitted when MX not resolved.</param>
+        /// <param name="smtpCheck">Whether SMTP verification passed. Omitted when SMTP not checked.</param>
+        /// <param name="catchAll">Whether domain is catch-all. Omitted when SMTP not checked.</param>
+        /// <param name="suggestedEmail">Typo correction suggestion. Omitted when no typo detected.</param>
+        /// <param name="retryAfterMs">Suggested retry delay in milliseconds. Present only for retry_later action.</param>
+        /// <param name="hasSpf">Whether the domain has an SPF record. Omitted for standard depth.</param>
+        /// <param name="hasDmarc">Whether the domain has a DMARC record. Omitted for standard depth.</param>
+        /// <param name="dmarcPolicy">The domain&#39;s DMARC policy. Omitted when no DMARC record found.</param>
+        /// <param name="dnsblListed">Whether the domain&#39;s MX IP is on a DNS blocklist (Spamhaus ZEN). Omitted for standard depth.</param>
         /// <param name="suppressionMatch">suppressionMatch</param>
+        /// <param name="policyApplied">policyApplied</param>
         [JsonConstructor]
-        public ValidationResponse(string email, StatusEnum status, ActionEnum action, Option<string?> schemaVersion = default, Option<string?> subStatus = default, Option<string?> domain = default, Option<bool?> mxFound = default, Option<bool?> smtpCheck = default, Option<bool?> disposable = default, Option<bool?> roleAccount = default, Option<bool?> freeProvider = default, Option<ValidationResponseSuppressionMatch?> suppressionMatch = default)
+        public ValidationResponse(string schemaVersion, string email, StatusEnum status, ActionEnum action, string domain, bool mxFound, bool disposable, bool roleAccount, bool freeProvider, DepthEnum depth, DateTime processedAt, Option<string?> requestId = default, Option<SubStatusEnum?> subStatus = default, Option<string?> mxHost = default, Option<bool?> smtpCheck = default, Option<bool?> catchAll = default, Option<string?> suggestedEmail = default, Option<int?> retryAfterMs = default, Option<bool?> hasSpf = default, Option<bool?> hasDmarc = default, Option<DmarcPolicyEnum?> dmarcPolicy = default, Option<bool?> dnsblListed = default, Option<ValidationResponseSuppressionMatch?> suppressionMatch = default, Option<ValidationResponsePolicyApplied?> policyApplied = default)
         {
+            SchemaVersion = schemaVersion;
             Email = email;
             Status = status;
             Action = action;
-            SchemaVersionOption = schemaVersion;
+            Domain = domain;
+            MxFound = mxFound;
+            Disposable = disposable;
+            RoleAccount = roleAccount;
+            FreeProvider = freeProvider;
+            Depth = depth;
+            ProcessedAt = processedAt;
+            RequestIdOption = requestId;
             SubStatusOption = subStatus;
-            DomainOption = domain;
-            MxFoundOption = mxFound;
+            MxHostOption = mxHost;
             SmtpCheckOption = smtpCheck;
-            DisposableOption = disposable;
-            RoleAccountOption = roleAccount;
-            FreeProviderOption = freeProvider;
+            CatchAllOption = catchAll;
+            SuggestedEmailOption = suggestedEmail;
+            RetryAfterMsOption = retryAfterMs;
+            HasSpfOption = hasSpf;
+            HasDmarcOption = hasDmarc;
+            DmarcPolicyOption = dmarcPolicy;
+            DnsblListedOption = dnsblListed;
             SuppressionMatchOption = suppressionMatch;
+            PolicyAppliedOption = policyApplied;
             OnCreated();
         }
 
@@ -286,64 +309,490 @@ namespace MailOdds.Model
         public ActionEnum Action { get; set; }
 
         /// <summary>
-        /// Gets or Sets Email
+        /// Validation depth used for this check
         /// </summary>
-        [JsonPropertyName("email")]
-        public string Email { get; set; }
+        /// <value>Validation depth used for this check</value>
+        public enum DepthEnum
+        {
+            /// <summary>
+            /// Enum Standard for value: standard
+            /// </summary>
+            Standard = 1,
+
+            /// <summary>
+            /// Enum Enhanced for value: enhanced
+            /// </summary>
+            Enhanced = 2
+        }
 
         /// <summary>
-        /// Used to track the state of SchemaVersion
+        /// Returns a <see cref="DepthEnum"/>
         /// </summary>
-        [JsonIgnore]
-        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<string?> SchemaVersionOption { get; private set; }
+        /// <param name="value"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public static DepthEnum DepthEnumFromString(string value)
+        {
+            if (value.Equals("standard"))
+                return DepthEnum.Standard;
+
+            if (value.Equals("enhanced"))
+                return DepthEnum.Enhanced;
+
+            throw new NotImplementedException($"Could not convert value to type DepthEnum: '{value}'");
+        }
 
         /// <summary>
-        /// Gets or Sets SchemaVersion
+        /// Returns a <see cref="DepthEnum"/>
         /// </summary>
-        /* <example>1.0</example> */
-        [JsonPropertyName("schema_version")]
-        public string? SchemaVersion { get { return this.SchemaVersionOption; } set { this.SchemaVersionOption = new(value); } }
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static DepthEnum? DepthEnumFromStringOrDefault(string value)
+        {
+            if (value.Equals("standard"))
+                return DepthEnum.Standard;
+
+            if (value.Equals("enhanced"))
+                return DepthEnum.Enhanced;
+
+            return null;
+        }
+
+        /// <summary>
+        /// Converts the <see cref="DepthEnum"/> to the json value
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public static string DepthEnumToJsonValue(DepthEnum value)
+        {
+            if (value == DepthEnum.Standard)
+                return "standard";
+
+            if (value == DepthEnum.Enhanced)
+                return "enhanced";
+
+            throw new NotImplementedException($"Value could not be handled: '{value}'");
+        }
+
+        /// <summary>
+        /// Validation depth used for this check
+        /// </summary>
+        /// <value>Validation depth used for this check</value>
+        [JsonPropertyName("depth")]
+        public DepthEnum Depth { get; set; }
+
+        /// <summary>
+        /// Detailed status reason. Omitted when none.
+        /// </summary>
+        /// <value>Detailed status reason. Omitted when none.</value>
+        public enum SubStatusEnum
+        {
+            /// <summary>
+            /// Enum FormatInvalid for value: format_invalid
+            /// </summary>
+            FormatInvalid = 1,
+
+            /// <summary>
+            /// Enum MxMissing for value: mx_missing
+            /// </summary>
+            MxMissing = 2,
+
+            /// <summary>
+            /// Enum MxTimeout for value: mx_timeout
+            /// </summary>
+            MxTimeout = 3,
+
+            /// <summary>
+            /// Enum SmtpUnreachable for value: smtp_unreachable
+            /// </summary>
+            SmtpUnreachable = 4,
+
+            /// <summary>
+            /// Enum SmtpRejected for value: smtp_rejected
+            /// </summary>
+            SmtpRejected = 5,
+
+            /// <summary>
+            /// Enum Disposable for value: disposable
+            /// </summary>
+            Disposable = 6,
+
+            /// <summary>
+            /// Enum RoleAccount for value: role_account
+            /// </summary>
+            RoleAccount = 7,
+
+            /// <summary>
+            /// Enum Greylisted for value: greylisted
+            /// </summary>
+            Greylisted = 8,
+
+            /// <summary>
+            /// Enum CatchAllDetected for value: catch_all_detected
+            /// </summary>
+            CatchAllDetected = 9,
+
+            /// <summary>
+            /// Enum DomainNotFound for value: domain_not_found
+            /// </summary>
+            DomainNotFound = 10,
+
+            /// <summary>
+            /// Enum SuppressionMatch for value: suppression_match
+            /// </summary>
+            SuppressionMatch = 11,
+
+            /// <summary>
+            /// Enum RestrictedMilitary for value: restricted_military
+            /// </summary>
+            RestrictedMilitary = 12,
+
+            /// <summary>
+            /// Enum RestrictedSanctioned for value: restricted_sanctioned
+            /// </summary>
+            RestrictedSanctioned = 13
+        }
+
+        /// <summary>
+        /// Returns a <see cref="SubStatusEnum"/>
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public static SubStatusEnum SubStatusEnumFromString(string value)
+        {
+            if (value.Equals("format_invalid"))
+                return SubStatusEnum.FormatInvalid;
+
+            if (value.Equals("mx_missing"))
+                return SubStatusEnum.MxMissing;
+
+            if (value.Equals("mx_timeout"))
+                return SubStatusEnum.MxTimeout;
+
+            if (value.Equals("smtp_unreachable"))
+                return SubStatusEnum.SmtpUnreachable;
+
+            if (value.Equals("smtp_rejected"))
+                return SubStatusEnum.SmtpRejected;
+
+            if (value.Equals("disposable"))
+                return SubStatusEnum.Disposable;
+
+            if (value.Equals("role_account"))
+                return SubStatusEnum.RoleAccount;
+
+            if (value.Equals("greylisted"))
+                return SubStatusEnum.Greylisted;
+
+            if (value.Equals("catch_all_detected"))
+                return SubStatusEnum.CatchAllDetected;
+
+            if (value.Equals("domain_not_found"))
+                return SubStatusEnum.DomainNotFound;
+
+            if (value.Equals("suppression_match"))
+                return SubStatusEnum.SuppressionMatch;
+
+            if (value.Equals("restricted_military"))
+                return SubStatusEnum.RestrictedMilitary;
+
+            if (value.Equals("restricted_sanctioned"))
+                return SubStatusEnum.RestrictedSanctioned;
+
+            throw new NotImplementedException($"Could not convert value to type SubStatusEnum: '{value}'");
+        }
+
+        /// <summary>
+        /// Returns a <see cref="SubStatusEnum"/>
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static SubStatusEnum? SubStatusEnumFromStringOrDefault(string value)
+        {
+            if (value.Equals("format_invalid"))
+                return SubStatusEnum.FormatInvalid;
+
+            if (value.Equals("mx_missing"))
+                return SubStatusEnum.MxMissing;
+
+            if (value.Equals("mx_timeout"))
+                return SubStatusEnum.MxTimeout;
+
+            if (value.Equals("smtp_unreachable"))
+                return SubStatusEnum.SmtpUnreachable;
+
+            if (value.Equals("smtp_rejected"))
+                return SubStatusEnum.SmtpRejected;
+
+            if (value.Equals("disposable"))
+                return SubStatusEnum.Disposable;
+
+            if (value.Equals("role_account"))
+                return SubStatusEnum.RoleAccount;
+
+            if (value.Equals("greylisted"))
+                return SubStatusEnum.Greylisted;
+
+            if (value.Equals("catch_all_detected"))
+                return SubStatusEnum.CatchAllDetected;
+
+            if (value.Equals("domain_not_found"))
+                return SubStatusEnum.DomainNotFound;
+
+            if (value.Equals("suppression_match"))
+                return SubStatusEnum.SuppressionMatch;
+
+            if (value.Equals("restricted_military"))
+                return SubStatusEnum.RestrictedMilitary;
+
+            if (value.Equals("restricted_sanctioned"))
+                return SubStatusEnum.RestrictedSanctioned;
+
+            return null;
+        }
+
+        /// <summary>
+        /// Converts the <see cref="SubStatusEnum"/> to the json value
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public static string SubStatusEnumToJsonValue(SubStatusEnum? value)
+        {
+            if (value == SubStatusEnum.FormatInvalid)
+                return "format_invalid";
+
+            if (value == SubStatusEnum.MxMissing)
+                return "mx_missing";
+
+            if (value == SubStatusEnum.MxTimeout)
+                return "mx_timeout";
+
+            if (value == SubStatusEnum.SmtpUnreachable)
+                return "smtp_unreachable";
+
+            if (value == SubStatusEnum.SmtpRejected)
+                return "smtp_rejected";
+
+            if (value == SubStatusEnum.Disposable)
+                return "disposable";
+
+            if (value == SubStatusEnum.RoleAccount)
+                return "role_account";
+
+            if (value == SubStatusEnum.Greylisted)
+                return "greylisted";
+
+            if (value == SubStatusEnum.CatchAllDetected)
+                return "catch_all_detected";
+
+            if (value == SubStatusEnum.DomainNotFound)
+                return "domain_not_found";
+
+            if (value == SubStatusEnum.SuppressionMatch)
+                return "suppression_match";
+
+            if (value == SubStatusEnum.RestrictedMilitary)
+                return "restricted_military";
+
+            if (value == SubStatusEnum.RestrictedSanctioned)
+                return "restricted_sanctioned";
+
+            throw new NotImplementedException($"Value could not be handled: '{value}'");
+        }
 
         /// <summary>
         /// Used to track the state of SubStatus
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<string?> SubStatusOption { get; private set; }
+        public Option<SubStatusEnum?> SubStatusOption { get; private set; }
 
         /// <summary>
-        /// Detailed status reason
+        /// Detailed status reason. Omitted when none.
         /// </summary>
-        /// <value>Detailed status reason</value>
+        /// <value>Detailed status reason. Omitted when none.</value>
         [JsonPropertyName("sub_status")]
-        public string? SubStatus { get { return this.SubStatusOption; } set { this.SubStatusOption = new(value); } }
+        public SubStatusEnum? SubStatus { get { return this.SubStatusOption; } set { this.SubStatusOption = new(value); } }
 
         /// <summary>
-        /// Used to track the state of Domain
+        /// The domain&#39;s DMARC policy. Omitted when no DMARC record found.
+        /// </summary>
+        /// <value>The domain&#39;s DMARC policy. Omitted when no DMARC record found.</value>
+        public enum DmarcPolicyEnum
+        {
+            /// <summary>
+            /// Enum None for value: none
+            /// </summary>
+            None = 1,
+
+            /// <summary>
+            /// Enum Quarantine for value: quarantine
+            /// </summary>
+            Quarantine = 2,
+
+            /// <summary>
+            /// Enum Reject for value: reject
+            /// </summary>
+            Reject = 3
+        }
+
+        /// <summary>
+        /// Returns a <see cref="DmarcPolicyEnum"/>
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public static DmarcPolicyEnum DmarcPolicyEnumFromString(string value)
+        {
+            if (value.Equals("none"))
+                return DmarcPolicyEnum.None;
+
+            if (value.Equals("quarantine"))
+                return DmarcPolicyEnum.Quarantine;
+
+            if (value.Equals("reject"))
+                return DmarcPolicyEnum.Reject;
+
+            throw new NotImplementedException($"Could not convert value to type DmarcPolicyEnum: '{value}'");
+        }
+
+        /// <summary>
+        /// Returns a <see cref="DmarcPolicyEnum"/>
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static DmarcPolicyEnum? DmarcPolicyEnumFromStringOrDefault(string value)
+        {
+            if (value.Equals("none"))
+                return DmarcPolicyEnum.None;
+
+            if (value.Equals("quarantine"))
+                return DmarcPolicyEnum.Quarantine;
+
+            if (value.Equals("reject"))
+                return DmarcPolicyEnum.Reject;
+
+            return null;
+        }
+
+        /// <summary>
+        /// Converts the <see cref="DmarcPolicyEnum"/> to the json value
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public static string DmarcPolicyEnumToJsonValue(DmarcPolicyEnum? value)
+        {
+            if (value == DmarcPolicyEnum.None)
+                return "none";
+
+            if (value == DmarcPolicyEnum.Quarantine)
+                return "quarantine";
+
+            if (value == DmarcPolicyEnum.Reject)
+                return "reject";
+
+            throw new NotImplementedException($"Value could not be handled: '{value}'");
+        }
+
+        /// <summary>
+        /// Used to track the state of DmarcPolicy
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<string?> DomainOption { get; private set; }
+        public Option<DmarcPolicyEnum?> DmarcPolicyOption { get; private set; }
+
+        /// <summary>
+        /// The domain&#39;s DMARC policy. Omitted when no DMARC record found.
+        /// </summary>
+        /// <value>The domain&#39;s DMARC policy. Omitted when no DMARC record found.</value>
+        [JsonPropertyName("dmarc_policy")]
+        public DmarcPolicyEnum? DmarcPolicy { get { return this.DmarcPolicyOption; } set { this.DmarcPolicyOption = new(value); } }
+
+        /// <summary>
+        /// Gets or Sets SchemaVersion
+        /// </summary>
+        /* <example>1.0</example> */
+        [JsonPropertyName("schema_version")]
+        public string SchemaVersion { get; set; }
+
+        /// <summary>
+        /// Gets or Sets Email
+        /// </summary>
+        [JsonPropertyName("email")]
+        public string Email { get; set; }
 
         /// <summary>
         /// Gets or Sets Domain
         /// </summary>
         [JsonPropertyName("domain")]
-        public string? Domain { get { return this.DomainOption; } set { this.DomainOption = new(value); } }
+        public string Domain { get; set; }
 
         /// <summary>
-        /// Used to track the state of MxFound
+        /// Whether MX records were found for the domain
+        /// </summary>
+        /// <value>Whether MX records were found for the domain</value>
+        [JsonPropertyName("mx_found")]
+        public bool MxFound { get; set; }
+
+        /// <summary>
+        /// Whether domain is a known disposable email provider
+        /// </summary>
+        /// <value>Whether domain is a known disposable email provider</value>
+        [JsonPropertyName("disposable")]
+        public bool Disposable { get; set; }
+
+        /// <summary>
+        /// Whether address is a role account (e.g., info@, admin@)
+        /// </summary>
+        /// <value>Whether address is a role account (e.g., info@, admin@)</value>
+        [JsonPropertyName("role_account")]
+        public bool RoleAccount { get; set; }
+
+        /// <summary>
+        /// Whether domain is a known free email provider (e.g., gmail.com)
+        /// </summary>
+        /// <value>Whether domain is a known free email provider (e.g., gmail.com)</value>
+        [JsonPropertyName("free_provider")]
+        public bool FreeProvider { get; set; }
+
+        /// <summary>
+        /// ISO 8601 timestamp of validation
+        /// </summary>
+        /// <value>ISO 8601 timestamp of validation</value>
+        [JsonPropertyName("processed_at")]
+        public DateTime ProcessedAt { get; set; }
+
+        /// <summary>
+        /// Used to track the state of RequestId
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<bool?> MxFoundOption { get; private set; }
+        public Option<string?> RequestIdOption { get; private set; }
 
         /// <summary>
-        /// Gets or Sets MxFound
+        /// Unique request identifier
         /// </summary>
-        [JsonPropertyName("mx_found")]
-        public bool? MxFound { get { return this.MxFoundOption; } set { this.MxFoundOption = new(value); } }
+        /// <value>Unique request identifier</value>
+        [JsonPropertyName("request_id")]
+        public string? RequestId { get { return this.RequestIdOption; } set { this.RequestIdOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of MxHost
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> MxHostOption { get; private set; }
+
+        /// <summary>
+        /// Primary MX hostname. Omitted when MX not resolved.
+        /// </summary>
+        /// <value>Primary MX hostname. Omitted when MX not resolved.</value>
+        [JsonPropertyName("mx_host")]
+        public string? MxHost { get { return this.MxHostOption; } set { this.MxHostOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of SmtpCheck
@@ -353,49 +802,95 @@ namespace MailOdds.Model
         public Option<bool?> SmtpCheckOption { get; private set; }
 
         /// <summary>
-        /// Gets or Sets SmtpCheck
+        /// Whether SMTP verification passed. Omitted when SMTP not checked.
         /// </summary>
+        /// <value>Whether SMTP verification passed. Omitted when SMTP not checked.</value>
         [JsonPropertyName("smtp_check")]
         public bool? SmtpCheck { get { return this.SmtpCheckOption; } set { this.SmtpCheckOption = new(value); } }
 
         /// <summary>
-        /// Used to track the state of Disposable
+        /// Used to track the state of CatchAll
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<bool?> DisposableOption { get; private set; }
+        public Option<bool?> CatchAllOption { get; private set; }
 
         /// <summary>
-        /// Gets or Sets Disposable
+        /// Whether domain is catch-all. Omitted when SMTP not checked.
         /// </summary>
-        [JsonPropertyName("disposable")]
-        public bool? Disposable { get { return this.DisposableOption; } set { this.DisposableOption = new(value); } }
+        /// <value>Whether domain is catch-all. Omitted when SMTP not checked.</value>
+        [JsonPropertyName("catch_all")]
+        public bool? CatchAll { get { return this.CatchAllOption; } set { this.CatchAllOption = new(value); } }
 
         /// <summary>
-        /// Used to track the state of RoleAccount
-        /// </summary>
-        [JsonIgnore]
-        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<bool?> RoleAccountOption { get; private set; }
-
-        /// <summary>
-        /// Gets or Sets RoleAccount
-        /// </summary>
-        [JsonPropertyName("role_account")]
-        public bool? RoleAccount { get { return this.RoleAccountOption; } set { this.RoleAccountOption = new(value); } }
-
-        /// <summary>
-        /// Used to track the state of FreeProvider
+        /// Used to track the state of SuggestedEmail
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<bool?> FreeProviderOption { get; private set; }
+        public Option<string?> SuggestedEmailOption { get; private set; }
 
         /// <summary>
-        /// Gets or Sets FreeProvider
+        /// Typo correction suggestion. Omitted when no typo detected.
         /// </summary>
-        [JsonPropertyName("free_provider")]
-        public bool? FreeProvider { get { return this.FreeProviderOption; } set { this.FreeProviderOption = new(value); } }
+        /// <value>Typo correction suggestion. Omitted when no typo detected.</value>
+        [JsonPropertyName("suggested_email")]
+        public string? SuggestedEmail { get { return this.SuggestedEmailOption; } set { this.SuggestedEmailOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of RetryAfterMs
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<int?> RetryAfterMsOption { get; private set; }
+
+        /// <summary>
+        /// Suggested retry delay in milliseconds. Present only for retry_later action.
+        /// </summary>
+        /// <value>Suggested retry delay in milliseconds. Present only for retry_later action.</value>
+        [JsonPropertyName("retry_after_ms")]
+        public int? RetryAfterMs { get { return this.RetryAfterMsOption; } set { this.RetryAfterMsOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of HasSpf
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<bool?> HasSpfOption { get; private set; }
+
+        /// <summary>
+        /// Whether the domain has an SPF record. Omitted for standard depth.
+        /// </summary>
+        /// <value>Whether the domain has an SPF record. Omitted for standard depth.</value>
+        [JsonPropertyName("has_spf")]
+        public bool? HasSpf { get { return this.HasSpfOption; } set { this.HasSpfOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of HasDmarc
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<bool?> HasDmarcOption { get; private set; }
+
+        /// <summary>
+        /// Whether the domain has a DMARC record. Omitted for standard depth.
+        /// </summary>
+        /// <value>Whether the domain has a DMARC record. Omitted for standard depth.</value>
+        [JsonPropertyName("has_dmarc")]
+        public bool? HasDmarc { get { return this.HasDmarcOption; } set { this.HasDmarcOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of DnsblListed
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<bool?> DnsblListedOption { get; private set; }
+
+        /// <summary>
+        /// Whether the domain&#39;s MX IP is on a DNS blocklist (Spamhaus ZEN). Omitted for standard depth.
+        /// </summary>
+        /// <value>Whether the domain&#39;s MX IP is on a DNS blocklist (Spamhaus ZEN). Omitted for standard depth.</value>
+        [JsonPropertyName("dnsbl_listed")]
+        public bool? DnsblListed { get { return this.DnsblListedOption; } set { this.DnsblListedOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of SuppressionMatch
@@ -411,6 +906,19 @@ namespace MailOdds.Model
         public ValidationResponseSuppressionMatch? SuppressionMatch { get { return this.SuppressionMatchOption; } set { this.SuppressionMatchOption = new(value); } }
 
         /// <summary>
+        /// Used to track the state of PolicyApplied
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<ValidationResponsePolicyApplied?> PolicyAppliedOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets PolicyApplied
+        /// </summary>
+        [JsonPropertyName("policy_applied")]
+        public ValidationResponsePolicyApplied? PolicyApplied { get { return this.PolicyAppliedOption; } set { this.PolicyAppliedOption = new(value); } }
+
+        /// <summary>
         /// Returns the string presentation of the object
         /// </summary>
         /// <returns>String presentation of the object</returns>
@@ -418,18 +926,30 @@ namespace MailOdds.Model
         {
             StringBuilder sb = new StringBuilder();
             sb.Append("class ValidationResponse {\n");
+            sb.Append("  SchemaVersion: ").Append(SchemaVersion).Append("\n");
             sb.Append("  Email: ").Append(Email).Append("\n");
             sb.Append("  Status: ").Append(Status).Append("\n");
             sb.Append("  Action: ").Append(Action).Append("\n");
-            sb.Append("  SchemaVersion: ").Append(SchemaVersion).Append("\n");
-            sb.Append("  SubStatus: ").Append(SubStatus).Append("\n");
             sb.Append("  Domain: ").Append(Domain).Append("\n");
             sb.Append("  MxFound: ").Append(MxFound).Append("\n");
-            sb.Append("  SmtpCheck: ").Append(SmtpCheck).Append("\n");
             sb.Append("  Disposable: ").Append(Disposable).Append("\n");
             sb.Append("  RoleAccount: ").Append(RoleAccount).Append("\n");
             sb.Append("  FreeProvider: ").Append(FreeProvider).Append("\n");
+            sb.Append("  Depth: ").Append(Depth).Append("\n");
+            sb.Append("  ProcessedAt: ").Append(ProcessedAt).Append("\n");
+            sb.Append("  RequestId: ").Append(RequestId).Append("\n");
+            sb.Append("  SubStatus: ").Append(SubStatus).Append("\n");
+            sb.Append("  MxHost: ").Append(MxHost).Append("\n");
+            sb.Append("  SmtpCheck: ").Append(SmtpCheck).Append("\n");
+            sb.Append("  CatchAll: ").Append(CatchAll).Append("\n");
+            sb.Append("  SuggestedEmail: ").Append(SuggestedEmail).Append("\n");
+            sb.Append("  RetryAfterMs: ").Append(RetryAfterMs).Append("\n");
+            sb.Append("  HasSpf: ").Append(HasSpf).Append("\n");
+            sb.Append("  HasDmarc: ").Append(HasDmarc).Append("\n");
+            sb.Append("  DmarcPolicy: ").Append(DmarcPolicy).Append("\n");
+            sb.Append("  DnsblListed: ").Append(DnsblListed).Append("\n");
             sb.Append("  SuppressionMatch: ").Append(SuppressionMatch).Append("\n");
+            sb.Append("  PolicyApplied: ").Append(PolicyApplied).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -451,6 +971,11 @@ namespace MailOdds.Model
     public class ValidationResponseJsonConverter : JsonConverter<ValidationResponse>
     {
         /// <summary>
+        /// The format to use to serialize ProcessedAt
+        /// </summary>
+        public static string ProcessedAtFormat { get; set; } = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffffK";
+
+        /// <summary>
         /// Deserializes json to <see cref="ValidationResponse" />
         /// </summary>
         /// <param name="utf8JsonReader"></param>
@@ -467,18 +992,30 @@ namespace MailOdds.Model
 
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
+            Option<string?> schemaVersion = default;
             Option<string?> email = default;
             Option<ValidationResponse.StatusEnum?> status = default;
             Option<ValidationResponse.ActionEnum?> action = default;
-            Option<string?> schemaVersion = default;
-            Option<string?> subStatus = default;
             Option<string?> domain = default;
             Option<bool?> mxFound = default;
-            Option<bool?> smtpCheck = default;
             Option<bool?> disposable = default;
             Option<bool?> roleAccount = default;
             Option<bool?> freeProvider = default;
+            Option<ValidationResponse.DepthEnum?> depth = default;
+            Option<DateTime?> processedAt = default;
+            Option<string?> requestId = default;
+            Option<ValidationResponse.SubStatusEnum?> subStatus = default;
+            Option<string?> mxHost = default;
+            Option<bool?> smtpCheck = default;
+            Option<bool?> catchAll = default;
+            Option<string?> suggestedEmail = default;
+            Option<int?> retryAfterMs = default;
+            Option<bool?> hasSpf = default;
+            Option<bool?> hasDmarc = default;
+            Option<ValidationResponse.DmarcPolicyEnum?> dmarcPolicy = default;
+            Option<bool?> dnsblListed = default;
             Option<ValidationResponseSuppressionMatch?> suppressionMatch = default;
+            Option<ValidationResponsePolicyApplied?> policyApplied = default;
 
             while (utf8JsonReader.Read())
             {
@@ -495,6 +1032,9 @@ namespace MailOdds.Model
 
                     switch (localVarJsonPropertyName)
                     {
+                        case "schema_version":
+                            schemaVersion = new Option<string?>(utf8JsonReader.GetString()!);
+                            break;
                         case "email":
                             email = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
@@ -508,20 +1048,11 @@ namespace MailOdds.Model
                             if (actionRawValue != null)
                                 action = new Option<ValidationResponse.ActionEnum?>(ValidationResponse.ActionEnumFromStringOrDefault(actionRawValue));
                             break;
-                        case "schema_version":
-                            schemaVersion = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "sub_status":
-                            subStatus = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
                         case "domain":
                             domain = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         case "mx_found":
                             mxFound = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
-                            break;
-                        case "smtp_check":
-                            smtpCheck = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
                             break;
                         case "disposable":
                             disposable = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
@@ -532,14 +1063,65 @@ namespace MailOdds.Model
                         case "free_provider":
                             freeProvider = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
                             break;
+                        case "depth":
+                            string? depthRawValue = utf8JsonReader.GetString();
+                            if (depthRawValue != null)
+                                depth = new Option<ValidationResponse.DepthEnum?>(ValidationResponse.DepthEnumFromStringOrDefault(depthRawValue));
+                            break;
+                        case "processed_at":
+                            processedAt = new Option<DateTime?>(JsonSerializer.Deserialize<DateTime>(ref utf8JsonReader, jsonSerializerOptions));
+                            break;
+                        case "request_id":
+                            requestId = new Option<string?>(utf8JsonReader.GetString()!);
+                            break;
+                        case "sub_status":
+                            string? subStatusRawValue = utf8JsonReader.GetString();
+                            if (subStatusRawValue != null)
+                                subStatus = new Option<ValidationResponse.SubStatusEnum?>(ValidationResponse.SubStatusEnumFromStringOrDefault(subStatusRawValue));
+                            break;
+                        case "mx_host":
+                            mxHost = new Option<string?>(utf8JsonReader.GetString()!);
+                            break;
+                        case "smtp_check":
+                            smtpCheck = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
+                            break;
+                        case "catch_all":
+                            catchAll = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
+                            break;
+                        case "suggested_email":
+                            suggestedEmail = new Option<string?>(utf8JsonReader.GetString()!);
+                            break;
+                        case "retry_after_ms":
+                            retryAfterMs = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
+                            break;
+                        case "has_spf":
+                            hasSpf = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
+                            break;
+                        case "has_dmarc":
+                            hasDmarc = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
+                            break;
+                        case "dmarc_policy":
+                            string? dmarcPolicyRawValue = utf8JsonReader.GetString();
+                            if (dmarcPolicyRawValue != null)
+                                dmarcPolicy = new Option<ValidationResponse.DmarcPolicyEnum?>(ValidationResponse.DmarcPolicyEnumFromStringOrDefault(dmarcPolicyRawValue));
+                            break;
+                        case "dnsbl_listed":
+                            dnsblListed = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
+                            break;
                         case "suppression_match":
                             suppressionMatch = new Option<ValidationResponseSuppressionMatch?>(JsonSerializer.Deserialize<ValidationResponseSuppressionMatch>(ref utf8JsonReader, jsonSerializerOptions)!);
+                            break;
+                        case "policy_applied":
+                            policyApplied = new Option<ValidationResponsePolicyApplied?>(JsonSerializer.Deserialize<ValidationResponsePolicyApplied>(ref utf8JsonReader, jsonSerializerOptions)!);
                             break;
                         default:
                             break;
                     }
                 }
             }
+
+            if (!schemaVersion.IsSet)
+                throw new ArgumentException("Property is required for class ValidationResponse.", nameof(schemaVersion));
 
             if (!email.IsSet)
                 throw new ArgumentException("Property is required for class ValidationResponse.", nameof(email));
@@ -550,6 +1132,30 @@ namespace MailOdds.Model
             if (!action.IsSet)
                 throw new ArgumentException("Property is required for class ValidationResponse.", nameof(action));
 
+            if (!domain.IsSet)
+                throw new ArgumentException("Property is required for class ValidationResponse.", nameof(domain));
+
+            if (!mxFound.IsSet)
+                throw new ArgumentException("Property is required for class ValidationResponse.", nameof(mxFound));
+
+            if (!disposable.IsSet)
+                throw new ArgumentException("Property is required for class ValidationResponse.", nameof(disposable));
+
+            if (!roleAccount.IsSet)
+                throw new ArgumentException("Property is required for class ValidationResponse.", nameof(roleAccount));
+
+            if (!freeProvider.IsSet)
+                throw new ArgumentException("Property is required for class ValidationResponse.", nameof(freeProvider));
+
+            if (!depth.IsSet)
+                throw new ArgumentException("Property is required for class ValidationResponse.", nameof(depth));
+
+            if (!processedAt.IsSet)
+                throw new ArgumentException("Property is required for class ValidationResponse.", nameof(processedAt));
+
+            if (schemaVersion.IsSet && schemaVersion.Value == null)
+                throw new ArgumentNullException(nameof(schemaVersion), "Property is not nullable for class ValidationResponse.");
+
             if (email.IsSet && email.Value == null)
                 throw new ArgumentNullException(nameof(email), "Property is not nullable for class ValidationResponse.");
 
@@ -559,20 +1165,11 @@ namespace MailOdds.Model
             if (action.IsSet && action.Value == null)
                 throw new ArgumentNullException(nameof(action), "Property is not nullable for class ValidationResponse.");
 
-            if (schemaVersion.IsSet && schemaVersion.Value == null)
-                throw new ArgumentNullException(nameof(schemaVersion), "Property is not nullable for class ValidationResponse.");
-
-            if (subStatus.IsSet && subStatus.Value == null)
-                throw new ArgumentNullException(nameof(subStatus), "Property is not nullable for class ValidationResponse.");
-
             if (domain.IsSet && domain.Value == null)
                 throw new ArgumentNullException(nameof(domain), "Property is not nullable for class ValidationResponse.");
 
             if (mxFound.IsSet && mxFound.Value == null)
                 throw new ArgumentNullException(nameof(mxFound), "Property is not nullable for class ValidationResponse.");
-
-            if (smtpCheck.IsSet && smtpCheck.Value == null)
-                throw new ArgumentNullException(nameof(smtpCheck), "Property is not nullable for class ValidationResponse.");
 
             if (disposable.IsSet && disposable.Value == null)
                 throw new ArgumentNullException(nameof(disposable), "Property is not nullable for class ValidationResponse.");
@@ -583,10 +1180,52 @@ namespace MailOdds.Model
             if (freeProvider.IsSet && freeProvider.Value == null)
                 throw new ArgumentNullException(nameof(freeProvider), "Property is not nullable for class ValidationResponse.");
 
+            if (depth.IsSet && depth.Value == null)
+                throw new ArgumentNullException(nameof(depth), "Property is not nullable for class ValidationResponse.");
+
+            if (processedAt.IsSet && processedAt.Value == null)
+                throw new ArgumentNullException(nameof(processedAt), "Property is not nullable for class ValidationResponse.");
+
+            if (requestId.IsSet && requestId.Value == null)
+                throw new ArgumentNullException(nameof(requestId), "Property is not nullable for class ValidationResponse.");
+
+            if (subStatus.IsSet && subStatus.Value == null)
+                throw new ArgumentNullException(nameof(subStatus), "Property is not nullable for class ValidationResponse.");
+
+            if (mxHost.IsSet && mxHost.Value == null)
+                throw new ArgumentNullException(nameof(mxHost), "Property is not nullable for class ValidationResponse.");
+
+            if (smtpCheck.IsSet && smtpCheck.Value == null)
+                throw new ArgumentNullException(nameof(smtpCheck), "Property is not nullable for class ValidationResponse.");
+
+            if (catchAll.IsSet && catchAll.Value == null)
+                throw new ArgumentNullException(nameof(catchAll), "Property is not nullable for class ValidationResponse.");
+
+            if (suggestedEmail.IsSet && suggestedEmail.Value == null)
+                throw new ArgumentNullException(nameof(suggestedEmail), "Property is not nullable for class ValidationResponse.");
+
+            if (retryAfterMs.IsSet && retryAfterMs.Value == null)
+                throw new ArgumentNullException(nameof(retryAfterMs), "Property is not nullable for class ValidationResponse.");
+
+            if (hasSpf.IsSet && hasSpf.Value == null)
+                throw new ArgumentNullException(nameof(hasSpf), "Property is not nullable for class ValidationResponse.");
+
+            if (hasDmarc.IsSet && hasDmarc.Value == null)
+                throw new ArgumentNullException(nameof(hasDmarc), "Property is not nullable for class ValidationResponse.");
+
+            if (dmarcPolicy.IsSet && dmarcPolicy.Value == null)
+                throw new ArgumentNullException(nameof(dmarcPolicy), "Property is not nullable for class ValidationResponse.");
+
+            if (dnsblListed.IsSet && dnsblListed.Value == null)
+                throw new ArgumentNullException(nameof(dnsblListed), "Property is not nullable for class ValidationResponse.");
+
             if (suppressionMatch.IsSet && suppressionMatch.Value == null)
                 throw new ArgumentNullException(nameof(suppressionMatch), "Property is not nullable for class ValidationResponse.");
 
-            return new ValidationResponse(email.Value!, status.Value!.Value!, action.Value!.Value!, schemaVersion, subStatus, domain, mxFound, smtpCheck, disposable, roleAccount, freeProvider, suppressionMatch);
+            if (policyApplied.IsSet && policyApplied.Value == null)
+                throw new ArgumentNullException(nameof(policyApplied), "Property is not nullable for class ValidationResponse.");
+
+            return new ValidationResponse(schemaVersion.Value!, email.Value!, status.Value!.Value!, action.Value!.Value!, domain.Value!, mxFound.Value!.Value!, disposable.Value!.Value!, roleAccount.Value!.Value!, freeProvider.Value!.Value!, depth.Value!.Value!, processedAt.Value!.Value!, requestId, subStatus, mxHost, smtpCheck, catchAll, suggestedEmail, retryAfterMs, hasSpf, hasDmarc, dmarcPolicy, dnsblListed, suppressionMatch, policyApplied);
         }
 
         /// <summary>
@@ -613,20 +1252,31 @@ namespace MailOdds.Model
         /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, ValidationResponse validationResponse, JsonSerializerOptions jsonSerializerOptions)
         {
+            if (validationResponse.SchemaVersion == null)
+                throw new ArgumentNullException(nameof(validationResponse.SchemaVersion), "Property is required for class ValidationResponse.");
+
             if (validationResponse.Email == null)
                 throw new ArgumentNullException(nameof(validationResponse.Email), "Property is required for class ValidationResponse.");
 
-            if (validationResponse.SchemaVersionOption.IsSet && validationResponse.SchemaVersion == null)
-                throw new ArgumentNullException(nameof(validationResponse.SchemaVersion), "Property is required for class ValidationResponse.");
-
-            if (validationResponse.SubStatusOption.IsSet && validationResponse.SubStatus == null)
-                throw new ArgumentNullException(nameof(validationResponse.SubStatus), "Property is required for class ValidationResponse.");
-
-            if (validationResponse.DomainOption.IsSet && validationResponse.Domain == null)
+            if (validationResponse.Domain == null)
                 throw new ArgumentNullException(nameof(validationResponse.Domain), "Property is required for class ValidationResponse.");
+
+            if (validationResponse.RequestIdOption.IsSet && validationResponse.RequestId == null)
+                throw new ArgumentNullException(nameof(validationResponse.RequestId), "Property is required for class ValidationResponse.");
+
+            if (validationResponse.MxHostOption.IsSet && validationResponse.MxHost == null)
+                throw new ArgumentNullException(nameof(validationResponse.MxHost), "Property is required for class ValidationResponse.");
+
+            if (validationResponse.SuggestedEmailOption.IsSet && validationResponse.SuggestedEmail == null)
+                throw new ArgumentNullException(nameof(validationResponse.SuggestedEmail), "Property is required for class ValidationResponse.");
 
             if (validationResponse.SuppressionMatchOption.IsSet && validationResponse.SuppressionMatch == null)
                 throw new ArgumentNullException(nameof(validationResponse.SuppressionMatch), "Property is required for class ValidationResponse.");
+
+            if (validationResponse.PolicyAppliedOption.IsSet && validationResponse.PolicyApplied == null)
+                throw new ArgumentNullException(nameof(validationResponse.PolicyApplied), "Property is required for class ValidationResponse.");
+
+            writer.WriteString("schema_version", validationResponse.SchemaVersion);
 
             writer.WriteString("email", validationResponse.Email);
 
@@ -634,34 +1284,66 @@ namespace MailOdds.Model
             writer.WriteString("status", statusRawValue);
             var actionRawValue = ValidationResponse.ActionEnumToJsonValue(validationResponse.Action);
             writer.WriteString("action", actionRawValue);
-            if (validationResponse.SchemaVersionOption.IsSet)
-                writer.WriteString("schema_version", validationResponse.SchemaVersion);
+            writer.WriteString("domain", validationResponse.Domain);
 
-            if (validationResponse.SubStatusOption.IsSet)
-                writer.WriteString("sub_status", validationResponse.SubStatus);
+            writer.WriteBoolean("mx_found", validationResponse.MxFound);
 
-            if (validationResponse.DomainOption.IsSet)
-                writer.WriteString("domain", validationResponse.Domain);
+            writer.WriteBoolean("disposable", validationResponse.Disposable);
 
-            if (validationResponse.MxFoundOption.IsSet)
-                writer.WriteBoolean("mx_found", validationResponse.MxFoundOption.Value!.Value);
+            writer.WriteBoolean("role_account", validationResponse.RoleAccount);
+
+            writer.WriteBoolean("free_provider", validationResponse.FreeProvider);
+
+            var depthRawValue = ValidationResponse.DepthEnumToJsonValue(validationResponse.Depth);
+            writer.WriteString("depth", depthRawValue);
+            writer.WriteString("processed_at", validationResponse.ProcessedAt.ToString(ProcessedAtFormat));
+
+            if (validationResponse.RequestIdOption.IsSet)
+                writer.WriteString("request_id", validationResponse.RequestId);
+
+            if (validationResponse.SubStatusOption.IsSet && validationResponse.SubStatusOption.Value != null)
+            {
+                var subStatusRawValue = ValidationResponse.SubStatusEnumToJsonValue(validationResponse.SubStatusOption.Value!.Value);
+                writer.WriteString("sub_status", subStatusRawValue);
+            }
+            if (validationResponse.MxHostOption.IsSet)
+                writer.WriteString("mx_host", validationResponse.MxHost);
 
             if (validationResponse.SmtpCheckOption.IsSet)
                 writer.WriteBoolean("smtp_check", validationResponse.SmtpCheckOption.Value!.Value);
 
-            if (validationResponse.DisposableOption.IsSet)
-                writer.WriteBoolean("disposable", validationResponse.DisposableOption.Value!.Value);
+            if (validationResponse.CatchAllOption.IsSet)
+                writer.WriteBoolean("catch_all", validationResponse.CatchAllOption.Value!.Value);
 
-            if (validationResponse.RoleAccountOption.IsSet)
-                writer.WriteBoolean("role_account", validationResponse.RoleAccountOption.Value!.Value);
+            if (validationResponse.SuggestedEmailOption.IsSet)
+                writer.WriteString("suggested_email", validationResponse.SuggestedEmail);
 
-            if (validationResponse.FreeProviderOption.IsSet)
-                writer.WriteBoolean("free_provider", validationResponse.FreeProviderOption.Value!.Value);
+            if (validationResponse.RetryAfterMsOption.IsSet)
+                writer.WriteNumber("retry_after_ms", validationResponse.RetryAfterMsOption.Value!.Value);
+
+            if (validationResponse.HasSpfOption.IsSet)
+                writer.WriteBoolean("has_spf", validationResponse.HasSpfOption.Value!.Value);
+
+            if (validationResponse.HasDmarcOption.IsSet)
+                writer.WriteBoolean("has_dmarc", validationResponse.HasDmarcOption.Value!.Value);
+
+            if (validationResponse.DmarcPolicyOption.IsSet && validationResponse.DmarcPolicyOption.Value != null)
+            {
+                var dmarcPolicyRawValue = ValidationResponse.DmarcPolicyEnumToJsonValue(validationResponse.DmarcPolicyOption.Value!.Value);
+                writer.WriteString("dmarc_policy", dmarcPolicyRawValue);
+            }
+            if (validationResponse.DnsblListedOption.IsSet)
+                writer.WriteBoolean("dnsbl_listed", validationResponse.DnsblListedOption.Value!.Value);
 
             if (validationResponse.SuppressionMatchOption.IsSet)
             {
                 writer.WritePropertyName("suppression_match");
                 JsonSerializer.Serialize(writer, validationResponse.SuppressionMatch, jsonSerializerOptions);
+            }
+            if (validationResponse.PolicyAppliedOption.IsSet)
+            {
+                writer.WritePropertyName("policy_applied");
+                JsonSerializer.Serialize(writer, validationResponse.PolicyApplied, jsonSerializerOptions);
             }
         }
     }

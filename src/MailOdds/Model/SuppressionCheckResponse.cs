@@ -22,7 +22,6 @@ using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.ComponentModel.DataAnnotations;
-
 using MailOdds.Client;
 
 namespace MailOdds.Model
@@ -36,14 +35,16 @@ namespace MailOdds.Model
         /// Initializes a new instance of the <see cref="SuppressionCheckResponse" /> class.
         /// </summary>
         /// <param name="schemaVersion">schemaVersion</param>
+        /// <param name="requestId">Unique request identifier</param>
         /// <param name="email">email</param>
         /// <param name="suppressed">suppressed</param>
         /// <param name="matchType">matchType</param>
         /// <param name="matchValue">matchValue</param>
         [JsonConstructor]
-        public SuppressionCheckResponse(Option<string?> schemaVersion = default, Option<string?> email = default, Option<bool?> suppressed = default, Option<MatchTypeEnum?> matchType = default, Option<string?> matchValue = default)
+        public SuppressionCheckResponse(Option<string?> schemaVersion = default, Option<string?> requestId = default, Option<string?> email = default, Option<bool?> suppressed = default, Option<MatchTypeEnum?> matchType = default, Option<string?> matchValue = default)
         {
             SchemaVersionOption = schemaVersion;
+            RequestIdOption = requestId;
             EmailOption = email;
             SuppressedOption = suppressed;
             MatchTypeOption = matchType;
@@ -146,6 +147,20 @@ namespace MailOdds.Model
         public string? SchemaVersion { get { return this.SchemaVersionOption; } set { this.SchemaVersionOption = new(value); } }
 
         /// <summary>
+        /// Used to track the state of RequestId
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> RequestIdOption { get; private set; }
+
+        /// <summary>
+        /// Unique request identifier
+        /// </summary>
+        /// <value>Unique request identifier</value>
+        [JsonPropertyName("request_id")]
+        public string? RequestId { get { return this.RequestIdOption; } set { this.RequestIdOption = new(value); } }
+
+        /// <summary>
         /// Used to track the state of Email
         /// </summary>
         [JsonIgnore]
@@ -193,6 +208,7 @@ namespace MailOdds.Model
             StringBuilder sb = new StringBuilder();
             sb.Append("class SuppressionCheckResponse {\n");
             sb.Append("  SchemaVersion: ").Append(SchemaVersion).Append("\n");
+            sb.Append("  RequestId: ").Append(RequestId).Append("\n");
             sb.Append("  Email: ").Append(Email).Append("\n");
             sb.Append("  Suppressed: ").Append(Suppressed).Append("\n");
             sb.Append("  MatchType: ").Append(MatchType).Append("\n");
@@ -235,6 +251,7 @@ namespace MailOdds.Model
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
             Option<string?> schemaVersion = default;
+            Option<string?> requestId = default;
             Option<string?> email = default;
             Option<bool?> suppressed = default;
             Option<SuppressionCheckResponse.MatchTypeEnum?> matchType = default;
@@ -257,6 +274,9 @@ namespace MailOdds.Model
                     {
                         case "schema_version":
                             schemaVersion = new Option<string?>(utf8JsonReader.GetString()!);
+                            break;
+                        case "request_id":
+                            requestId = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         case "email":
                             email = new Option<string?>(utf8JsonReader.GetString()!);
@@ -281,6 +301,9 @@ namespace MailOdds.Model
             if (schemaVersion.IsSet && schemaVersion.Value == null)
                 throw new ArgumentNullException(nameof(schemaVersion), "Property is not nullable for class SuppressionCheckResponse.");
 
+            if (requestId.IsSet && requestId.Value == null)
+                throw new ArgumentNullException(nameof(requestId), "Property is not nullable for class SuppressionCheckResponse.");
+
             if (email.IsSet && email.Value == null)
                 throw new ArgumentNullException(nameof(email), "Property is not nullable for class SuppressionCheckResponse.");
 
@@ -293,7 +316,7 @@ namespace MailOdds.Model
             if (matchValue.IsSet && matchValue.Value == null)
                 throw new ArgumentNullException(nameof(matchValue), "Property is not nullable for class SuppressionCheckResponse.");
 
-            return new SuppressionCheckResponse(schemaVersion, email, suppressed, matchType, matchValue);
+            return new SuppressionCheckResponse(schemaVersion, requestId, email, suppressed, matchType, matchValue);
         }
 
         /// <summary>
@@ -323,6 +346,9 @@ namespace MailOdds.Model
             if (suppressionCheckResponse.SchemaVersionOption.IsSet && suppressionCheckResponse.SchemaVersion == null)
                 throw new ArgumentNullException(nameof(suppressionCheckResponse.SchemaVersion), "Property is required for class SuppressionCheckResponse.");
 
+            if (suppressionCheckResponse.RequestIdOption.IsSet && suppressionCheckResponse.RequestId == null)
+                throw new ArgumentNullException(nameof(suppressionCheckResponse.RequestId), "Property is required for class SuppressionCheckResponse.");
+
             if (suppressionCheckResponse.EmailOption.IsSet && suppressionCheckResponse.Email == null)
                 throw new ArgumentNullException(nameof(suppressionCheckResponse.Email), "Property is required for class SuppressionCheckResponse.");
 
@@ -331,6 +357,9 @@ namespace MailOdds.Model
 
             if (suppressionCheckResponse.SchemaVersionOption.IsSet)
                 writer.WriteString("schema_version", suppressionCheckResponse.SchemaVersion);
+
+            if (suppressionCheckResponse.RequestIdOption.IsSet)
+                writer.WriteString("request_id", suppressionCheckResponse.RequestId);
 
             if (suppressionCheckResponse.EmailOption.IsSet)
                 writer.WriteString("email", suppressionCheckResponse.Email);

@@ -22,7 +22,6 @@ using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.ComponentModel.DataAnnotations;
-
 using MailOdds.Client;
 
 namespace MailOdds.Model
@@ -36,12 +35,14 @@ namespace MailOdds.Model
         /// Initializes a new instance of the <see cref="ResultsResponse" /> class.
         /// </summary>
         /// <param name="schemaVersion">schemaVersion</param>
+        /// <param name="requestId">Unique request identifier</param>
         /// <param name="results">results</param>
         /// <param name="pagination">pagination</param>
         [JsonConstructor]
-        public ResultsResponse(Option<string?> schemaVersion = default, Option<List<ValidationResult>?> results = default, Option<Pagination?> pagination = default)
+        public ResultsResponse(Option<string?> schemaVersion = default, Option<string?> requestId = default, Option<List<ValidationResult>?> results = default, Option<Pagination?> pagination = default)
         {
             SchemaVersionOption = schemaVersion;
+            RequestIdOption = requestId;
             ResultsOption = results;
             PaginationOption = pagination;
             OnCreated();
@@ -61,6 +62,20 @@ namespace MailOdds.Model
         /// </summary>
         [JsonPropertyName("schema_version")]
         public string? SchemaVersion { get { return this.SchemaVersionOption; } set { this.SchemaVersionOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of RequestId
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> RequestIdOption { get; private set; }
+
+        /// <summary>
+        /// Unique request identifier
+        /// </summary>
+        /// <value>Unique request identifier</value>
+        [JsonPropertyName("request_id")]
+        public string? RequestId { get { return this.RequestIdOption; } set { this.RequestIdOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Results
@@ -97,6 +112,7 @@ namespace MailOdds.Model
             StringBuilder sb = new StringBuilder();
             sb.Append("class ResultsResponse {\n");
             sb.Append("  SchemaVersion: ").Append(SchemaVersion).Append("\n");
+            sb.Append("  RequestId: ").Append(RequestId).Append("\n");
             sb.Append("  Results: ").Append(Results).Append("\n");
             sb.Append("  Pagination: ").Append(Pagination).Append("\n");
             sb.Append("}\n");
@@ -137,6 +153,7 @@ namespace MailOdds.Model
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
             Option<string?> schemaVersion = default;
+            Option<string?> requestId = default;
             Option<List<ValidationResult>?> results = default;
             Option<Pagination?> pagination = default;
 
@@ -158,6 +175,9 @@ namespace MailOdds.Model
                         case "schema_version":
                             schemaVersion = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
+                        case "request_id":
+                            requestId = new Option<string?>(utf8JsonReader.GetString()!);
+                            break;
                         case "results":
                             results = new Option<List<ValidationResult>?>(JsonSerializer.Deserialize<List<ValidationResult>>(ref utf8JsonReader, jsonSerializerOptions)!);
                             break;
@@ -173,13 +193,16 @@ namespace MailOdds.Model
             if (schemaVersion.IsSet && schemaVersion.Value == null)
                 throw new ArgumentNullException(nameof(schemaVersion), "Property is not nullable for class ResultsResponse.");
 
+            if (requestId.IsSet && requestId.Value == null)
+                throw new ArgumentNullException(nameof(requestId), "Property is not nullable for class ResultsResponse.");
+
             if (results.IsSet && results.Value == null)
                 throw new ArgumentNullException(nameof(results), "Property is not nullable for class ResultsResponse.");
 
             if (pagination.IsSet && pagination.Value == null)
                 throw new ArgumentNullException(nameof(pagination), "Property is not nullable for class ResultsResponse.");
 
-            return new ResultsResponse(schemaVersion, results, pagination);
+            return new ResultsResponse(schemaVersion, requestId, results, pagination);
         }
 
         /// <summary>
@@ -209,6 +232,9 @@ namespace MailOdds.Model
             if (resultsResponse.SchemaVersionOption.IsSet && resultsResponse.SchemaVersion == null)
                 throw new ArgumentNullException(nameof(resultsResponse.SchemaVersion), "Property is required for class ResultsResponse.");
 
+            if (resultsResponse.RequestIdOption.IsSet && resultsResponse.RequestId == null)
+                throw new ArgumentNullException(nameof(resultsResponse.RequestId), "Property is required for class ResultsResponse.");
+
             if (resultsResponse.ResultsOption.IsSet && resultsResponse.Results == null)
                 throw new ArgumentNullException(nameof(resultsResponse.Results), "Property is required for class ResultsResponse.");
 
@@ -217,6 +243,9 @@ namespace MailOdds.Model
 
             if (resultsResponse.SchemaVersionOption.IsSet)
                 writer.WriteString("schema_version", resultsResponse.SchemaVersion);
+
+            if (resultsResponse.RequestIdOption.IsSet)
+                writer.WriteString("request_id", resultsResponse.RequestId);
 
             if (resultsResponse.ResultsOption.IsSet)
             {

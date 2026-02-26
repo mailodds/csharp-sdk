@@ -22,7 +22,6 @@ using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.ComponentModel.DataAnnotations;
-
 using MailOdds.Client;
 
 namespace MailOdds.Model
@@ -36,16 +35,99 @@ namespace MailOdds.Model
         /// Initializes a new instance of the <see cref="ValidateRequest" /> class.
         /// </summary>
         /// <param name="email">Email address to validate</param>
+        /// <param name="depth">Validation depth. &#39;standard&#39; skips SMTP verification. (default to DepthEnum.Enhanced)</param>
         /// <param name="policyId">Optional policy ID to use instead of default policy</param>
         [JsonConstructor]
-        public ValidateRequest(string email, Option<int?> policyId = default)
+        public ValidateRequest(string email, Option<DepthEnum?> depth = default, Option<int?> policyId = default)
         {
             Email = email;
+            DepthOption = depth;
             PolicyIdOption = policyId;
             OnCreated();
         }
 
         partial void OnCreated();
+
+        /// <summary>
+        /// Validation depth. &#39;standard&#39; skips SMTP verification.
+        /// </summary>
+        /// <value>Validation depth. &#39;standard&#39; skips SMTP verification.</value>
+        public enum DepthEnum
+        {
+            /// <summary>
+            /// Enum Standard for value: standard
+            /// </summary>
+            Standard = 1,
+
+            /// <summary>
+            /// Enum Enhanced for value: enhanced
+            /// </summary>
+            Enhanced = 2
+        }
+
+        /// <summary>
+        /// Returns a <see cref="DepthEnum"/>
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public static DepthEnum DepthEnumFromString(string value)
+        {
+            if (value.Equals("standard"))
+                return DepthEnum.Standard;
+
+            if (value.Equals("enhanced"))
+                return DepthEnum.Enhanced;
+
+            throw new NotImplementedException($"Could not convert value to type DepthEnum: '{value}'");
+        }
+
+        /// <summary>
+        /// Returns a <see cref="DepthEnum"/>
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static DepthEnum? DepthEnumFromStringOrDefault(string value)
+        {
+            if (value.Equals("standard"))
+                return DepthEnum.Standard;
+
+            if (value.Equals("enhanced"))
+                return DepthEnum.Enhanced;
+
+            return null;
+        }
+
+        /// <summary>
+        /// Converts the <see cref="DepthEnum"/> to the json value
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public static string DepthEnumToJsonValue(DepthEnum? value)
+        {
+            if (value == DepthEnum.Standard)
+                return "standard";
+
+            if (value == DepthEnum.Enhanced)
+                return "enhanced";
+
+            throw new NotImplementedException($"Value could not be handled: '{value}'");
+        }
+
+        /// <summary>
+        /// Used to track the state of Depth
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<DepthEnum?> DepthOption { get; private set; }
+
+        /// <summary>
+        /// Validation depth. &#39;standard&#39; skips SMTP verification.
+        /// </summary>
+        /// <value>Validation depth. &#39;standard&#39; skips SMTP verification.</value>
+        [JsonPropertyName("depth")]
+        public DepthEnum? Depth { get { return this.DepthOption; } set { this.DepthOption = new(value); } }
 
         /// <summary>
         /// Email address to validate
@@ -77,6 +159,7 @@ namespace MailOdds.Model
             StringBuilder sb = new StringBuilder();
             sb.Append("class ValidateRequest {\n");
             sb.Append("  Email: ").Append(Email).Append("\n");
+            sb.Append("  Depth: ").Append(Depth).Append("\n");
             sb.Append("  PolicyId: ").Append(PolicyId).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
@@ -116,6 +199,7 @@ namespace MailOdds.Model
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
             Option<string?> email = default;
+            Option<ValidateRequest.DepthEnum?> depth = default;
             Option<int?> policyId = default;
 
             while (utf8JsonReader.Read())
@@ -136,6 +220,11 @@ namespace MailOdds.Model
                         case "email":
                             email = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
+                        case "depth":
+                            string? depthRawValue = utf8JsonReader.GetString();
+                            if (depthRawValue != null)
+                                depth = new Option<ValidateRequest.DepthEnum?>(ValidateRequest.DepthEnumFromStringOrDefault(depthRawValue));
+                            break;
                         case "policy_id":
                             policyId = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
                             break;
@@ -151,10 +240,13 @@ namespace MailOdds.Model
             if (email.IsSet && email.Value == null)
                 throw new ArgumentNullException(nameof(email), "Property is not nullable for class ValidateRequest.");
 
+            if (depth.IsSet && depth.Value == null)
+                throw new ArgumentNullException(nameof(depth), "Property is not nullable for class ValidateRequest.");
+
             if (policyId.IsSet && policyId.Value == null)
                 throw new ArgumentNullException(nameof(policyId), "Property is not nullable for class ValidateRequest.");
 
-            return new ValidateRequest(email.Value!, policyId);
+            return new ValidateRequest(email.Value!, depth, policyId);
         }
 
         /// <summary>
@@ -186,6 +278,11 @@ namespace MailOdds.Model
 
             writer.WriteString("email", validateRequest.Email);
 
+            if (validateRequest.DepthOption.IsSet && validateRequest.DepthOption.Value != null)
+            {
+                var depthRawValue = ValidateRequest.DepthEnumToJsonValue(validateRequest.DepthOption.Value!.Value);
+                writer.WriteString("depth", depthRawValue);
+            }
             if (validateRequest.PolicyIdOption.IsSet)
                 writer.WriteNumber("policy_id", validateRequest.PolicyIdOption.Value!.Value);
         }

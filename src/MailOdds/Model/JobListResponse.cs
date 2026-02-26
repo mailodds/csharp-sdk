@@ -22,7 +22,6 @@ using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.ComponentModel.DataAnnotations;
-
 using MailOdds.Client;
 
 namespace MailOdds.Model
@@ -36,12 +35,14 @@ namespace MailOdds.Model
         /// Initializes a new instance of the <see cref="JobListResponse" /> class.
         /// </summary>
         /// <param name="schemaVersion">schemaVersion</param>
+        /// <param name="requestId">Unique request identifier</param>
         /// <param name="jobs">jobs</param>
         /// <param name="pagination">pagination</param>
         [JsonConstructor]
-        public JobListResponse(Option<string?> schemaVersion = default, Option<List<Job>?> jobs = default, Option<Pagination?> pagination = default)
+        public JobListResponse(Option<string?> schemaVersion = default, Option<string?> requestId = default, Option<List<Job>?> jobs = default, Option<Pagination?> pagination = default)
         {
             SchemaVersionOption = schemaVersion;
+            RequestIdOption = requestId;
             JobsOption = jobs;
             PaginationOption = pagination;
             OnCreated();
@@ -61,6 +62,20 @@ namespace MailOdds.Model
         /// </summary>
         [JsonPropertyName("schema_version")]
         public string? SchemaVersion { get { return this.SchemaVersionOption; } set { this.SchemaVersionOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of RequestId
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> RequestIdOption { get; private set; }
+
+        /// <summary>
+        /// Unique request identifier
+        /// </summary>
+        /// <value>Unique request identifier</value>
+        [JsonPropertyName("request_id")]
+        public string? RequestId { get { return this.RequestIdOption; } set { this.RequestIdOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Jobs
@@ -97,6 +112,7 @@ namespace MailOdds.Model
             StringBuilder sb = new StringBuilder();
             sb.Append("class JobListResponse {\n");
             sb.Append("  SchemaVersion: ").Append(SchemaVersion).Append("\n");
+            sb.Append("  RequestId: ").Append(RequestId).Append("\n");
             sb.Append("  Jobs: ").Append(Jobs).Append("\n");
             sb.Append("  Pagination: ").Append(Pagination).Append("\n");
             sb.Append("}\n");
@@ -137,6 +153,7 @@ namespace MailOdds.Model
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
             Option<string?> schemaVersion = default;
+            Option<string?> requestId = default;
             Option<List<Job>?> jobs = default;
             Option<Pagination?> pagination = default;
 
@@ -158,6 +175,9 @@ namespace MailOdds.Model
                         case "schema_version":
                             schemaVersion = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
+                        case "request_id":
+                            requestId = new Option<string?>(utf8JsonReader.GetString()!);
+                            break;
                         case "jobs":
                             jobs = new Option<List<Job>?>(JsonSerializer.Deserialize<List<Job>>(ref utf8JsonReader, jsonSerializerOptions)!);
                             break;
@@ -173,13 +193,16 @@ namespace MailOdds.Model
             if (schemaVersion.IsSet && schemaVersion.Value == null)
                 throw new ArgumentNullException(nameof(schemaVersion), "Property is not nullable for class JobListResponse.");
 
+            if (requestId.IsSet && requestId.Value == null)
+                throw new ArgumentNullException(nameof(requestId), "Property is not nullable for class JobListResponse.");
+
             if (jobs.IsSet && jobs.Value == null)
                 throw new ArgumentNullException(nameof(jobs), "Property is not nullable for class JobListResponse.");
 
             if (pagination.IsSet && pagination.Value == null)
                 throw new ArgumentNullException(nameof(pagination), "Property is not nullable for class JobListResponse.");
 
-            return new JobListResponse(schemaVersion, jobs, pagination);
+            return new JobListResponse(schemaVersion, requestId, jobs, pagination);
         }
 
         /// <summary>
@@ -209,6 +232,9 @@ namespace MailOdds.Model
             if (jobListResponse.SchemaVersionOption.IsSet && jobListResponse.SchemaVersion == null)
                 throw new ArgumentNullException(nameof(jobListResponse.SchemaVersion), "Property is required for class JobListResponse.");
 
+            if (jobListResponse.RequestIdOption.IsSet && jobListResponse.RequestId == null)
+                throw new ArgumentNullException(nameof(jobListResponse.RequestId), "Property is required for class JobListResponse.");
+
             if (jobListResponse.JobsOption.IsSet && jobListResponse.Jobs == null)
                 throw new ArgumentNullException(nameof(jobListResponse.Jobs), "Property is required for class JobListResponse.");
 
@@ -217,6 +243,9 @@ namespace MailOdds.Model
 
             if (jobListResponse.SchemaVersionOption.IsSet)
                 writer.WriteString("schema_version", jobListResponse.SchemaVersion);
+
+            if (jobListResponse.RequestIdOption.IsSet)
+                writer.WriteString("request_id", jobListResponse.RequestId);
 
             if (jobListResponse.JobsOption.IsSet)
             {

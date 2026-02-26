@@ -5,6 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **SchemaVersion** | **string** |  | [optional] 
+**RequestId** | **string** | Unique request identifier | [optional] 
 **Jobs** | [**List&lt;Job&gt;**](Job.md) |  | [optional] 
 **Pagination** | [**Pagination**](Pagination.md) |  | [optional] 
 

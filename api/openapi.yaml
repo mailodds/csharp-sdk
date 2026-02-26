@@ -41,6 +41,12 @@ tags:
   name: Webhooks
 - description: Health and status endpoints
   name: System
+- description: Send transactional emails
+  name: Email Sending
+- description: Manage sending domain authentication
+  name: Sending Domains
+- description: Manage subscriber lists and subscriptions
+  name: Subscriber Lists
 paths:
   /v1/validate:
     post:
@@ -79,6 +85,39 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
           description: Forbidden - Insufficient permissions or no credits
       summary: Validate single email
+      tags:
+      - Email Validation
+  /v1/validate/batch:
+    post:
+      description: "Validate up to 100 email addresses synchronously. For larger lists,\
+        \ use the bulk jobs API."
+      operationId: validateBatch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/validateBatch_request"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/validateBatch_200_response"
+          description: Batch validation results
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+      summary: Validate multiple emails (sync)
       tags:
       - Email Validation
   /v1/jobs:
@@ -1001,6 +1040,698 @@ paths:
       summary: Test policy evaluation
       tags:
       - Validation Policies
+  /v1/deliver:
+    post:
+      description: "Send a transactional email through the safety pipeline. Validates\
+        \ recipients, checks domain ownership, and queues for delivery. Requires a\
+        \ verified sending domain."
+      operationId: deliverEmail
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeliverRequest"
+        required: true
+      responses:
+        "202":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeliverResponse"
+          description: Email accepted for delivery
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Forbidden - Insufficient permissions or no credits
+      summary: Send a single email
+      tags:
+      - Email Sending
+  /v1/deliver/batch:
+    post:
+      description: Send a single message to up to 100 recipients. Shares the same
+        message body across all recipients. Each recipient is processed independently.
+      operationId: deliverBatch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BatchDeliverRequest"
+        required: true
+      responses:
+        "202":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BatchDeliverResponse"
+          description: Batch accepted for delivery
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Forbidden - Insufficient permissions or no credits
+      summary: Send to multiple recipients (max 100)
+      tags:
+      - Email Sending
+  /v1/sending-domains:
+    get:
+      description: List all sending domains for the authenticated account.
+      operationId: listSendingDomains
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/listSendingDomains_200_response"
+          description: List of sending domains
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Forbidden - Insufficient permissions or no credits
+      summary: List sending domains
+      tags:
+      - Sending Domains
+    post:
+      description: "Register a new sending domain with NS delegation. After adding,\
+        \ configure DNS records and verify."
+      operationId: createSendingDomain
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/createSendingDomain_request"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/createSendingDomain_201_response"
+          description: Domain created
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Forbidden - Insufficient permissions or no credits
+      summary: Add a sending domain
+      tags:
+      - Sending Domains
+  /v1/sending-domains/{domain_id}:
+    delete:
+      description: Permanently remove a sending domain from the account.
+      operationId: deleteSendingDomain
+      parameters:
+      - explode: false
+        in: path
+        name: domain_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/deletePolicyRule_200_response"
+          description: Domain deleted
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Resource not found
+      summary: Delete a sending domain
+      tags:
+      - Sending Domains
+    get:
+      description: Get details of a specific sending domain including DNS verification
+        status.
+      operationId: getSendingDomain
+      parameters:
+      - explode: false
+        in: path
+        name: domain_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/createSendingDomain_201_response"
+          description: Domain details
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Resource not found
+      summary: Get a sending domain
+      tags:
+      - Sending Domains
+  /v1/sending-domains/{domain_id}/verify:
+    post:
+      description: "Check and verify all DNS records (DKIM, SPF, DMARC, MX, return\
+        \ path) for the sending domain."
+      operationId: verifySendingDomain
+      parameters:
+      - explode: false
+        in: path
+        name: domain_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/createSendingDomain_201_response"
+          description: Verification result
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Resource not found
+      summary: Verify domain DNS records
+      tags:
+      - Sending Domains
+  /v1/sending-domains/{domain_id}/identity-score:
+    get:
+      description: "Get a composite DNS health score for the sending domain, checking\
+        \ DKIM, SPF, DMARC, MX, and return path configuration."
+      operationId: getSendingDomainIdentityScore
+      parameters:
+      - explode: false
+        in: path
+        name: domain_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getSendingDomainIdentityScore_200_response"
+          description: Identity score
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Resource not found
+      summary: Get domain identity score
+      tags:
+      - Sending Domains
+  /v1/sending-stats:
+    get:
+      description: "Get aggregate sending statistics across all domains for the account,\
+        \ including delivery rates, open rates, and click rates."
+      operationId: getSendingStats
+      parameters:
+      - description: Time period
+        explode: true
+        in: query
+        name: period
+        required: false
+        schema:
+          default: 7d
+          enum:
+          - 7d
+          - 30d
+          - 90d
+          type: string
+        style: form
+      - description: Filter by domain
+        explode: true
+        in: query
+        name: domain_id
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getSendingStats_200_response"
+          description: Sending statistics
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Forbidden - Insufficient permissions or no credits
+      summary: Get sending statistics
+      tags:
+      - Sending Domains
+  /v1/lists:
+    get:
+      description: List all subscriber lists for the authenticated account with pagination.
+      operationId: getLists
+      parameters:
+      - description: Page number
+        explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          type: integer
+        style: form
+      - description: Items per page
+        explode: true
+        in: query
+        name: per_page
+        required: false
+        schema:
+          default: 25
+          maximum: 100
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getLists_200_response"
+          description: Paginated list of subscriber lists
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+      summary: List subscriber lists
+      tags:
+      - Subscriber Lists
+    post:
+      description: Create a new subscriber list. Use lists to organize subscribers
+        and manage double opt-in confirmation flows.
+      operationId: createList
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateListRequest"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/createList_201_response"
+          description: List created
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Forbidden - Insufficient permissions or no credits
+      summary: Create a subscriber list
+      tags:
+      - Subscriber Lists
+  /v1/lists/{list_id}:
+    delete:
+      description: Soft-delete a subscriber list. Existing subscribers are retained
+        but the list is no longer usable.
+      operationId: deleteList
+      parameters:
+      - description: List UUID
+        explode: false
+        in: path
+        name: list_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/deletePolicyRule_200_response"
+          description: List deleted
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Resource not found
+      summary: Delete a subscriber list
+      tags:
+      - Subscriber Lists
+    get:
+      description: Get details of a specific subscriber list including subscriber
+        and confirmed counts.
+      operationId: getList
+      parameters:
+      - description: List UUID
+        explode: false
+        in: path
+        name: list_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/createList_201_response"
+          description: Subscriber list details
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Resource not found
+      summary: Get a subscriber list
+      tags:
+      - Subscriber Lists
+  /v1/lists/{list_id}/subscribers:
+    get:
+      description: List paginated subscribers for a specific list. Optionally filter
+        by status.
+      operationId: getSubscribers
+      parameters:
+      - description: List UUID
+        explode: false
+        in: path
+        name: list_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Page number
+        explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          type: integer
+        style: form
+      - description: Items per page
+        explode: true
+        in: query
+        name: per_page
+        required: false
+        schema:
+          default: 50
+          maximum: 100
+          type: integer
+        style: form
+      - description: Filter by subscriber status
+        explode: true
+        in: query
+        name: status
+        required: false
+        schema:
+          enum:
+          - pending
+          - confirmed
+          - unsubscribed
+          - bounced
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getSubscribers_200_response"
+          description: Paginated list of subscribers
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Resource not found
+      summary: List subscribers
+      tags:
+      - Subscriber Lists
+  /v1/lists/{list_id}/subscribers/{subscriber_id}:
+    delete:
+      description: Set a subscriber's status to unsubscribed. The consent record is
+        retained for compliance.
+      operationId: unsubscribeSubscriber
+      parameters:
+      - description: List UUID
+        explode: false
+        in: path
+        name: list_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Subscriber UUID
+        explode: false
+        in: path
+        name: subscriber_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/unsubscribeSubscriber_200_response"
+          description: Subscriber unsubscribed
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Resource not found
+      summary: Unsubscribe a subscriber
+      tags:
+      - Subscriber Lists
+  /v1/subscribe/{list_id}:
+    post:
+      description: Add a subscriber to a list and initiate the double opt-in confirmation
+        flow. The subscriber receives a confirmation email and must click the link
+        to confirm. Rate limited to 10 requests/min per IP and 1000/hour per account.
+      operationId: subscribe
+      parameters:
+      - description: List UUID
+        explode: false
+        in: path
+        name: list_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubscribeRequest"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/unsubscribeSubscriber_200_response"
+          description: Subscriber created (pending confirmation)
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Forbidden - Insufficient permissions or no credits
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Invalid email address
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Rate limit exceeded
+      summary: Subscribe to a list
+      tags:
+      - Subscriber Lists
+  /v1/confirm/{token}:
+    get:
+      description: "Confirm a pending subscription via the token sent in the confirmation\
+        \ email. No authentication required. Redirects to the list's configured redirect\
+        \ URL if set, otherwise returns JSON. Tokens expire after 72 hours."
+      operationId: confirmSubscription
+      parameters:
+      - description: Confirmation token from email
+        explode: false
+        in: path
+        name: token
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/confirmSubscription_200_response"
+          description: Subscription confirmed
+        "302":
+          description: Redirect to configured confirmation URL
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad request
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Resource not found
+      security: []
+      summary: Confirm subscription
+      tags:
+      - Subscriber Lists
 components:
   responses:
     BadRequest:
@@ -1033,9 +1764,13 @@ components:
         schema_version: "1.0"
         error: error
         message: message
+        request_id: request_id
       properties:
         schema_version:
           example: "1.0"
+          type: string
+        request_id:
+          description: Unique request identifier
           type: string
         error:
           description: Machine-readable error code
@@ -1045,16 +1780,23 @@ components:
           type: string
       required:
       - error
-      - message
       type: object
     ValidateRequest:
       example:
+        depth: enhanced
         policy_id: 0
         email: email
       properties:
         email:
           description: Email address to validate
           format: email
+          type: string
+        depth:
+          default: enhanced
+          description: Validation depth. 'standard' skips SMTP verification.
+          enum:
+          - standard
+          - enhanced
           type: string
         policy_id:
           description: Optional policy ID to use instead of default policy
@@ -1063,25 +1805,46 @@ components:
       - email
       type: object
     ValidationResponse:
+      description: Flat validation response. Conditional fields are omitted (not null)
+        when not applicable.
       example:
+        sub_status: format_invalid
+        mx_host: mx_host
+        role_account: true
+        free_provider: true
+        retry_after_ms: 0
+        has_spf: true
+        dmarc_policy: none
+        catch_all: true
+        suppression_match:
+          reason: reason
+          match_type: email
+          match_value: match_value
+        disposable: true
+        policy_applied:
+          rule_id: 1
+          rule_type: rule_type
+          policy_id: 6
+          policy_name: policy_name
         schema_version: "1.0"
-        sub_status: sub_status
+        depth: standard
         domain: domain
         mx_found: true
-        role_account: true
+        has_dmarc: true
+        dnsbl_listed: true
         action: accept
-        free_provider: true
+        processed_at: 2000-01-23T04:56:07.000+00:00
         smtp_check: true
-        suppression_match:
-          match_type: email
-          matched: true
-          match_value: match_value
+        request_id: request_id
         email: email
-        disposable: true
+        suggested_email: suggested_email
         status: valid
       properties:
         schema_version:
           example: "1.0"
+          type: string
+        request_id:
+          description: Unique request identifier
           type: string
         email:
           type: string
@@ -1094,9 +1857,6 @@ components:
           - do_not_mail
           - unknown
           type: string
-        sub_status:
-          description: Detailed status reason
-          type: string
         action:
           description: Recommended action
           enum:
@@ -1105,23 +1865,97 @@ components:
           - reject
           - retry_later
           type: string
+        sub_status:
+          description: Detailed status reason. Omitted when none.
+          enum:
+          - format_invalid
+          - mx_missing
+          - mx_timeout
+          - smtp_unreachable
+          - smtp_rejected
+          - disposable
+          - role_account
+          - greylisted
+          - catch_all_detected
+          - domain_not_found
+          - suppression_match
+          - restricted_military
+          - restricted_sanctioned
+          type: string
         domain:
           type: string
         mx_found:
+          description: Whether MX records were found for the domain
           type: boolean
+        mx_host:
+          description: Primary MX hostname. Omitted when MX not resolved.
+          type: string
         smtp_check:
+          description: Whether SMTP verification passed. Omitted when SMTP not checked.
+          type: boolean
+        catch_all:
+          description: Whether domain is catch-all. Omitted when SMTP not checked.
           type: boolean
         disposable:
+          description: Whether domain is a known disposable email provider
           type: boolean
         role_account:
+          description: "Whether address is a role account (e.g., info@, admin@)"
           type: boolean
         free_provider:
+          description: "Whether domain is a known free email provider (e.g., gmail.com)"
+          type: boolean
+        depth:
+          description: Validation depth used for this check
+          enum:
+          - standard
+          - enhanced
+          type: string
+        processed_at:
+          description: ISO 8601 timestamp of validation
+          format: date-time
+          type: string
+        suggested_email:
+          description: Typo correction suggestion. Omitted when no typo detected.
+          type: string
+        retry_after_ms:
+          description: Suggested retry delay in milliseconds. Present only for retry_later
+            action.
+          type: integer
+        has_spf:
+          description: Whether the domain has an SPF record. Omitted for standard
+            depth.
+          type: boolean
+        has_dmarc:
+          description: Whether the domain has a DMARC record. Omitted for standard
+            depth.
+          type: boolean
+        dmarc_policy:
+          description: The domain's DMARC policy. Omitted when no DMARC record found.
+          enum:
+          - none
+          - quarantine
+          - reject
+          type: string
+        dnsbl_listed:
+          description: Whether the domain's MX IP is on a DNS blocklist (Spamhaus
+            ZEN). Omitted for standard depth.
           type: boolean
         suppression_match:
           $ref: "#/components/schemas/ValidationResponse_suppression_match"
+        policy_applied:
+          $ref: "#/components/schemas/ValidationResponse_policy_applied"
       required:
       - action
+      - depth
+      - disposable
+      - domain
       - email
+      - free_provider
+      - mx_found
+      - processed_at
+      - role_account
+      - schema_version
       - status
       type: object
     CreateJobRequest:
@@ -1169,10 +2003,11 @@ components:
         job:
           summary:
             valid: 5
-            do_not_mail: 2
+            do_not_mail: 7
             invalid: 5
-            unknown: 7
-            cancelled_pending: 9
+            catch_all: 2
+            unknown: 9
+            cancelled_pending: 3
           progress_percent: 14
           completed_at: 2000-01-23T04:56:07.000+00:00
           metadata: "{}"
@@ -1181,9 +2016,13 @@ components:
           processed_count: 6
           id: job_abc123xyz
           status: pending
+        request_id: request_id
       properties:
         schema_version:
           example: "1.0"
+          type: string
+        request_id:
+          description: Unique request identifier
           type: string
         job:
           $ref: "#/components/schemas/Job"
@@ -1192,10 +2031,11 @@ components:
       example:
         summary:
           valid: 5
-          do_not_mail: 2
+          do_not_mail: 7
           invalid: 5
-          unknown: 7
-          cancelled_pending: 9
+          catch_all: 2
+          unknown: 9
+          cancelled_pending: 3
         progress_percent: 14
         completed_at: 2000-01-23T04:56:07.000+00:00
         metadata: "{}"
@@ -1239,17 +2079,18 @@ components:
       example:
         schema_version: schema_version
         pagination:
-          per_page: 2
-          total: 4
-          page: 3
-          total_pages: 7
+          per_page: 4
+          total: 7
+          page: 2
+          total_pages: 1
         jobs:
         - summary:
             valid: 5
-            do_not_mail: 2
+            do_not_mail: 7
             invalid: 5
-            unknown: 7
-            cancelled_pending: 9
+            catch_all: 2
+            unknown: 9
+            cancelled_pending: 3
           progress_percent: 14
           completed_at: 2000-01-23T04:56:07.000+00:00
           metadata: "{}"
@@ -1260,10 +2101,11 @@ components:
           status: pending
         - summary:
             valid: 5
-            do_not_mail: 2
+            do_not_mail: 7
             invalid: 5
-            unknown: 7
-            cancelled_pending: 9
+            catch_all: 2
+            unknown: 9
+            cancelled_pending: 3
           progress_percent: 14
           completed_at: 2000-01-23T04:56:07.000+00:00
           metadata: "{}"
@@ -1272,8 +2114,12 @@ components:
           processed_count: 6
           id: job_abc123xyz
           status: pending
+        request_id: request_id
       properties:
         schema_version:
+          type: string
+        request_id:
+          description: Unique request identifier
           type: string
         jobs:
           items:
@@ -1286,23 +2132,27 @@ components:
       example:
         schema_version: schema_version
         pagination:
-          per_page: 2
-          total: 4
-          page: 3
-          total_pages: 7
+          per_page: 4
+          total: 7
+          page: 2
+          total_pages: 1
+        request_id: request_id
         results:
         - sub_status: sub_status
-          action: action
+          action: accept
           processed_at: 2000-01-23T04:56:07.000+00:00
           email: email
-          status: status
+          status: valid
         - sub_status: sub_status
-          action: action
+          action: accept
           processed_at: 2000-01-23T04:56:07.000+00:00
           email: email
-          status: status
+          status: valid
       properties:
         schema_version:
+          type: string
+        request_id:
+          description: Unique request identifier
           type: string
         results:
           items:
@@ -1314,18 +2164,29 @@ components:
     ValidationResult:
       example:
         sub_status: sub_status
-        action: action
+        action: accept
         processed_at: 2000-01-23T04:56:07.000+00:00
         email: email
-        status: status
+        status: valid
       properties:
         email:
           type: string
         status:
+          enum:
+          - valid
+          - invalid
+          - catch_all
+          - do_not_mail
+          - unknown
           type: string
         sub_status:
           type: string
         action:
+          enum:
+          - accept
+          - accept_with_caution
+          - reject
+          - retry_later
           type: string
         processed_at:
           format: date-time
@@ -1333,10 +2194,10 @@ components:
       type: object
     Pagination:
       example:
-        per_page: 2
-        total: 4
-        page: 3
-        total_pages: 7
+        per_page: 4
+        total: 7
+        page: 2
+        total_pages: 1
       properties:
         page:
           type: integer
@@ -1355,8 +2216,12 @@ components:
           fields: "{}"
           expires_in: 0
           url: https://openapi-generator.tech
+        request_id: request_id
       properties:
         schema_version:
+          type: string
+        request_id:
+          description: Unique request identifier
           type: string
         upload:
           $ref: "#/components/schemas/PresignedUploadResponse_upload"
@@ -1376,12 +2241,16 @@ components:
           type: email
           value: value
         pagination:
-          per_page: 2
-          total: 4
-          page: 3
-          total_pages: 7
+          per_page: 4
+          total: 7
+          page: 2
+          total_pages: 1
+        request_id: request_id
       properties:
         schema_version:
+          type: string
+        request_id:
+          description: Unique request identifier
           type: string
         entries:
           items:
@@ -1433,14 +2302,28 @@ components:
     AddSuppressionResponse:
       example:
         schema_version: schema_version
+        duplicates: 6
+        total: 5
         added: 0
-        skipped: 6
+        invalid: 1
+        request_id: request_id
       properties:
         schema_version:
           type: string
+        request_id:
+          description: Unique request identifier
+          type: string
         added:
+          description: Number of entries successfully added
           type: integer
-        skipped:
+        duplicates:
+          description: Number of duplicate entries skipped
+          type: integer
+        invalid:
+          description: Number of invalid entries rejected
+          type: integer
+        total:
+          description: Total entries in the request
           type: integer
       type: object
     SuppressionCheckResponse:
@@ -1449,9 +2332,13 @@ components:
         match_type: email
         suppressed: true
         match_value: match_value
+        request_id: request_id
         email: email
       properties:
         schema_version:
+          type: string
+        request_id:
+          description: Unique request identifier
           type: string
         email:
           type: string
@@ -1472,8 +2359,12 @@ components:
         by_type:
           domain: 1
           email: 6
+        request_id: request_id
       properties:
         schema_version:
+          type: string
+        request_id:
+          description: Unique request identifier
           type: string
         total:
           type: integer
@@ -1594,12 +2485,16 @@ components:
           is_default: true
           priority: 6
           rule_count: 1
+        request_id: request_id
         limits:
           max_rules_per_policy: 7
           max_policies: 2
           plan: plan
       properties:
         schema_version:
+          type: string
+        request_id:
+          description: Unique request identifier
           type: string
         policies:
           items:
@@ -1732,6 +2627,7 @@ components:
     PolicyResponse:
       example:
         schema_version: schema_version
+        request_id: request_id
         policy:
           is_enabled: true
           name: name
@@ -1758,6 +2654,9 @@ components:
           rule_count: 1
       properties:
         schema_version:
+          type: string
+        request_id:
+          description: Unique request identifier
           type: string
         policy:
           $ref: "#/components/schemas/Policy"
@@ -1802,13 +2701,508 @@ components:
             id: 5
             type: status_override
           id: id
+        request_id: request_id
       properties:
         schema_version:
+          type: string
+        request_id:
+          description: Unique request identifier
           type: string
         presets:
           items:
             $ref: "#/components/schemas/PolicyPresetsResponse_presets_inner"
           type: array
+      type: object
+    DeliverRequest:
+      example:
+        domain_id: domain_id
+        headers: "{}"
+        reply_to: reply_to
+        subject: subject
+        campaign_type: order_confirmation
+        options:
+          validate_first: true
+        from: from
+        html: html
+        structured_data: "{}"
+        to:
+        - name: name
+          email: email
+        - name: name
+          email: email
+        text: text
+        tags:
+        - tags
+        - tags
+      properties:
+        to:
+          description: List of recipient email addresses
+          items:
+            $ref: "#/components/schemas/DeliverRequest_to_inner"
+          type: array
+        from:
+          description: Sender email address (must match sending domain)
+          type: string
+        subject:
+          description: Email subject line
+          type: string
+        html:
+          description: HTML email body
+          type: string
+        text:
+          description: Plain text email body
+          type: string
+        domain_id:
+          description: Sending domain UUID
+          type: string
+        reply_to:
+          description: Reply-to address
+          type: string
+        headers:
+          description: Extra email headers
+          type: object
+        tags:
+          description: Tags for categorization
+          items:
+            type: string
+          type: array
+        campaign_type:
+          description: Campaign type for JSON-LD auto-generation
+          enum:
+          - order_confirmation
+          - shipping_notification
+          - subscription_confirm
+          - review_request
+          - event_invitation
+          - promotional
+          - welcome
+          - password_reset
+          - appointment_reminder
+          - ticket_confirmation
+          type: string
+        structured_data:
+          $ref: "#/components/schemas/DeliverRequest_structured_data"
+        options:
+          $ref: "#/components/schemas/DeliverRequest_options"
+      required:
+      - domain_id
+      - from
+      - subject
+      - to
+      type: object
+    DeliverResponse:
+      example:
+        schema_version: schema_version
+        delivery:
+          warmup_limited: true
+          pool: pool
+          lane: lane
+        content_scan: "{}"
+        message_id: message_id
+        request_id: request_id
+        validation: "{}"
+        status: queued
+      properties:
+        schema_version:
+          type: string
+        request_id:
+          description: Unique request identifier
+          type: string
+        message_id:
+          description: Unique message identifier
+          type: string
+        status:
+          description: Delivery status
+          enum:
+          - queued
+          type: string
+        delivery:
+          $ref: "#/components/schemas/DeliverResponse_delivery"
+        validation:
+          description: Pre-send validation results (when validate_first is true)
+          type: object
+        content_scan:
+          description: Content scan results
+          type: object
+      type: object
+    BatchDeliverRequest:
+      description: Same fields as DeliverRequest but 'to' accepts up to 100 recipients.
+      example:
+        domain_id: domain_id
+        headers: "{}"
+        reply_to: reply_to
+        subject: subject
+        campaign_type: campaign_type
+        options: "{}"
+        from: from
+        html: html
+        structured_data: "{}"
+        to:
+        - to
+        - to
+        - to
+        - to
+        - to
+        text: text
+        tags:
+        - tags
+        - tags
+      properties:
+        to:
+          description: List of recipient email addresses (max 100)
+          items:
+            format: email
+            type: string
+          maxItems: 100
+          type: array
+        from:
+          type: string
+        subject:
+          type: string
+        html:
+          type: string
+        text:
+          type: string
+        domain_id:
+          type: string
+        reply_to:
+          type: string
+        headers:
+          type: object
+        tags:
+          items:
+            type: string
+          type: array
+        campaign_type:
+          type: string
+        structured_data:
+          $ref: "#/components/schemas/BatchDeliverRequest_structured_data"
+        options:
+          type: object
+      required:
+      - domain_id
+      - from
+      - subject
+      - to
+      type: object
+    BatchDeliverResponse:
+      example:
+        schema_version: schema_version
+        delivery:
+          queued_at: 2000-01-23T04:56:07.000+00:00
+          pool: pool
+          lane: lane
+        total: 0
+        rejected:
+        - reason: reason
+          sub_status: sub_status
+          email: email
+          status: status
+        - reason: reason
+          sub_status: sub_status
+          email: email
+          status: status
+        accepted: 6
+        request_id: request_id
+        status: queued
+      properties:
+        schema_version:
+          type: string
+        request_id:
+          description: Unique request identifier
+          type: string
+        total:
+          description: Total recipients submitted
+          type: integer
+        accepted:
+          description: Number of recipients accepted for delivery
+          type: integer
+        rejected:
+          description: Recipients that were rejected (suppressed or failed validation)
+          items:
+            $ref: "#/components/schemas/BatchDeliverResponse_rejected_inner"
+          type: array
+        status:
+          description: Batch status
+          enum:
+          - queued
+          - all_rejected
+          type: string
+        delivery:
+          $ref: "#/components/schemas/BatchDeliverResponse_delivery"
+      type: object
+    SendingDomain:
+      example:
+        bimi_enabled: true
+        domain_type: domain_type
+        bimi_vmc_url: bimi_vmc_url
+        updated_at: 2000-01-23T04:56:07.000+00:00
+        dns_records:
+          ns:
+            verified_at: 2000-01-23T04:56:07.000+00:00
+            host: host
+            type: type
+            targets:
+            - targets
+            - targets
+            status: pending
+        forward_replies_to: forward_replies_to
+        domain: domain
+        created_at: 2000-01-23T04:56:07.000+00:00
+        id: id
+        bimi_svg_url: bimi_svg_url
+        status: pending_dns
+        dkim_selector: dkim_selector
+      properties:
+        id:
+          description: Domain UUID
+          type: string
+        domain:
+          description: Domain name
+          type: string
+        domain_type:
+          description: Domain type (ns_delegated)
+          type: string
+        status:
+          description: Domain verification status
+          enum:
+          - pending_dns
+          - dns_partial
+          - active
+          - suspended
+          type: string
+        dkim_selector:
+          description: DKIM selector (e.g. mo1)
+          type: string
+        dns_records:
+          $ref: "#/components/schemas/SendingDomain_dns_records"
+        bimi_svg_url:
+          description: BIMI SVG logo URL
+          nullable: true
+          type: string
+        bimi_vmc_url:
+          description: BIMI VMC certificate URL
+          nullable: true
+          type: string
+        bimi_enabled:
+          description: Whether BIMI is enabled
+          type: boolean
+        forward_replies_to:
+          description: Reply forwarding address
+          nullable: true
+          type: string
+        created_at:
+          format: date-time
+          type: string
+        updated_at:
+          format: date-time
+          type: string
+      type: object
+    SendingDomainIdentityScore:
+      example:
+        checks:
+          return_path:
+            score: 6.027456183070403
+            status: status
+          dkim:
+            score: 6.027456183070403
+            status: status
+          spf:
+            score: 6.027456183070403
+            status: status
+          mx:
+            score: 6.027456183070403
+            status: status
+          dmarc:
+            score: 1.4658129805029452
+            status: status
+            policy: policy
+        overall_score: 0.8008281904610115
+      properties:
+        overall_score:
+          description: Composite score 0-100
+          type: number
+        checks:
+          $ref: "#/components/schemas/SendingDomainIdentityScore_checks"
+      type: object
+    CreateListRequest:
+      example:
+        confirmation_from_name: confirmation_from_name
+        confirmation_subject: confirmation_subject
+        confirmation_redirect_url: https://openapi-generator.tech
+        name: name
+        description: description
+      properties:
+        name:
+          description: List name (unique per account)
+          type: string
+        description:
+          description: Optional list description
+          type: string
+        confirmation_redirect_url:
+          description: URL to redirect subscribers after confirmation
+          format: uri
+          type: string
+        confirmation_subject:
+          description: Custom confirmation email subject
+          type: string
+        confirmation_from_name:
+          description: Custom sender name for confirmation emails
+          type: string
+      required:
+      - name
+      type: object
+    SubscribeRequest:
+      example:
+        page_url: https://openapi-generator.tech
+        metadata: "{}"
+        name: name
+        form_id: form_id
+        email: email
+      properties:
+        email:
+          description: Subscriber email address
+          format: email
+          type: string
+        name:
+          description: Subscriber name
+          type: string
+        metadata:
+          description: Custom metadata key-value pairs
+          type: object
+        page_url:
+          description: URL of the page where the subscription form was submitted (for
+            consent proof)
+          format: uri
+          type: string
+        form_id:
+          description: Identifier of the form used to subscribe (for consent proof)
+          type: string
+      required:
+      - email
+      type: object
+    SubscriberList:
+      example:
+        account_id: 0
+        confirmation_from_name: confirmation_from_name
+        updated_at: 2000-01-23T04:56:07.000+00:00
+        confirmation_subject: confirmation_subject
+        subscriber_count: 6
+        confirmation_redirect_url: confirmation_redirect_url
+        name: name
+        confirmed_count: 1
+        description: description
+        created_at: 2000-01-23T04:56:07.000+00:00
+        id: id
+      properties:
+        id:
+          description: List UUID
+          type: string
+        account_id:
+          description: Account ID
+          type: integer
+        name:
+          description: List name
+          type: string
+        description:
+          description: List description
+          nullable: true
+          type: string
+        confirmation_redirect_url:
+          description: Redirect URL after confirmation
+          nullable: true
+          type: string
+        confirmation_subject:
+          description: Confirmation email subject
+          nullable: true
+          type: string
+        confirmation_from_name:
+          description: Confirmation email sender name
+          nullable: true
+          type: string
+        subscriber_count:
+          description: Total subscriber count
+          type: integer
+        confirmed_count:
+          description: Confirmed subscriber count
+          type: integer
+        created_at:
+          format: date-time
+          type: string
+        updated_at:
+          format: date-time
+          type: string
+      type: object
+    Subscriber:
+      example:
+        consent_source_ip: consent_source_ip
+        validation_result: "{}"
+        metadata: "{}"
+        list_id: list_id
+        consent_form_id: consent_form_id
+        created_at: 2000-01-23T04:56:07.000+00:00
+        unsubscribed_at: 2000-01-23T04:56:07.000+00:00
+        name: name
+        consent_timestamp: 2000-01-23T04:56:07.000+00:00
+        id: id
+        confirmed_at: 2000-01-23T04:56:07.000+00:00
+        email: email
+        status: pending
+        consent_page_url: consent_page_url
+      properties:
+        id:
+          description: Subscriber UUID
+          type: string
+        list_id:
+          description: List UUID
+          type: string
+        email:
+          format: email
+          type: string
+        name:
+          nullable: true
+          type: string
+        status:
+          enum:
+          - pending
+          - confirmed
+          - unsubscribed
+          - bounced
+          type: string
+        consent_source_ip:
+          description: IP address of subscription
+          nullable: true
+          type: string
+        consent_page_url:
+          description: Page URL where form was submitted
+          nullable: true
+          type: string
+        consent_form_id:
+          description: Form identifier
+          nullable: true
+          type: string
+        consent_timestamp:
+          format: date-time
+          nullable: true
+          type: string
+        confirmed_at:
+          format: date-time
+          nullable: true
+          type: string
+        unsubscribed_at:
+          format: date-time
+          nullable: true
+          type: string
+        validation_result:
+          description: Email validation result
+          nullable: true
+          type: object
+        metadata:
+          description: Custom metadata
+          type: object
+        created_at:
+          format: date-time
+          type: string
       type: object
     PolicyTestResponse:
       example:
@@ -1816,9 +3210,13 @@ components:
         original: "{}"
         modified: "{}"
         matched_rule: "{}"
+        request_id: request_id
         rules_evaluated: 0
       properties:
         schema_version:
+          type: string
+        request_id:
+          description: Unique request identifier
           type: string
         original:
           description: Original validation result before policy
@@ -1832,6 +3230,135 @@ components:
           type: object
         rules_evaluated:
           type: integer
+      type: object
+    validateBatch_request:
+      properties:
+        emails:
+          description: List of emails to validate
+          items:
+            format: email
+            type: string
+          maxItems: 100
+          type: array
+        depth:
+          default: enhanced
+          enum:
+          - standard
+          - enhanced
+          type: string
+        policy_id:
+          description: Optional policy ID
+          type: integer
+      required:
+      - emails
+      type: object
+    validateBatch_200_response_summary:
+      example:
+        valid: 6
+        do_not_mail: 2
+        invalid: 1
+        catch_all: 5
+        unknown: 5
+      properties:
+        valid:
+          type: integer
+        invalid:
+          type: integer
+        catch_all:
+          type: integer
+        unknown:
+          type: integer
+        do_not_mail:
+          type: integer
+      type: object
+    validateBatch_200_response:
+      example:
+        schema_version: schema_version
+        summary:
+          valid: 6
+          do_not_mail: 2
+          invalid: 1
+          catch_all: 5
+          unknown: 5
+        total: 0
+        request_id: request_id
+        results:
+        - sub_status: format_invalid
+          mx_host: mx_host
+          role_account: true
+          free_provider: true
+          retry_after_ms: 0
+          has_spf: true
+          dmarc_policy: none
+          catch_all: true
+          suppression_match:
+            reason: reason
+            match_type: email
+            match_value: match_value
+          disposable: true
+          policy_applied:
+            rule_id: 1
+            rule_type: rule_type
+            policy_id: 6
+            policy_name: policy_name
+          schema_version: "1.0"
+          depth: standard
+          domain: domain
+          mx_found: true
+          has_dmarc: true
+          dnsbl_listed: true
+          action: accept
+          processed_at: 2000-01-23T04:56:07.000+00:00
+          smtp_check: true
+          request_id: request_id
+          email: email
+          suggested_email: suggested_email
+          status: valid
+        - sub_status: format_invalid
+          mx_host: mx_host
+          role_account: true
+          free_provider: true
+          retry_after_ms: 0
+          has_spf: true
+          dmarc_policy: none
+          catch_all: true
+          suppression_match:
+            reason: reason
+            match_type: email
+            match_value: match_value
+          disposable: true
+          policy_applied:
+            rule_id: 1
+            rule_type: rule_type
+            policy_id: 6
+            policy_name: policy_name
+          schema_version: "1.0"
+          depth: standard
+          domain: domain
+          mx_found: true
+          has_dmarc: true
+          dnsbl_listed: true
+          action: accept
+          processed_at: 2000-01-23T04:56:07.000+00:00
+          smtp_check: true
+          request_id: request_id
+          email: email
+          suggested_email: suggested_email
+          status: valid
+      properties:
+        schema_version:
+          type: string
+        request_id:
+          description: Unique request identifier
+          type: string
+        total:
+          type: integer
+        summary:
+          $ref: "#/components/schemas/validateBatch_200_response_summary"
+        results:
+          items:
+            $ref: "#/components/schemas/ValidationResponse"
+          type: array
       type: object
     createJobUpload_request:
       properties:
@@ -1875,8 +3402,12 @@ components:
       example:
         schema_version: schema_version
         deleted: true
+        request_id: request_id
       properties:
         schema_version:
+          type: string
+        request_id:
+          description: Unique request identifier
           type: string
         deleted:
           type: boolean
@@ -1894,8 +3425,12 @@ components:
       example:
         schema_version: schema_version
         removed: 0
+        request_id: request_id
       properties:
         schema_version:
+          type: string
+        request_id:
+          description: Unique request identifier
           type: string
         removed:
           type: integer
@@ -2003,14 +3538,349 @@ components:
       - policy_id
       - test_result
       type: object
-    ValidationResponse_suppression_match:
+    listSendingDomains_200_response:
       example:
+        domains:
+        - bimi_enabled: true
+          domain_type: domain_type
+          bimi_vmc_url: bimi_vmc_url
+          updated_at: 2000-01-23T04:56:07.000+00:00
+          dns_records:
+            ns:
+              verified_at: 2000-01-23T04:56:07.000+00:00
+              host: host
+              type: type
+              targets:
+              - targets
+              - targets
+              status: pending
+          forward_replies_to: forward_replies_to
+          domain: domain
+          created_at: 2000-01-23T04:56:07.000+00:00
+          id: id
+          bimi_svg_url: bimi_svg_url
+          status: pending_dns
+          dkim_selector: dkim_selector
+        - bimi_enabled: true
+          domain_type: domain_type
+          bimi_vmc_url: bimi_vmc_url
+          updated_at: 2000-01-23T04:56:07.000+00:00
+          dns_records:
+            ns:
+              verified_at: 2000-01-23T04:56:07.000+00:00
+              host: host
+              type: type
+              targets:
+              - targets
+              - targets
+              status: pending
+          forward_replies_to: forward_replies_to
+          domain: domain
+          created_at: 2000-01-23T04:56:07.000+00:00
+          id: id
+          bimi_svg_url: bimi_svg_url
+          status: pending_dns
+          dkim_selector: dkim_selector
+      properties:
+        domains:
+          items:
+            $ref: "#/components/schemas/SendingDomain"
+          type: array
+      type: object
+    createSendingDomain_request:
+      properties:
+        domain:
+          description: Domain name to add
+          example: example.com
+          type: string
+      required:
+      - domain
+      type: object
+    createSendingDomain_201_response:
+      example:
+        domain:
+          bimi_enabled: true
+          domain_type: domain_type
+          bimi_vmc_url: bimi_vmc_url
+          updated_at: 2000-01-23T04:56:07.000+00:00
+          dns_records:
+            ns:
+              verified_at: 2000-01-23T04:56:07.000+00:00
+              host: host
+              type: type
+              targets:
+              - targets
+              - targets
+              status: pending
+          forward_replies_to: forward_replies_to
+          domain: domain
+          created_at: 2000-01-23T04:56:07.000+00:00
+          id: id
+          bimi_svg_url: bimi_svg_url
+          status: pending_dns
+          dkim_selector: dkim_selector
+      properties:
+        domain:
+          $ref: "#/components/schemas/SendingDomain"
+      type: object
+    getSendingDomainIdentityScore_200_response:
+      example:
+        identity_score:
+          checks:
+            return_path:
+              score: 6.027456183070403
+              status: status
+            dkim:
+              score: 6.027456183070403
+              status: status
+            spf:
+              score: 6.027456183070403
+              status: status
+            mx:
+              score: 6.027456183070403
+              status: status
+            dmarc:
+              score: 1.4658129805029452
+              status: status
+              policy: policy
+          overall_score: 0.8008281904610115
+      properties:
+        identity_score:
+          $ref: "#/components/schemas/SendingDomainIdentityScore"
+      type: object
+    getSendingStats_200_response_stats:
+      example:
+        deferred: 5
+        opened_total: 2
+        period: period
+        bot_opens: 1
+        click_rate: 1.2315135367772556
+        clicked_total: 9
+        delivered: 6
+        failed: 5
+        bounced: 1
+        bot_open_pct: 6.84685269835264
+        sent: 0
+        unsubscribed: 2
+        delivery_rate: 4.145608029883936
+        opened_unique: 7
+        clicked_unique: 3
+        human_opens: 1
+        open_rate: 7.386281948385884
+      properties:
+        period:
+          type: string
+        sent:
+          type: integer
+        delivered:
+          type: integer
+        bounced:
+          type: integer
+        deferred:
+          type: integer
+        failed:
+          type: integer
+        opened_total:
+          type: integer
+        opened_unique:
+          type: integer
+        clicked_total:
+          type: integer
+        clicked_unique:
+          type: integer
+        unsubscribed:
+          type: integer
+        delivery_rate:
+          type: number
+        open_rate:
+          type: number
+        click_rate:
+          type: number
+        bot_opens:
+          description: Opens from known bots/scanners
+          type: integer
+        human_opens:
+          description: Verified human opens
+          type: integer
+        bot_open_pct:
+          description: Percentage of opens from bots
+          type: number
+      type: object
+    getSendingStats_200_response:
+      example:
+        stats:
+          deferred: 5
+          opened_total: 2
+          period: period
+          bot_opens: 1
+          click_rate: 1.2315135367772556
+          clicked_total: 9
+          delivered: 6
+          failed: 5
+          bounced: 1
+          bot_open_pct: 6.84685269835264
+          sent: 0
+          unsubscribed: 2
+          delivery_rate: 4.145608029883936
+          opened_unique: 7
+          clicked_unique: 3
+          human_opens: 1
+          open_rate: 7.386281948385884
+      properties:
+        stats:
+          $ref: "#/components/schemas/getSendingStats_200_response_stats"
+      type: object
+    getLists_200_response:
+      example:
+        per_page: 2
+        total: 5
+        pages: 7
+        lists:
+        - account_id: 0
+          confirmation_from_name: confirmation_from_name
+          updated_at: 2000-01-23T04:56:07.000+00:00
+          confirmation_subject: confirmation_subject
+          subscriber_count: 6
+          confirmation_redirect_url: confirmation_redirect_url
+          name: name
+          confirmed_count: 1
+          description: description
+          created_at: 2000-01-23T04:56:07.000+00:00
+          id: id
+        - account_id: 0
+          confirmation_from_name: confirmation_from_name
+          updated_at: 2000-01-23T04:56:07.000+00:00
+          confirmation_subject: confirmation_subject
+          subscriber_count: 6
+          confirmation_redirect_url: confirmation_redirect_url
+          name: name
+          confirmed_count: 1
+          description: description
+          created_at: 2000-01-23T04:56:07.000+00:00
+          id: id
+        page: 5
+      properties:
+        lists:
+          items:
+            $ref: "#/components/schemas/SubscriberList"
+          type: array
+        total:
+          type: integer
+        page:
+          type: integer
+        per_page:
+          type: integer
+        pages:
+          type: integer
+      type: object
+    createList_201_response:
+      example:
+        list:
+          account_id: 0
+          confirmation_from_name: confirmation_from_name
+          updated_at: 2000-01-23T04:56:07.000+00:00
+          confirmation_subject: confirmation_subject
+          subscriber_count: 6
+          confirmation_redirect_url: confirmation_redirect_url
+          name: name
+          confirmed_count: 1
+          description: description
+          created_at: 2000-01-23T04:56:07.000+00:00
+          id: id
+      properties:
+        list:
+          $ref: "#/components/schemas/SubscriberList"
+      type: object
+    getSubscribers_200_response:
+      example:
+        per_page: 1
+        total: 0
+        pages: 5
+        subscribers:
+        - consent_source_ip: consent_source_ip
+          validation_result: "{}"
+          metadata: "{}"
+          list_id: list_id
+          consent_form_id: consent_form_id
+          created_at: 2000-01-23T04:56:07.000+00:00
+          unsubscribed_at: 2000-01-23T04:56:07.000+00:00
+          name: name
+          consent_timestamp: 2000-01-23T04:56:07.000+00:00
+          id: id
+          confirmed_at: 2000-01-23T04:56:07.000+00:00
+          email: email
+          status: pending
+          consent_page_url: consent_page_url
+        - consent_source_ip: consent_source_ip
+          validation_result: "{}"
+          metadata: "{}"
+          list_id: list_id
+          consent_form_id: consent_form_id
+          created_at: 2000-01-23T04:56:07.000+00:00
+          unsubscribed_at: 2000-01-23T04:56:07.000+00:00
+          name: name
+          consent_timestamp: 2000-01-23T04:56:07.000+00:00
+          id: id
+          confirmed_at: 2000-01-23T04:56:07.000+00:00
+          email: email
+          status: pending
+          consent_page_url: consent_page_url
+        page: 6
+      properties:
+        subscribers:
+          items:
+            $ref: "#/components/schemas/Subscriber"
+          type: array
+        total:
+          type: integer
+        page:
+          type: integer
+        per_page:
+          type: integer
+        pages:
+          type: integer
+      type: object
+    unsubscribeSubscriber_200_response:
+      example:
+        subscriber:
+          consent_source_ip: consent_source_ip
+          validation_result: "{}"
+          metadata: "{}"
+          list_id: list_id
+          consent_form_id: consent_form_id
+          created_at: 2000-01-23T04:56:07.000+00:00
+          unsubscribed_at: 2000-01-23T04:56:07.000+00:00
+          name: name
+          consent_timestamp: 2000-01-23T04:56:07.000+00:00
+          id: id
+          confirmed_at: 2000-01-23T04:56:07.000+00:00
+          email: email
+          status: pending
+          consent_page_url: consent_page_url
+      properties:
+        subscriber:
+          $ref: "#/components/schemas/Subscriber"
+      type: object
+    confirmSubscription_200_response:
+      example:
+        list_id: list_id
+        confirmed: true
+        email: email
+      properties:
+        confirmed:
+          type: boolean
+        email:
+          type: string
+        list_id:
+          type: string
+      type: object
+    ValidationResponse_suppression_match:
+      description: Present only when email matched a suppression list entry.
+      example:
+        reason: reason
         match_type: email
-        matched: true
         match_value: match_value
       properties:
-        matched:
-          type: boolean
         match_type:
           enum:
           - email
@@ -2018,18 +3888,40 @@ components:
           type: string
         match_value:
           type: string
+        reason:
+          type: string
+      type: object
+    ValidationResponse_policy_applied:
+      description: Present when a validation policy modified the result.
+      example:
+        rule_id: 1
+        rule_type: rule_type
+        policy_id: 6
+        policy_name: policy_name
+      properties:
+        policy_id:
+          type: integer
+        policy_name:
+          type: string
+        rule_id:
+          type: integer
+        rule_type:
+          type: string
       type: object
     Job_summary:
       example:
         valid: 5
-        do_not_mail: 2
+        do_not_mail: 7
         invalid: 5
-        unknown: 7
-        cancelled_pending: 9
+        catch_all: 2
+        unknown: 9
+        cancelled_pending: 3
       properties:
         valid:
           type: integer
         invalid:
+          type: integer
+        catch_all:
           type: integer
         do_not_mail:
           type: integer
@@ -2207,6 +4099,194 @@ components:
           items:
             $ref: "#/components/schemas/PolicyRule"
           type: array
+      type: object
+    DeliverRequest_to_inner:
+      example:
+        name: name
+        email: email
+      properties:
+        email:
+          format: email
+          type: string
+        name:
+          type: string
+      required:
+      - email
+      type: object
+    DeliverRequest_structured_data:
+      description: "JSON-LD structured data (object, array, or string). Max 10KB."
+      oneOf:
+      - type: object
+      - items: {}
+        type: array
+      - type: string
+    DeliverRequest_options:
+      example:
+        validate_first: true
+      properties:
+        validate_first:
+          description: Validate recipients before sending
+          type: boolean
+      type: object
+    DeliverResponse_delivery:
+      example:
+        warmup_limited: true
+        pool: pool
+        lane: lane
+      properties:
+        pool:
+          description: IP pool used
+          type: string
+        lane:
+          description: Delivery lane
+          type: string
+        warmup_limited:
+          description: Whether warmup throttling was applied
+          type: boolean
+      type: object
+    BatchDeliverRequest_structured_data:
+      oneOf:
+      - type: object
+      - items: {}
+        type: array
+      - type: string
+    BatchDeliverResponse_rejected_inner:
+      example:
+        reason: reason
+        sub_status: sub_status
+        email: email
+        status: status
+      properties:
+        email:
+          type: string
+        reason:
+          description: "Rejection reason (suppressed, validation_rejected)"
+          type: string
+        status:
+          description: Validation status if rejected by validation
+          type: string
+        sub_status:
+          description: Validation sub-status if rejected by validation
+          type: string
+      type: object
+    BatchDeliverResponse_delivery:
+      description: Delivery routing info (present when status is queued)
+      example:
+        queued_at: 2000-01-23T04:56:07.000+00:00
+        pool: pool
+        lane: lane
+      properties:
+        pool:
+          description: IP pool used
+          type: string
+        lane:
+          description: Delivery lane (green or yellow)
+          type: string
+        queued_at:
+          description: Timestamp when batch was queued
+          format: date-time
+          type: string
+      type: object
+    SendingDomain_dns_records_ns:
+      example:
+        verified_at: 2000-01-23T04:56:07.000+00:00
+        host: host
+        type: type
+        targets:
+        - targets
+        - targets
+        status: pending
+      properties:
+        type:
+          description: Record type (NS)
+          type: string
+        host:
+          description: NS record host (mo.yourdomain.com)
+          type: string
+        targets:
+          description: NS target servers
+          items:
+            type: string
+          type: array
+        status:
+          description: Verification status
+          enum:
+          - pending
+          - verified
+          type: string
+        verified_at:
+          format: date-time
+          nullable: true
+          type: string
+      type: object
+    SendingDomain_dns_records:
+      description: DNS records for domain verification
+      example:
+        ns:
+          verified_at: 2000-01-23T04:56:07.000+00:00
+          host: host
+          type: type
+          targets:
+          - targets
+          - targets
+          status: pending
+      properties:
+        ns:
+          $ref: "#/components/schemas/SendingDomain_dns_records_ns"
+      type: object
+    SendingDomainIdentityScore_checks_dkim:
+      example:
+        score: 6.027456183070403
+        status: status
+      properties:
+        status:
+          type: string
+        score:
+          type: number
+      type: object
+    SendingDomainIdentityScore_checks_dmarc:
+      example:
+        score: 1.4658129805029452
+        status: status
+        policy: policy
+      properties:
+        status:
+          type: string
+        score:
+          type: number
+        policy:
+          type: string
+      type: object
+    SendingDomainIdentityScore_checks:
+      description: Individual check results
+      example:
+        return_path:
+          score: 6.027456183070403
+          status: status
+        dkim:
+          score: 6.027456183070403
+          status: status
+        spf:
+          score: 6.027456183070403
+          status: status
+        mx:
+          score: 6.027456183070403
+          status: status
+        dmarc:
+          score: 1.4658129805029452
+          status: status
+          policy: policy
+      properties:
+        dkim:
+          $ref: "#/components/schemas/SendingDomainIdentityScore_checks_dkim"
+        spf:
+          $ref: "#/components/schemas/SendingDomainIdentityScore_checks_dkim"
+        dmarc:
+          $ref: "#/components/schemas/SendingDomainIdentityScore_checks_dmarc"
+        mx:
+          $ref: "#/components/schemas/SendingDomainIdentityScore_checks_dkim"
+        return_path:
+          $ref: "#/components/schemas/SendingDomainIdentityScore_checks_dkim"
       type: object
   securitySchemes:
     BearerAuth:

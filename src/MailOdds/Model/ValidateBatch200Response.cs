@@ -35,13 +35,15 @@ namespace MailOdds.Model
         /// Initializes a new instance of the <see cref="ValidateBatch200Response" /> class.
         /// </summary>
         /// <param name="schemaVersion">schemaVersion</param>
+        /// <param name="requestId">Unique request identifier</param>
         /// <param name="total">total</param>
         /// <param name="summary">summary</param>
         /// <param name="results">results</param>
         [JsonConstructor]
-        public ValidateBatch200Response(Option<string?> schemaVersion = default, Option<int?> total = default, Option<ValidateBatch200ResponseSummary?> summary = default, Option<List<ValidationResponse>?> results = default)
+        public ValidateBatch200Response(Option<string?> schemaVersion = default, Option<string?> requestId = default, Option<int?> total = default, Option<ValidateBatch200ResponseSummary?> summary = default, Option<List<ValidationResponse>?> results = default)
         {
             SchemaVersionOption = schemaVersion;
+            RequestIdOption = requestId;
             TotalOption = total;
             SummaryOption = summary;
             ResultsOption = results;
@@ -62,6 +64,20 @@ namespace MailOdds.Model
         /// </summary>
         [JsonPropertyName("schema_version")]
         public string? SchemaVersion { get { return this.SchemaVersionOption; } set { this.SchemaVersionOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of RequestId
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> RequestIdOption { get; private set; }
+
+        /// <summary>
+        /// Unique request identifier
+        /// </summary>
+        /// <value>Unique request identifier</value>
+        [JsonPropertyName("request_id")]
+        public string? RequestId { get { return this.RequestIdOption; } set { this.RequestIdOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Total
@@ -111,6 +127,7 @@ namespace MailOdds.Model
             StringBuilder sb = new StringBuilder();
             sb.Append("class ValidateBatch200Response {\n");
             sb.Append("  SchemaVersion: ").Append(SchemaVersion).Append("\n");
+            sb.Append("  RequestId: ").Append(RequestId).Append("\n");
             sb.Append("  Total: ").Append(Total).Append("\n");
             sb.Append("  Summary: ").Append(Summary).Append("\n");
             sb.Append("  Results: ").Append(Results).Append("\n");
@@ -152,6 +169,7 @@ namespace MailOdds.Model
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
             Option<string?> schemaVersion = default;
+            Option<string?> requestId = default;
             Option<int?> total = default;
             Option<ValidateBatch200ResponseSummary?> summary = default;
             Option<List<ValidationResponse>?> results = default;
@@ -174,6 +192,9 @@ namespace MailOdds.Model
                         case "schema_version":
                             schemaVersion = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
+                        case "request_id":
+                            requestId = new Option<string?>(utf8JsonReader.GetString()!);
+                            break;
                         case "total":
                             total = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
                             break;
@@ -192,6 +213,9 @@ namespace MailOdds.Model
             if (schemaVersion.IsSet && schemaVersion.Value == null)
                 throw new ArgumentNullException(nameof(schemaVersion), "Property is not nullable for class ValidateBatch200Response.");
 
+            if (requestId.IsSet && requestId.Value == null)
+                throw new ArgumentNullException(nameof(requestId), "Property is not nullable for class ValidateBatch200Response.");
+
             if (total.IsSet && total.Value == null)
                 throw new ArgumentNullException(nameof(total), "Property is not nullable for class ValidateBatch200Response.");
 
@@ -201,7 +225,7 @@ namespace MailOdds.Model
             if (results.IsSet && results.Value == null)
                 throw new ArgumentNullException(nameof(results), "Property is not nullable for class ValidateBatch200Response.");
 
-            return new ValidateBatch200Response(schemaVersion, total, summary, results);
+            return new ValidateBatch200Response(schemaVersion, requestId, total, summary, results);
         }
 
         /// <summary>
@@ -231,6 +255,9 @@ namespace MailOdds.Model
             if (validateBatch200Response.SchemaVersionOption.IsSet && validateBatch200Response.SchemaVersion == null)
                 throw new ArgumentNullException(nameof(validateBatch200Response.SchemaVersion), "Property is required for class ValidateBatch200Response.");
 
+            if (validateBatch200Response.RequestIdOption.IsSet && validateBatch200Response.RequestId == null)
+                throw new ArgumentNullException(nameof(validateBatch200Response.RequestId), "Property is required for class ValidateBatch200Response.");
+
             if (validateBatch200Response.SummaryOption.IsSet && validateBatch200Response.Summary == null)
                 throw new ArgumentNullException(nameof(validateBatch200Response.Summary), "Property is required for class ValidateBatch200Response.");
 
@@ -239,6 +266,9 @@ namespace MailOdds.Model
 
             if (validateBatch200Response.SchemaVersionOption.IsSet)
                 writer.WriteString("schema_version", validateBatch200Response.SchemaVersion);
+
+            if (validateBatch200Response.RequestIdOption.IsSet)
+                writer.WriteString("request_id", validateBatch200Response.RequestId);
 
             if (validateBatch200Response.TotalOption.IsSet)
                 writer.WriteNumber("total", validateBatch200Response.TotalOption.Value!.Value);

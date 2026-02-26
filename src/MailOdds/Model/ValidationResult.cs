@@ -22,7 +22,6 @@ using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.ComponentModel.DataAnnotations;
-
 using MailOdds.Client;
 
 namespace MailOdds.Model
@@ -41,7 +40,7 @@ namespace MailOdds.Model
         /// <param name="action">action</param>
         /// <param name="processedAt">processedAt</param>
         [JsonConstructor]
-        public ValidationResult(Option<string?> email = default, Option<string?> status = default, Option<string?> subStatus = default, Option<string?> action = default, Option<DateTime?> processedAt = default)
+        public ValidationResult(Option<string?> email = default, Option<StatusEnum?> status = default, Option<string?> subStatus = default, Option<ActionEnum?> action = default, Option<DateTime?> processedAt = default)
         {
             EmailOption = email;
             StatusOption = status;
@@ -52,6 +51,234 @@ namespace MailOdds.Model
         }
 
         partial void OnCreated();
+
+        /// <summary>
+        /// Defines Status
+        /// </summary>
+        public enum StatusEnum
+        {
+            /// <summary>
+            /// Enum Valid for value: valid
+            /// </summary>
+            Valid = 1,
+
+            /// <summary>
+            /// Enum Invalid for value: invalid
+            /// </summary>
+            Invalid = 2,
+
+            /// <summary>
+            /// Enum CatchAll for value: catch_all
+            /// </summary>
+            CatchAll = 3,
+
+            /// <summary>
+            /// Enum DoNotMail for value: do_not_mail
+            /// </summary>
+            DoNotMail = 4,
+
+            /// <summary>
+            /// Enum Unknown for value: unknown
+            /// </summary>
+            Unknown = 5
+        }
+
+        /// <summary>
+        /// Returns a <see cref="StatusEnum"/>
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public static StatusEnum StatusEnumFromString(string value)
+        {
+            if (value.Equals("valid"))
+                return StatusEnum.Valid;
+
+            if (value.Equals("invalid"))
+                return StatusEnum.Invalid;
+
+            if (value.Equals("catch_all"))
+                return StatusEnum.CatchAll;
+
+            if (value.Equals("do_not_mail"))
+                return StatusEnum.DoNotMail;
+
+            if (value.Equals("unknown"))
+                return StatusEnum.Unknown;
+
+            throw new NotImplementedException($"Could not convert value to type StatusEnum: '{value}'");
+        }
+
+        /// <summary>
+        /// Returns a <see cref="StatusEnum"/>
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static StatusEnum? StatusEnumFromStringOrDefault(string value)
+        {
+            if (value.Equals("valid"))
+                return StatusEnum.Valid;
+
+            if (value.Equals("invalid"))
+                return StatusEnum.Invalid;
+
+            if (value.Equals("catch_all"))
+                return StatusEnum.CatchAll;
+
+            if (value.Equals("do_not_mail"))
+                return StatusEnum.DoNotMail;
+
+            if (value.Equals("unknown"))
+                return StatusEnum.Unknown;
+
+            return null;
+        }
+
+        /// <summary>
+        /// Converts the <see cref="StatusEnum"/> to the json value
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public static string StatusEnumToJsonValue(StatusEnum? value)
+        {
+            if (value == StatusEnum.Valid)
+                return "valid";
+
+            if (value == StatusEnum.Invalid)
+                return "invalid";
+
+            if (value == StatusEnum.CatchAll)
+                return "catch_all";
+
+            if (value == StatusEnum.DoNotMail)
+                return "do_not_mail";
+
+            if (value == StatusEnum.Unknown)
+                return "unknown";
+
+            throw new NotImplementedException($"Value could not be handled: '{value}'");
+        }
+
+        /// <summary>
+        /// Used to track the state of Status
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<StatusEnum?> StatusOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets Status
+        /// </summary>
+        [JsonPropertyName("status")]
+        public StatusEnum? Status { get { return this.StatusOption; } set { this.StatusOption = new(value); } }
+
+        /// <summary>
+        /// Defines Action
+        /// </summary>
+        public enum ActionEnum
+        {
+            /// <summary>
+            /// Enum Accept for value: accept
+            /// </summary>
+            Accept = 1,
+
+            /// <summary>
+            /// Enum AcceptWithCaution for value: accept_with_caution
+            /// </summary>
+            AcceptWithCaution = 2,
+
+            /// <summary>
+            /// Enum Reject for value: reject
+            /// </summary>
+            Reject = 3,
+
+            /// <summary>
+            /// Enum RetryLater for value: retry_later
+            /// </summary>
+            RetryLater = 4
+        }
+
+        /// <summary>
+        /// Returns a <see cref="ActionEnum"/>
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public static ActionEnum ActionEnumFromString(string value)
+        {
+            if (value.Equals("accept"))
+                return ActionEnum.Accept;
+
+            if (value.Equals("accept_with_caution"))
+                return ActionEnum.AcceptWithCaution;
+
+            if (value.Equals("reject"))
+                return ActionEnum.Reject;
+
+            if (value.Equals("retry_later"))
+                return ActionEnum.RetryLater;
+
+            throw new NotImplementedException($"Could not convert value to type ActionEnum: '{value}'");
+        }
+
+        /// <summary>
+        /// Returns a <see cref="ActionEnum"/>
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static ActionEnum? ActionEnumFromStringOrDefault(string value)
+        {
+            if (value.Equals("accept"))
+                return ActionEnum.Accept;
+
+            if (value.Equals("accept_with_caution"))
+                return ActionEnum.AcceptWithCaution;
+
+            if (value.Equals("reject"))
+                return ActionEnum.Reject;
+
+            if (value.Equals("retry_later"))
+                return ActionEnum.RetryLater;
+
+            return null;
+        }
+
+        /// <summary>
+        /// Converts the <see cref="ActionEnum"/> to the json value
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public static string ActionEnumToJsonValue(ActionEnum? value)
+        {
+            if (value == ActionEnum.Accept)
+                return "accept";
+
+            if (value == ActionEnum.AcceptWithCaution)
+                return "accept_with_caution";
+
+            if (value == ActionEnum.Reject)
+                return "reject";
+
+            if (value == ActionEnum.RetryLater)
+                return "retry_later";
+
+            throw new NotImplementedException($"Value could not be handled: '{value}'");
+        }
+
+        /// <summary>
+        /// Used to track the state of Action
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<ActionEnum?> ActionOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets Action
+        /// </summary>
+        [JsonPropertyName("action")]
+        public ActionEnum? Action { get { return this.ActionOption; } set { this.ActionOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Email
@@ -67,19 +294,6 @@ namespace MailOdds.Model
         public string? Email { get { return this.EmailOption; } set { this.EmailOption = new(value); } }
 
         /// <summary>
-        /// Used to track the state of Status
-        /// </summary>
-        [JsonIgnore]
-        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<string?> StatusOption { get; private set; }
-
-        /// <summary>
-        /// Gets or Sets Status
-        /// </summary>
-        [JsonPropertyName("status")]
-        public string? Status { get { return this.StatusOption; } set { this.StatusOption = new(value); } }
-
-        /// <summary>
         /// Used to track the state of SubStatus
         /// </summary>
         [JsonIgnore]
@@ -91,19 +305,6 @@ namespace MailOdds.Model
         /// </summary>
         [JsonPropertyName("sub_status")]
         public string? SubStatus { get { return this.SubStatusOption; } set { this.SubStatusOption = new(value); } }
-
-        /// <summary>
-        /// Used to track the state of Action
-        /// </summary>
-        [JsonIgnore]
-        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<string?> ActionOption { get; private set; }
-
-        /// <summary>
-        /// Gets or Sets Action
-        /// </summary>
-        [JsonPropertyName("action")]
-        public string? Action { get { return this.ActionOption; } set { this.ActionOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of ProcessedAt
@@ -174,9 +375,9 @@ namespace MailOdds.Model
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
             Option<string?> email = default;
-            Option<string?> status = default;
+            Option<ValidationResult.StatusEnum?> status = default;
             Option<string?> subStatus = default;
-            Option<string?> action = default;
+            Option<ValidationResult.ActionEnum?> action = default;
             Option<DateTime?> processedAt = default;
 
             while (utf8JsonReader.Read())
@@ -198,13 +399,17 @@ namespace MailOdds.Model
                             email = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         case "status":
-                            status = new Option<string?>(utf8JsonReader.GetString()!);
+                            string? statusRawValue = utf8JsonReader.GetString();
+                            if (statusRawValue != null)
+                                status = new Option<ValidationResult.StatusEnum?>(ValidationResult.StatusEnumFromStringOrDefault(statusRawValue));
                             break;
                         case "sub_status":
                             subStatus = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         case "action":
-                            action = new Option<string?>(utf8JsonReader.GetString()!);
+                            string? actionRawValue = utf8JsonReader.GetString();
+                            if (actionRawValue != null)
+                                action = new Option<ValidationResult.ActionEnum?>(ValidationResult.ActionEnumFromStringOrDefault(actionRawValue));
                             break;
                         case "processed_at":
                             processedAt = new Option<DateTime?>(JsonSerializer.Deserialize<DateTime>(ref utf8JsonReader, jsonSerializerOptions));
@@ -260,27 +465,19 @@ namespace MailOdds.Model
             if (validationResult.EmailOption.IsSet && validationResult.Email == null)
                 throw new ArgumentNullException(nameof(validationResult.Email), "Property is required for class ValidationResult.");
 
-            if (validationResult.StatusOption.IsSet && validationResult.Status == null)
-                throw new ArgumentNullException(nameof(validationResult.Status), "Property is required for class ValidationResult.");
-
             if (validationResult.SubStatusOption.IsSet && validationResult.SubStatus == null)
                 throw new ArgumentNullException(nameof(validationResult.SubStatus), "Property is required for class ValidationResult.");
-
-            if (validationResult.ActionOption.IsSet && validationResult.Action == null)
-                throw new ArgumentNullException(nameof(validationResult.Action), "Property is required for class ValidationResult.");
 
             if (validationResult.EmailOption.IsSet)
                 writer.WriteString("email", validationResult.Email);
 
-            if (validationResult.StatusOption.IsSet)
-                writer.WriteString("status", validationResult.Status);
-
+            var statusRawValue = ValidationResult.StatusEnumToJsonValue(validationResult.StatusOption.Value!.Value);
+            writer.WriteString("status", statusRawValue);
             if (validationResult.SubStatusOption.IsSet)
                 writer.WriteString("sub_status", validationResult.SubStatus);
 
-            if (validationResult.ActionOption.IsSet)
-                writer.WriteString("action", validationResult.Action);
-
+            var actionRawValue = ValidationResult.ActionEnumToJsonValue(validationResult.ActionOption.Value!.Value);
+            writer.WriteString("action", actionRawValue);
             if (validationResult.ProcessedAtOption.IsSet)
                 writer.WriteString("processed_at", validationResult.ProcessedAtOption.Value!.Value.ToString(ProcessedAtFormat));
         }

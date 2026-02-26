@@ -22,7 +22,6 @@ using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.ComponentModel.DataAnnotations;
-
 using MailOdds.Client;
 
 namespace MailOdds.Model
@@ -37,14 +36,16 @@ namespace MailOdds.Model
         /// </summary>
         /// <param name="valid">valid</param>
         /// <param name="invalid">invalid</param>
+        /// <param name="catchAll">catchAll</param>
         /// <param name="doNotMail">doNotMail</param>
         /// <param name="unknown">unknown</param>
         /// <param name="cancelledPending">cancelledPending</param>
         [JsonConstructor]
-        public JobSummary(Option<int?> valid = default, Option<int?> invalid = default, Option<int?> doNotMail = default, Option<int?> unknown = default, Option<int?> cancelledPending = default)
+        public JobSummary(Option<int?> valid = default, Option<int?> invalid = default, Option<int?> catchAll = default, Option<int?> doNotMail = default, Option<int?> unknown = default, Option<int?> cancelledPending = default)
         {
             ValidOption = valid;
             InvalidOption = invalid;
+            CatchAllOption = catchAll;
             DoNotMailOption = doNotMail;
             UnknownOption = unknown;
             CancelledPendingOption = cancelledPending;
@@ -78,6 +79,19 @@ namespace MailOdds.Model
         /// </summary>
         [JsonPropertyName("invalid")]
         public int? Invalid { get { return this.InvalidOption; } set { this.InvalidOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of CatchAll
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<int?> CatchAllOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets CatchAll
+        /// </summary>
+        [JsonPropertyName("catch_all")]
+        public int? CatchAll { get { return this.CatchAllOption; } set { this.CatchAllOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of DoNotMail
@@ -128,6 +142,7 @@ namespace MailOdds.Model
             sb.Append("class JobSummary {\n");
             sb.Append("  Valid: ").Append(Valid).Append("\n");
             sb.Append("  Invalid: ").Append(Invalid).Append("\n");
+            sb.Append("  CatchAll: ").Append(CatchAll).Append("\n");
             sb.Append("  DoNotMail: ").Append(DoNotMail).Append("\n");
             sb.Append("  Unknown: ").Append(Unknown).Append("\n");
             sb.Append("  CancelledPending: ").Append(CancelledPending).Append("\n");
@@ -170,6 +185,7 @@ namespace MailOdds.Model
 
             Option<int?> valid = default;
             Option<int?> invalid = default;
+            Option<int?> catchAll = default;
             Option<int?> doNotMail = default;
             Option<int?> unknown = default;
             Option<int?> cancelledPending = default;
@@ -195,6 +211,9 @@ namespace MailOdds.Model
                         case "invalid":
                             invalid = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
                             break;
+                        case "catch_all":
+                            catchAll = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
+                            break;
                         case "do_not_mail":
                             doNotMail = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
                             break;
@@ -216,6 +235,9 @@ namespace MailOdds.Model
             if (invalid.IsSet && invalid.Value == null)
                 throw new ArgumentNullException(nameof(invalid), "Property is not nullable for class JobSummary.");
 
+            if (catchAll.IsSet && catchAll.Value == null)
+                throw new ArgumentNullException(nameof(catchAll), "Property is not nullable for class JobSummary.");
+
             if (doNotMail.IsSet && doNotMail.Value == null)
                 throw new ArgumentNullException(nameof(doNotMail), "Property is not nullable for class JobSummary.");
 
@@ -225,7 +247,7 @@ namespace MailOdds.Model
             if (cancelledPending.IsSet && cancelledPending.Value == null)
                 throw new ArgumentNullException(nameof(cancelledPending), "Property is not nullable for class JobSummary.");
 
-            return new JobSummary(valid, invalid, doNotMail, unknown, cancelledPending);
+            return new JobSummary(valid, invalid, catchAll, doNotMail, unknown, cancelledPending);
         }
 
         /// <summary>
@@ -257,6 +279,9 @@ namespace MailOdds.Model
 
             if (jobSummary.InvalidOption.IsSet)
                 writer.WriteNumber("invalid", jobSummary.InvalidOption.Value!.Value);
+
+            if (jobSummary.CatchAllOption.IsSet)
+                writer.WriteNumber("catch_all", jobSummary.CatchAllOption.Value!.Value);
 
             if (jobSummary.DoNotMailOption.IsSet)
                 writer.WriteNumber("do_not_mail", jobSummary.DoNotMailOption.Value!.Value);

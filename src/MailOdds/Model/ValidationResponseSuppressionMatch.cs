@@ -22,28 +22,27 @@ using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.ComponentModel.DataAnnotations;
-
 using MailOdds.Client;
 
 namespace MailOdds.Model
 {
     /// <summary>
-    /// ValidationResponseSuppressionMatch
+    /// Present only when email matched a suppression list entry.
     /// </summary>
     public partial class ValidationResponseSuppressionMatch : IValidatableObject
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ValidationResponseSuppressionMatch" /> class.
         /// </summary>
-        /// <param name="matched">matched</param>
         /// <param name="matchType">matchType</param>
         /// <param name="matchValue">matchValue</param>
+        /// <param name="reason">reason</param>
         [JsonConstructor]
-        public ValidationResponseSuppressionMatch(Option<bool?> matched = default, Option<MatchTypeEnum?> matchType = default, Option<string?> matchValue = default)
+        public ValidationResponseSuppressionMatch(Option<MatchTypeEnum?> matchType = default, Option<string?> matchValue = default, Option<string?> reason = default)
         {
-            MatchedOption = matched;
             MatchTypeOption = matchType;
             MatchValueOption = matchValue;
+            ReasonOption = reason;
             OnCreated();
         }
 
@@ -129,19 +128,6 @@ namespace MailOdds.Model
         public MatchTypeEnum? MatchType { get { return this.MatchTypeOption; } set { this.MatchTypeOption = new(value); } }
 
         /// <summary>
-        /// Used to track the state of Matched
-        /// </summary>
-        [JsonIgnore]
-        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<bool?> MatchedOption { get; private set; }
-
-        /// <summary>
-        /// Gets or Sets Matched
-        /// </summary>
-        [JsonPropertyName("matched")]
-        public bool? Matched { get { return this.MatchedOption; } set { this.MatchedOption = new(value); } }
-
-        /// <summary>
         /// Used to track the state of MatchValue
         /// </summary>
         [JsonIgnore]
@@ -155,6 +141,19 @@ namespace MailOdds.Model
         public string? MatchValue { get { return this.MatchValueOption; } set { this.MatchValueOption = new(value); } }
 
         /// <summary>
+        /// Used to track the state of Reason
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> ReasonOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets Reason
+        /// </summary>
+        [JsonPropertyName("reason")]
+        public string? Reason { get { return this.ReasonOption; } set { this.ReasonOption = new(value); } }
+
+        /// <summary>
         /// Returns the string presentation of the object
         /// </summary>
         /// <returns>String presentation of the object</returns>
@@ -162,9 +161,9 @@ namespace MailOdds.Model
         {
             StringBuilder sb = new StringBuilder();
             sb.Append("class ValidationResponseSuppressionMatch {\n");
-            sb.Append("  Matched: ").Append(Matched).Append("\n");
             sb.Append("  MatchType: ").Append(MatchType).Append("\n");
             sb.Append("  MatchValue: ").Append(MatchValue).Append("\n");
+            sb.Append("  Reason: ").Append(Reason).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -202,9 +201,9 @@ namespace MailOdds.Model
 
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
-            Option<bool?> matched = default;
             Option<ValidationResponseSuppressionMatch.MatchTypeEnum?> matchType = default;
             Option<string?> matchValue = default;
+            Option<string?> reason = default;
 
             while (utf8JsonReader.Read())
             {
@@ -221,9 +220,6 @@ namespace MailOdds.Model
 
                     switch (localVarJsonPropertyName)
                     {
-                        case "matched":
-                            matched = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
-                            break;
                         case "match_type":
                             string? matchTypeRawValue = utf8JsonReader.GetString();
                             if (matchTypeRawValue != null)
@@ -232,14 +228,14 @@ namespace MailOdds.Model
                         case "match_value":
                             matchValue = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
+                        case "reason":
+                            reason = new Option<string?>(utf8JsonReader.GetString()!);
+                            break;
                         default:
                             break;
                     }
                 }
             }
-
-            if (matched.IsSet && matched.Value == null)
-                throw new ArgumentNullException(nameof(matched), "Property is not nullable for class ValidationResponseSuppressionMatch.");
 
             if (matchType.IsSet && matchType.Value == null)
                 throw new ArgumentNullException(nameof(matchType), "Property is not nullable for class ValidationResponseSuppressionMatch.");
@@ -247,7 +243,10 @@ namespace MailOdds.Model
             if (matchValue.IsSet && matchValue.Value == null)
                 throw new ArgumentNullException(nameof(matchValue), "Property is not nullable for class ValidationResponseSuppressionMatch.");
 
-            return new ValidationResponseSuppressionMatch(matched, matchType, matchValue);
+            if (reason.IsSet && reason.Value == null)
+                throw new ArgumentNullException(nameof(reason), "Property is not nullable for class ValidationResponseSuppressionMatch.");
+
+            return new ValidationResponseSuppressionMatch(matchType, matchValue, reason);
         }
 
         /// <summary>
@@ -277,13 +276,16 @@ namespace MailOdds.Model
             if (validationResponseSuppressionMatch.MatchValueOption.IsSet && validationResponseSuppressionMatch.MatchValue == null)
                 throw new ArgumentNullException(nameof(validationResponseSuppressionMatch.MatchValue), "Property is required for class ValidationResponseSuppressionMatch.");
 
-            if (validationResponseSuppressionMatch.MatchedOption.IsSet)
-                writer.WriteBoolean("matched", validationResponseSuppressionMatch.MatchedOption.Value!.Value);
+            if (validationResponseSuppressionMatch.ReasonOption.IsSet && validationResponseSuppressionMatch.Reason == null)
+                throw new ArgumentNullException(nameof(validationResponseSuppressionMatch.Reason), "Property is required for class ValidationResponseSuppressionMatch.");
 
             var matchTypeRawValue = ValidationResponseSuppressionMatch.MatchTypeEnumToJsonValue(validationResponseSuppressionMatch.MatchTypeOption.Value!.Value);
             writer.WriteString("match_type", matchTypeRawValue);
             if (validationResponseSuppressionMatch.MatchValueOption.IsSet)
                 writer.WriteString("match_value", validationResponseSuppressionMatch.MatchValue);
+
+            if (validationResponseSuppressionMatch.ReasonOption.IsSet)
+                writer.WriteString("reason", validationResponseSuppressionMatch.Reason);
         }
     }
 }

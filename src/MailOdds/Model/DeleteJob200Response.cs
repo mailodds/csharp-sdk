@@ -22,7 +22,6 @@ using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.ComponentModel.DataAnnotations;
-
 using MailOdds.Client;
 
 namespace MailOdds.Model
@@ -36,11 +35,13 @@ namespace MailOdds.Model
         /// Initializes a new instance of the <see cref="DeleteJob200Response" /> class.
         /// </summary>
         /// <param name="schemaVersion">schemaVersion</param>
+        /// <param name="requestId">Unique request identifier</param>
         /// <param name="deleted">deleted</param>
         [JsonConstructor]
-        public DeleteJob200Response(Option<string?> schemaVersion = default, Option<bool?> deleted = default)
+        public DeleteJob200Response(Option<string?> schemaVersion = default, Option<string?> requestId = default, Option<bool?> deleted = default)
         {
             SchemaVersionOption = schemaVersion;
+            RequestIdOption = requestId;
             DeletedOption = deleted;
             OnCreated();
         }
@@ -59,6 +60,20 @@ namespace MailOdds.Model
         /// </summary>
         [JsonPropertyName("schema_version")]
         public string? SchemaVersion { get { return this.SchemaVersionOption; } set { this.SchemaVersionOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of RequestId
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> RequestIdOption { get; private set; }
+
+        /// <summary>
+        /// Unique request identifier
+        /// </summary>
+        /// <value>Unique request identifier</value>
+        [JsonPropertyName("request_id")]
+        public string? RequestId { get { return this.RequestIdOption; } set { this.RequestIdOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Deleted
@@ -82,6 +97,7 @@ namespace MailOdds.Model
             StringBuilder sb = new StringBuilder();
             sb.Append("class DeleteJob200Response {\n");
             sb.Append("  SchemaVersion: ").Append(SchemaVersion).Append("\n");
+            sb.Append("  RequestId: ").Append(RequestId).Append("\n");
             sb.Append("  Deleted: ").Append(Deleted).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
@@ -121,6 +137,7 @@ namespace MailOdds.Model
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
             Option<string?> schemaVersion = default;
+            Option<string?> requestId = default;
             Option<bool?> deleted = default;
 
             while (utf8JsonReader.Read())
@@ -141,6 +158,9 @@ namespace MailOdds.Model
                         case "schema_version":
                             schemaVersion = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
+                        case "request_id":
+                            requestId = new Option<string?>(utf8JsonReader.GetString()!);
+                            break;
                         case "deleted":
                             deleted = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
                             break;
@@ -153,10 +173,13 @@ namespace MailOdds.Model
             if (schemaVersion.IsSet && schemaVersion.Value == null)
                 throw new ArgumentNullException(nameof(schemaVersion), "Property is not nullable for class DeleteJob200Response.");
 
+            if (requestId.IsSet && requestId.Value == null)
+                throw new ArgumentNullException(nameof(requestId), "Property is not nullable for class DeleteJob200Response.");
+
             if (deleted.IsSet && deleted.Value == null)
                 throw new ArgumentNullException(nameof(deleted), "Property is not nullable for class DeleteJob200Response.");
 
-            return new DeleteJob200Response(schemaVersion, deleted);
+            return new DeleteJob200Response(schemaVersion, requestId, deleted);
         }
 
         /// <summary>
@@ -186,8 +209,14 @@ namespace MailOdds.Model
             if (deleteJob200Response.SchemaVersionOption.IsSet && deleteJob200Response.SchemaVersion == null)
                 throw new ArgumentNullException(nameof(deleteJob200Response.SchemaVersion), "Property is required for class DeleteJob200Response.");
 
+            if (deleteJob200Response.RequestIdOption.IsSet && deleteJob200Response.RequestId == null)
+                throw new ArgumentNullException(nameof(deleteJob200Response.RequestId), "Property is required for class DeleteJob200Response.");
+
             if (deleteJob200Response.SchemaVersionOption.IsSet)
                 writer.WriteString("schema_version", deleteJob200Response.SchemaVersion);
+
+            if (deleteJob200Response.RequestIdOption.IsSet)
+                writer.WriteString("request_id", deleteJob200Response.RequestId);
 
             if (deleteJob200Response.DeletedOption.IsSet)
                 writer.WriteBoolean("deleted", deleteJob200Response.DeletedOption.Value!.Value);

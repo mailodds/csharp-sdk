@@ -276,8 +276,11 @@ namespace MailOdds.Model
 
             writer.WritePropertyName("emails");
             JsonSerializer.Serialize(writer, validateBatchRequest.Emails, jsonSerializerOptions);
-            var depthRawValue = ValidateBatchRequest.DepthEnumToJsonValue(validateBatchRequest.DepthOption.Value!.Value);
-            writer.WriteString("depth", depthRawValue);
+            if (validateBatchRequest.DepthOption.IsSet && validateBatchRequest.DepthOption.Value != null)
+            {
+                var depthRawValue = ValidateBatchRequest.DepthEnumToJsonValue(validateBatchRequest.DepthOption.Value!.Value);
+                writer.WriteString("depth", depthRawValue);
+            }
             if (validateBatchRequest.PolicyIdOption.IsSet)
                 writer.WriteNumber("policy_id", validateBatchRequest.PolicyIdOption.Value!.Value);
         }
