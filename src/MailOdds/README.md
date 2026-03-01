@@ -91,6 +91,55 @@ namespace YourProject
     }
 }
 ```
+## Sending Email
+
+### Send a Single Email
+
+```cs
+using MailOdds.Api;
+using MailOdds.Model;
+
+var sendingApi = host.Services.GetRequiredService<IEmailSendingApi>();
+
+var request = new DeliverRequest(
+    to: new List<DeliverRequestToInner>
+    {
+        new(email: "recipient@example.com", name: "Jane")
+    },
+    from: "you@yourdomain.com",
+    subject: "Hello from MailOdds",
+    html: "<h1>Welcome!</h1><p>Your order has been confirmed.</p>",
+    domainId: "your-domain-uuid"
+);
+
+IDeliverEmailApiResponse response = await sendingApi.DeliverEmailAsync(request);
+DeliverResponse? result = response.Ok();
+Console.WriteLine(result?.Delivery?.MessageId);
+```
+
+### Managing Sending Domains
+
+```cs
+var domainsApi = host.Services.GetRequiredService<ISendingDomainsApi>();
+
+// List sending domains
+var domainsResponse = await domainsApi.ListSendingDomainsAsync();
+var domains = domainsResponse.Ok();
+foreach (var domain in domains.Domains)
+{
+    Console.WriteLine($"{domain.Domain}: {domain.Status}");
+}
+
+// Add a new sending domain
+var createResponse = await domainsApi.CreateSendingDomainAsync(
+    new CreateSendingDomainRequest(domain: "yourdomain.com")
+);
+var newDomain = createResponse.Created();
+Console.WriteLine(newDomain?.DnsRecords); // DKIM records to add
+```
+
+For batch sending, scheduled delivery, and campaign management, see the [API documentation](https://mailodds.com/docs).
+
 <a id="questions"></a>
 ## Questions
 
