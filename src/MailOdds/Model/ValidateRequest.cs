@@ -278,7 +278,9 @@ namespace MailOdds.Model
 
             writer.WriteString("email", validateRequest.Email);
 
-            var depthRawValue = ValidateRequest.DepthEnumToJsonValue(validateRequest.DepthOption.Value!.Value);
+            var depthRawValue = validateRequest.DepthOption.IsSet
+                ? ValidateRequest.DepthEnumToJsonValue(validateRequest.DepthOption.Value!.Value)
+                : "enhanced";
             writer.WriteString("depth", depthRawValue);
             if (validateRequest.PolicyIdOption.IsSet)
                 writer.WriteNumber("policy_id", validateRequest.PolicyIdOption.Value!.Value);

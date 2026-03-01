@@ -26,3 +26,8 @@
 ci/**
 # Preserve GitHub Actions workflows
 .github/**
+# Preserve csproj target framework and NuGet versions
+src/MailOdds/MailOdds.csproj
+src/MailOdds.Test/MailOdds.Test.csproj
+# Preserve fix for DepthOption.Value!.Value crash when depth not explicitly set
+src/MailOdds/Model/ValidateRequest.cs
