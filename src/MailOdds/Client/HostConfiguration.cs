@@ -1,7 +1,7 @@
 /*
  * MailOdds Email Validation API
  *
- * MailOdds provides email validation services to help maintain clean email lists  and improve deliverability. The API performs multiple validation checks including  format verification, domain validation, MX record checking, and disposable email detection.  ## Authentication  All API requests require authentication using a Bearer token. Include your API key  in the Authorization header:  ``` Authorization: Bearer YOUR_API_KEY ```  API keys can be created in the MailOdds dashboard.  ## Rate Limits  Rate limits vary by plan: - Free: 10 requests/minute - Starter: 60 requests/minute   - Pro: 300 requests/minute - Business: 1000 requests/minute - Enterprise: Custom limits  ## Response Format  All responses include: - `schema_version`: API schema version (currently \"1.0\") - `request_id`: Unique request identifier for debugging  Error responses include: - `error`: Machine-readable error code - `message`: Human-readable error description 
+ * MailOdds provides email validation services to help maintain clean email lists  and improve deliverability. The API performs multiple validation checks including  format verification, domain validation, MX record checking, and disposable email detection.  ## Authentication  All API requests require authentication using a Bearer token. Include your API key  in the Authorization header:  ``` Authorization: Bearer YOUR_API_KEY ```  API keys can be created in the MailOdds dashboard.  ## Rate Limits  Rate limits vary by plan: - Free: 10 requests/minute - Starter: 60 requests/minute   - Pro: 300 requests/minute - Business: 1000 requests/minute - Enterprise: Custom limits  ## Response Format  All responses include: - `schema_version`: API schema version (currently \"1.0\") - `request_id`: Unique request identifier for debugging  Error responses include: - `error`: Machine-readable error code - `message`: Human-readable error description  ## Webhooks  MailOdds can send webhook notifications for job completion and email delivery events. Configure webhooks in the dashboard or per-job via the `webhook_url` field.  ### Event Types  | Event | Description | |- -- -- --|- -- -- -- -- -- --| | `job.completed` | Validation job finished processing | | `job.failed` | Validation job failed | | `message.queued` | Email queued for delivery | | `message.delivered` | Email delivered to recipient | | `message.bounced` | Email bounced | | `message.deferred` | Email delivery deferred | | `message.failed` | Email delivery failed | | `message.opened` | Recipient opened the email | | `message.clicked` | Recipient clicked a link |  ### Payload Format  ```json {   \"event\": \"job.completed\",   \"job\": { ... },   \"timestamp\": \"2026-01-15T10:30:00Z\" } ```  ### Webhook Signing  If a webhook secret is configured, each request includes an `X-MailOdds-Signature` header containing an HMAC-SHA256 hex digest of the request body.  **Verification pseudocode:** ``` expected = HMAC-SHA256(webhook_secret, request_body) valid = constant_time_compare(request.headers[\"X-MailOdds-Signature\"], hex(expected)) ```  The payload is serialized with compact JSON (no extra whitespace, sorted keys) before signing.  ### Headers  All webhook requests include: - `Content-Type: application/json` - `User-Agent: MailOdds-Webhook/1.0` - `X-MailOdds-Event: {event_type}` - `X-Request-Id: {uuid}` - `X-MailOdds-Signature: {hmac}` (when secret is configured)  ### Retry Policy  Failed deliveries (non-2xx response or timeout) are retried up to 3 times with exponential backoff (10s, 60s, 300s). 
  *
  * The version of the OpenAPI document: 1.0.0
  * Contact: support@mailodds.com
@@ -80,7 +80,9 @@ namespace MailOdds.Client
             _jsonOptions.Converters.Add(new GetSendingStats200ResponseStatsJsonConverter());
             _jsonOptions.Converters.Add(new GetSubscribers200ResponseJsonConverter());
             _jsonOptions.Converters.Add(new HealthCheck200ResponseJsonConverter());
+            _jsonOptions.Converters.Add(new IdentityScoreCheckJsonConverter());
             _jsonOptions.Converters.Add(new JobJsonConverter());
+            _jsonOptions.Converters.Add(new JobArtifactsJsonConverter());
             _jsonOptions.Converters.Add(new JobListResponseJsonConverter());
             _jsonOptions.Converters.Add(new JobResponseJsonConverter());
             _jsonOptions.Converters.Add(new JobSummaryJsonConverter());
@@ -104,12 +106,12 @@ namespace MailOdds.Client
             _jsonOptions.Converters.Add(new SendingDomainDnsRecordsJsonConverter());
             _jsonOptions.Converters.Add(new SendingDomainDnsRecordsNsJsonConverter());
             _jsonOptions.Converters.Add(new SendingDomainIdentityScoreJsonConverter());
-            _jsonOptions.Converters.Add(new SendingDomainIdentityScoreChecksJsonConverter());
-            _jsonOptions.Converters.Add(new SendingDomainIdentityScoreChecksDkimJsonConverter());
-            _jsonOptions.Converters.Add(new SendingDomainIdentityScoreChecksDmarcJsonConverter());
+            _jsonOptions.Converters.Add(new SendingDomainIdentityScoreBreakdownJsonConverter());
             _jsonOptions.Converters.Add(new SubscribeRequestJsonConverter());
             _jsonOptions.Converters.Add(new SubscriberJsonConverter());
             _jsonOptions.Converters.Add(new SubscriberListJsonConverter());
+            _jsonOptions.Converters.Add(new SuppressionAuditResponseJsonConverter());
+            _jsonOptions.Converters.Add(new SuppressionAuditResponseEntriesInnerJsonConverter());
             _jsonOptions.Converters.Add(new SuppressionCheckResponseJsonConverter());
             _jsonOptions.Converters.Add(new SuppressionEntryJsonConverter());
             _jsonOptions.Converters.Add(new SuppressionListResponseJsonConverter());
@@ -132,6 +134,8 @@ namespace MailOdds.Client
             _jsonOptions.Converters.Add(new ValidationResponsePolicyAppliedJsonConverter());
             _jsonOptions.Converters.Add(new ValidationResponseSuppressionMatchJsonConverter());
             _jsonOptions.Converters.Add(new ValidationResultJsonConverter());
+            _jsonOptions.Converters.Add(new ValidationResultSuppressionJsonConverter());
+            _jsonOptions.Converters.Add(new WebhookEventJsonConverter());
             JsonSerializerOptionsProvider jsonSerializerOptionsProvider = new(_jsonOptions);
             _services.AddSingleton(jsonSerializerOptionsProvider);
             _services.AddSingleton<IApiFactory, ApiFactory>();

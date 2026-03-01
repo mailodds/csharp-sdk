@@ -2,7 +2,7 @@
 /*
  * MailOdds Email Validation API
  *
- * MailOdds provides email validation services to help maintain clean email lists  and improve deliverability. The API performs multiple validation checks including  format verification, domain validation, MX record checking, and disposable email detection.  ## Authentication  All API requests require authentication using a Bearer token. Include your API key  in the Authorization header:  ``` Authorization: Bearer YOUR_API_KEY ```  API keys can be created in the MailOdds dashboard.  ## Rate Limits  Rate limits vary by plan: - Free: 10 requests/minute - Starter: 60 requests/minute   - Pro: 300 requests/minute - Business: 1000 requests/minute - Enterprise: Custom limits  ## Response Format  All responses include: - `schema_version`: API schema version (currently \"1.0\") - `request_id`: Unique request identifier for debugging  Error responses include: - `error`: Machine-readable error code - `message`: Human-readable error description 
+ * MailOdds provides email validation services to help maintain clean email lists  and improve deliverability. The API performs multiple validation checks including  format verification, domain validation, MX record checking, and disposable email detection.  ## Authentication  All API requests require authentication using a Bearer token. Include your API key  in the Authorization header:  ``` Authorization: Bearer YOUR_API_KEY ```  API keys can be created in the MailOdds dashboard.  ## Rate Limits  Rate limits vary by plan: - Free: 10 requests/minute - Starter: 60 requests/minute   - Pro: 300 requests/minute - Business: 1000 requests/minute - Enterprise: Custom limits  ## Response Format  All responses include: - `schema_version`: API schema version (currently \"1.0\") - `request_id`: Unique request identifier for debugging  Error responses include: - `error`: Machine-readable error code - `message`: Human-readable error description  ## Webhooks  MailOdds can send webhook notifications for job completion and email delivery events. Configure webhooks in the dashboard or per-job via the `webhook_url` field.  ### Event Types  | Event | Description | |- -- -- --|- -- -- -- -- -- --| | `job.completed` | Validation job finished processing | | `job.failed` | Validation job failed | | `message.queued` | Email queued for delivery | | `message.delivered` | Email delivered to recipient | | `message.bounced` | Email bounced | | `message.deferred` | Email delivery deferred | | `message.failed` | Email delivery failed | | `message.opened` | Recipient opened the email | | `message.clicked` | Recipient clicked a link |  ### Payload Format  ```json {   \"event\": \"job.completed\",   \"job\": { ... },   \"timestamp\": \"2026-01-15T10:30:00Z\" } ```  ### Webhook Signing  If a webhook secret is configured, each request includes an `X-MailOdds-Signature` header containing an HMAC-SHA256 hex digest of the request body.  **Verification pseudocode:** ``` expected = HMAC-SHA256(webhook_secret, request_body) valid = constant_time_compare(request.headers[\"X-MailOdds-Signature\"], hex(expected)) ```  The payload is serialized with compact JSON (no extra whitespace, sorted keys) before signing.  ### Headers  All webhook requests include: - `Content-Type: application/json` - `User-Agent: MailOdds-Webhook/1.0` - `X-MailOdds-Event: {event_type}` - `X-Request-Id: {uuid}` - `X-MailOdds-Signature: {hmac}` (when secret is configured)  ### Retry Policy  Failed deliveries (non-2xx response or timeout) are retried up to 3 times with exponential backoff (10s, 60s, 300s). 
  *
  * The version of the OpenAPI document: 1.0.0
  * Contact: support@mailodds.com
@@ -35,26 +35,36 @@ namespace MailOdds.Model
         /// Initializes a new instance of the <see cref="Job" /> class.
         /// </summary>
         /// <param name="id">id</param>
+        /// <param name="name">Job name (from metadata or auto-generated)</param>
         /// <param name="status">status</param>
         /// <param name="totalCount">totalCount</param>
         /// <param name="processedCount">processedCount</param>
-        /// <param name="progressPercent">progressPercent</param>
-        /// <param name="summary">summary</param>
         /// <param name="createdAt">createdAt</param>
-        /// <param name="completedAt">completedAt</param>
-        /// <param name="metadata">metadata</param>
+        /// <param name="resultsExpireAt">When job results will be purged</param>
+        /// <param name="summary">summary</param>
+        /// <param name="startedAt">When processing began. Omitted if not yet started.</param>
+        /// <param name="completedAt">Omitted if not yet completed.</param>
+        /// <param name="metadata">Custom metadata attached at creation</param>
+        /// <param name="errorMessage">Error details. Present only for failed jobs.</param>
+        /// <param name="requestId">Request ID from the job creation request</param>
+        /// <param name="artifacts">artifacts</param>
         [JsonConstructor]
-        public Job(Option<string?> id = default, Option<StatusEnum?> status = default, Option<int?> totalCount = default, Option<int?> processedCount = default, Option<int?> progressPercent = default, Option<JobSummary?> summary = default, Option<DateTime?> createdAt = default, Option<DateTime?> completedAt = default, Option<Object?> metadata = default)
+        public Job(string id, string name, StatusEnum status, int totalCount, int processedCount, DateTime createdAt, DateTime resultsExpireAt, Option<JobSummary?> summary = default, Option<DateTime?> startedAt = default, Option<DateTime?> completedAt = default, Option<Object?> metadata = default, Option<string?> errorMessage = default, Option<string?> requestId = default, Option<JobArtifacts?> artifacts = default)
         {
-            IdOption = id;
-            StatusOption = status;
-            TotalCountOption = totalCount;
-            ProcessedCountOption = processedCount;
-            ProgressPercentOption = progressPercent;
+            Id = id;
+            Name = name;
+            Status = status;
+            TotalCount = totalCount;
+            ProcessedCount = processedCount;
+            CreatedAt = createdAt;
+            ResultsExpireAt = resultsExpireAt;
             SummaryOption = summary;
-            CreatedAtOption = createdAt;
+            StartedAtOption = startedAt;
             CompletedAtOption = completedAt;
             MetadataOption = metadata;
+            ErrorMessageOption = errorMessage;
+            RequestIdOption = requestId;
+            ArtifactsOption = artifacts;
             OnCreated();
         }
 
@@ -148,7 +158,7 @@ namespace MailOdds.Model
         /// <param name="value"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public static string StatusEnumToJsonValue(StatusEnum? value)
+        public static string StatusEnumToJsonValue(StatusEnum value)
         {
             if (value == StatusEnum.Pending)
                 return "pending";
@@ -169,70 +179,49 @@ namespace MailOdds.Model
         }
 
         /// <summary>
-        /// Used to track the state of Status
-        /// </summary>
-        [JsonIgnore]
-        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<StatusEnum?> StatusOption { get; private set; }
-
-        /// <summary>
         /// Gets or Sets Status
         /// </summary>
         [JsonPropertyName("status")]
-        public StatusEnum? Status { get { return this.StatusOption; } set { this.StatusOption = new(value); } }
-
-        /// <summary>
-        /// Used to track the state of Id
-        /// </summary>
-        [JsonIgnore]
-        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<string?> IdOption { get; private set; }
+        public StatusEnum Status { get; set; }
 
         /// <summary>
         /// Gets or Sets Id
         /// </summary>
         /* <example>job_abc123xyz</example> */
         [JsonPropertyName("id")]
-        public string? Id { get { return this.IdOption; } set { this.IdOption = new(value); } }
+        public string Id { get; set; }
 
         /// <summary>
-        /// Used to track the state of TotalCount
+        /// Job name (from metadata or auto-generated)
         /// </summary>
-        [JsonIgnore]
-        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> TotalCountOption { get; private set; }
+        /// <value>Job name (from metadata or auto-generated)</value>
+        [JsonPropertyName("name")]
+        public string Name { get; set; }
 
         /// <summary>
         /// Gets or Sets TotalCount
         /// </summary>
         [JsonPropertyName("total_count")]
-        public int? TotalCount { get { return this.TotalCountOption; } set { this.TotalCountOption = new(value); } }
-
-        /// <summary>
-        /// Used to track the state of ProcessedCount
-        /// </summary>
-        [JsonIgnore]
-        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> ProcessedCountOption { get; private set; }
+        public int TotalCount { get; set; }
 
         /// <summary>
         /// Gets or Sets ProcessedCount
         /// </summary>
         [JsonPropertyName("processed_count")]
-        public int? ProcessedCount { get { return this.ProcessedCountOption; } set { this.ProcessedCountOption = new(value); } }
+        public int ProcessedCount { get; set; }
 
         /// <summary>
-        /// Used to track the state of ProgressPercent
+        /// Gets or Sets CreatedAt
         /// </summary>
-        [JsonIgnore]
-        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> ProgressPercentOption { get; private set; }
+        [JsonPropertyName("created_at")]
+        public DateTime CreatedAt { get; set; }
 
         /// <summary>
-        /// Gets or Sets ProgressPercent
+        /// When job results will be purged
         /// </summary>
-        [JsonPropertyName("progress_percent")]
-        public int? ProgressPercent { get { return this.ProgressPercentOption; } set { this.ProgressPercentOption = new(value); } }
+        /// <value>When job results will be purged</value>
+        [JsonPropertyName("results_expire_at")]
+        public DateTime ResultsExpireAt { get; set; }
 
         /// <summary>
         /// Used to track the state of Summary
@@ -248,17 +237,18 @@ namespace MailOdds.Model
         public JobSummary? Summary { get { return this.SummaryOption; } set { this.SummaryOption = new(value); } }
 
         /// <summary>
-        /// Used to track the state of CreatedAt
+        /// Used to track the state of StartedAt
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<DateTime?> CreatedAtOption { get; private set; }
+        public Option<DateTime?> StartedAtOption { get; private set; }
 
         /// <summary>
-        /// Gets or Sets CreatedAt
+        /// When processing began. Omitted if not yet started.
         /// </summary>
-        [JsonPropertyName("created_at")]
-        public DateTime? CreatedAt { get { return this.CreatedAtOption; } set { this.CreatedAtOption = new(value); } }
+        /// <value>When processing began. Omitted if not yet started.</value>
+        [JsonPropertyName("started_at")]
+        public DateTime? StartedAt { get { return this.StartedAtOption; } set { this.StartedAtOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of CompletedAt
@@ -268,8 +258,9 @@ namespace MailOdds.Model
         public Option<DateTime?> CompletedAtOption { get; private set; }
 
         /// <summary>
-        /// Gets or Sets CompletedAt
+        /// Omitted if not yet completed.
         /// </summary>
+        /// <value>Omitted if not yet completed.</value>
         [JsonPropertyName("completed_at")]
         public DateTime? CompletedAt { get { return this.CompletedAtOption; } set { this.CompletedAtOption = new(value); } }
 
@@ -281,10 +272,52 @@ namespace MailOdds.Model
         public Option<Object?> MetadataOption { get; private set; }
 
         /// <summary>
-        /// Gets or Sets Metadata
+        /// Custom metadata attached at creation
         /// </summary>
+        /// <value>Custom metadata attached at creation</value>
         [JsonPropertyName("metadata")]
         public Object? Metadata { get { return this.MetadataOption; } set { this.MetadataOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of ErrorMessage
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> ErrorMessageOption { get; private set; }
+
+        /// <summary>
+        /// Error details. Present only for failed jobs.
+        /// </summary>
+        /// <value>Error details. Present only for failed jobs.</value>
+        [JsonPropertyName("error_message")]
+        public string? ErrorMessage { get { return this.ErrorMessageOption; } set { this.ErrorMessageOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of RequestId
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> RequestIdOption { get; private set; }
+
+        /// <summary>
+        /// Request ID from the job creation request
+        /// </summary>
+        /// <value>Request ID from the job creation request</value>
+        [JsonPropertyName("request_id")]
+        public string? RequestId { get { return this.RequestIdOption; } set { this.RequestIdOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of Artifacts
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<JobArtifacts?> ArtifactsOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets Artifacts
+        /// </summary>
+        [JsonPropertyName("artifacts")]
+        public JobArtifacts? Artifacts { get { return this.ArtifactsOption; } set { this.ArtifactsOption = new(value); } }
 
         /// <summary>
         /// Returns the string presentation of the object
@@ -295,14 +328,19 @@ namespace MailOdds.Model
             StringBuilder sb = new StringBuilder();
             sb.Append("class Job {\n");
             sb.Append("  Id: ").Append(Id).Append("\n");
+            sb.Append("  Name: ").Append(Name).Append("\n");
             sb.Append("  Status: ").Append(Status).Append("\n");
             sb.Append("  TotalCount: ").Append(TotalCount).Append("\n");
             sb.Append("  ProcessedCount: ").Append(ProcessedCount).Append("\n");
-            sb.Append("  ProgressPercent: ").Append(ProgressPercent).Append("\n");
-            sb.Append("  Summary: ").Append(Summary).Append("\n");
             sb.Append("  CreatedAt: ").Append(CreatedAt).Append("\n");
+            sb.Append("  ResultsExpireAt: ").Append(ResultsExpireAt).Append("\n");
+            sb.Append("  Summary: ").Append(Summary).Append("\n");
+            sb.Append("  StartedAt: ").Append(StartedAt).Append("\n");
             sb.Append("  CompletedAt: ").Append(CompletedAt).Append("\n");
             sb.Append("  Metadata: ").Append(Metadata).Append("\n");
+            sb.Append("  ErrorMessage: ").Append(ErrorMessage).Append("\n");
+            sb.Append("  RequestId: ").Append(RequestId).Append("\n");
+            sb.Append("  Artifacts: ").Append(Artifacts).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -312,20 +350,8 @@ namespace MailOdds.Model
         /// </summary>
         /// <param name="validationContext">Validation context</param>
         /// <returns>Validation Result</returns>
-        IEnumerable<System.ComponentModel.DataAnnotations.ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
+        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
         {
-            // ProgressPercent (int) maximum
-            if (this.ProgressPercentOption.IsSet && this.ProgressPercentOption.Value > (int)100)
-            {
-                yield return new System.ComponentModel.DataAnnotations.ValidationResult("Invalid value for ProgressPercent, must be a value less than or equal to 100.", new [] { "ProgressPercent" });
-            }
-
-            // ProgressPercent (int) minimum
-            if (this.ProgressPercentOption.IsSet && this.ProgressPercentOption.Value < (int)0)
-            {
-                yield return new System.ComponentModel.DataAnnotations.ValidationResult("Invalid value for ProgressPercent, must be a value greater than or equal to 0.", new [] { "ProgressPercent" });
-            }
-
             yield break;
         }
     }
@@ -339,6 +365,16 @@ namespace MailOdds.Model
         /// The format to use to serialize CreatedAt
         /// </summary>
         public static string CreatedAtFormat { get; set; } = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffffK";
+
+        /// <summary>
+        /// The format to use to serialize ResultsExpireAt
+        /// </summary>
+        public static string ResultsExpireAtFormat { get; set; } = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffffK";
+
+        /// <summary>
+        /// The format to use to serialize StartedAt
+        /// </summary>
+        public static string StartedAtFormat { get; set; } = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffffK";
 
         /// <summary>
         /// The format to use to serialize CompletedAt
@@ -363,14 +399,19 @@ namespace MailOdds.Model
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
             Option<string?> id = default;
+            Option<string?> name = default;
             Option<Job.StatusEnum?> status = default;
             Option<int?> totalCount = default;
             Option<int?> processedCount = default;
-            Option<int?> progressPercent = default;
-            Option<JobSummary?> summary = default;
             Option<DateTime?> createdAt = default;
+            Option<DateTime?> resultsExpireAt = default;
+            Option<JobSummary?> summary = default;
+            Option<DateTime?> startedAt = default;
             Option<DateTime?> completedAt = default;
             Option<Object?> metadata = default;
+            Option<string?> errorMessage = default;
+            Option<string?> requestId = default;
+            Option<JobArtifacts?> artifacts = default;
 
             while (utf8JsonReader.Read())
             {
@@ -390,6 +431,9 @@ namespace MailOdds.Model
                         case "id":
                             id = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
+                        case "name":
+                            name = new Option<string?>(utf8JsonReader.GetString()!);
+                            break;
                         case "status":
                             string? statusRawValue = utf8JsonReader.GetString();
                             if (statusRawValue != null)
@@ -401,14 +445,17 @@ namespace MailOdds.Model
                         case "processed_count":
                             processedCount = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
                             break;
-                        case "progress_percent":
-                            progressPercent = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
+                        case "created_at":
+                            createdAt = new Option<DateTime?>(JsonSerializer.Deserialize<DateTime>(ref utf8JsonReader, jsonSerializerOptions));
+                            break;
+                        case "results_expire_at":
+                            resultsExpireAt = new Option<DateTime?>(JsonSerializer.Deserialize<DateTime>(ref utf8JsonReader, jsonSerializerOptions));
                             break;
                         case "summary":
                             summary = new Option<JobSummary?>(JsonSerializer.Deserialize<JobSummary>(ref utf8JsonReader, jsonSerializerOptions)!);
                             break;
-                        case "created_at":
-                            createdAt = new Option<DateTime?>(JsonSerializer.Deserialize<DateTime>(ref utf8JsonReader, jsonSerializerOptions));
+                        case "started_at":
+                            startedAt = new Option<DateTime?>(JsonSerializer.Deserialize<DateTime>(ref utf8JsonReader, jsonSerializerOptions));
                             break;
                         case "completed_at":
                             completedAt = new Option<DateTime?>(JsonSerializer.Deserialize<DateTime>(ref utf8JsonReader, jsonSerializerOptions));
@@ -416,14 +463,47 @@ namespace MailOdds.Model
                         case "metadata":
                             metadata = new Option<Object?>(JsonSerializer.Deserialize<Object>(ref utf8JsonReader, jsonSerializerOptions)!);
                             break;
+                        case "error_message":
+                            errorMessage = new Option<string?>(utf8JsonReader.GetString()!);
+                            break;
+                        case "request_id":
+                            requestId = new Option<string?>(utf8JsonReader.GetString()!);
+                            break;
+                        case "artifacts":
+                            artifacts = new Option<JobArtifacts?>(JsonSerializer.Deserialize<JobArtifacts>(ref utf8JsonReader, jsonSerializerOptions)!);
+                            break;
                         default:
                             break;
                     }
                 }
             }
 
+            if (!id.IsSet)
+                throw new ArgumentException("Property is required for class Job.", nameof(id));
+
+            if (!name.IsSet)
+                throw new ArgumentException("Property is required for class Job.", nameof(name));
+
+            if (!status.IsSet)
+                throw new ArgumentException("Property is required for class Job.", nameof(status));
+
+            if (!totalCount.IsSet)
+                throw new ArgumentException("Property is required for class Job.", nameof(totalCount));
+
+            if (!processedCount.IsSet)
+                throw new ArgumentException("Property is required for class Job.", nameof(processedCount));
+
+            if (!createdAt.IsSet)
+                throw new ArgumentException("Property is required for class Job.", nameof(createdAt));
+
+            if (!resultsExpireAt.IsSet)
+                throw new ArgumentException("Property is required for class Job.", nameof(resultsExpireAt));
+
             if (id.IsSet && id.Value == null)
                 throw new ArgumentNullException(nameof(id), "Property is not nullable for class Job.");
+
+            if (name.IsSet && name.Value == null)
+                throw new ArgumentNullException(nameof(name), "Property is not nullable for class Job.");
 
             if (status.IsSet && status.Value == null)
                 throw new ArgumentNullException(nameof(status), "Property is not nullable for class Job.");
@@ -434,14 +514,17 @@ namespace MailOdds.Model
             if (processedCount.IsSet && processedCount.Value == null)
                 throw new ArgumentNullException(nameof(processedCount), "Property is not nullable for class Job.");
 
-            if (progressPercent.IsSet && progressPercent.Value == null)
-                throw new ArgumentNullException(nameof(progressPercent), "Property is not nullable for class Job.");
+            if (createdAt.IsSet && createdAt.Value == null)
+                throw new ArgumentNullException(nameof(createdAt), "Property is not nullable for class Job.");
+
+            if (resultsExpireAt.IsSet && resultsExpireAt.Value == null)
+                throw new ArgumentNullException(nameof(resultsExpireAt), "Property is not nullable for class Job.");
 
             if (summary.IsSet && summary.Value == null)
                 throw new ArgumentNullException(nameof(summary), "Property is not nullable for class Job.");
 
-            if (createdAt.IsSet && createdAt.Value == null)
-                throw new ArgumentNullException(nameof(createdAt), "Property is not nullable for class Job.");
+            if (startedAt.IsSet && startedAt.Value == null)
+                throw new ArgumentNullException(nameof(startedAt), "Property is not nullable for class Job.");
 
             if (completedAt.IsSet && completedAt.Value == null)
                 throw new ArgumentNullException(nameof(completedAt), "Property is not nullable for class Job.");
@@ -449,7 +532,16 @@ namespace MailOdds.Model
             if (metadata.IsSet && metadata.Value == null)
                 throw new ArgumentNullException(nameof(metadata), "Property is not nullable for class Job.");
 
-            return new Job(id, status, totalCount, processedCount, progressPercent, summary, createdAt, completedAt, metadata);
+            if (errorMessage.IsSet && errorMessage.Value == null)
+                throw new ArgumentNullException(nameof(errorMessage), "Property is not nullable for class Job.");
+
+            if (requestId.IsSet && requestId.Value == null)
+                throw new ArgumentNullException(nameof(requestId), "Property is not nullable for class Job.");
+
+            if (artifacts.IsSet && artifacts.Value == null)
+                throw new ArgumentNullException(nameof(artifacts), "Property is not nullable for class Job.");
+
+            return new Job(id.Value!, name.Value!, status.Value!.Value!, totalCount.Value!.Value!, processedCount.Value!.Value!, createdAt.Value!.Value!, resultsExpireAt.Value!.Value!, summary, startedAt, completedAt, metadata, errorMessage, requestId, artifacts);
         }
 
         /// <summary>
@@ -476,8 +568,11 @@ namespace MailOdds.Model
         /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, Job job, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (job.IdOption.IsSet && job.Id == null)
+            if (job.Id == null)
                 throw new ArgumentNullException(nameof(job.Id), "Property is required for class Job.");
+
+            if (job.Name == null)
+                throw new ArgumentNullException(nameof(job.Name), "Property is required for class Job.");
 
             if (job.SummaryOption.IsSet && job.Summary == null)
                 throw new ArgumentNullException(nameof(job.Summary), "Property is required for class Job.");
@@ -485,27 +580,36 @@ namespace MailOdds.Model
             if (job.MetadataOption.IsSet && job.Metadata == null)
                 throw new ArgumentNullException(nameof(job.Metadata), "Property is required for class Job.");
 
-            if (job.IdOption.IsSet)
-                writer.WriteString("id", job.Id);
+            if (job.ErrorMessageOption.IsSet && job.ErrorMessage == null)
+                throw new ArgumentNullException(nameof(job.ErrorMessage), "Property is required for class Job.");
 
-            var statusRawValue = Job.StatusEnumToJsonValue(job.StatusOption.Value!.Value);
+            if (job.RequestIdOption.IsSet && job.RequestId == null)
+                throw new ArgumentNullException(nameof(job.RequestId), "Property is required for class Job.");
+
+            if (job.ArtifactsOption.IsSet && job.Artifacts == null)
+                throw new ArgumentNullException(nameof(job.Artifacts), "Property is required for class Job.");
+
+            writer.WriteString("id", job.Id);
+
+            writer.WriteString("name", job.Name);
+
+            var statusRawValue = Job.StatusEnumToJsonValue(job.Status);
             writer.WriteString("status", statusRawValue);
-            if (job.TotalCountOption.IsSet)
-                writer.WriteNumber("total_count", job.TotalCountOption.Value!.Value);
+            writer.WriteNumber("total_count", job.TotalCount);
 
-            if (job.ProcessedCountOption.IsSet)
-                writer.WriteNumber("processed_count", job.ProcessedCountOption.Value!.Value);
+            writer.WriteNumber("processed_count", job.ProcessedCount);
 
-            if (job.ProgressPercentOption.IsSet)
-                writer.WriteNumber("progress_percent", job.ProgressPercentOption.Value!.Value);
+            writer.WriteString("created_at", job.CreatedAt.ToString(CreatedAtFormat));
+
+            writer.WriteString("results_expire_at", job.ResultsExpireAt.ToString(ResultsExpireAtFormat));
 
             if (job.SummaryOption.IsSet)
             {
                 writer.WritePropertyName("summary");
                 JsonSerializer.Serialize(writer, job.Summary, jsonSerializerOptions);
             }
-            if (job.CreatedAtOption.IsSet)
-                writer.WriteString("created_at", job.CreatedAtOption.Value!.Value.ToString(CreatedAtFormat));
+            if (job.StartedAtOption.IsSet)
+                writer.WriteString("started_at", job.StartedAtOption.Value!.Value.ToString(StartedAtFormat));
 
             if (job.CompletedAtOption.IsSet)
                 writer.WriteString("completed_at", job.CompletedAtOption.Value!.Value.ToString(CompletedAtFormat));
@@ -514,6 +618,17 @@ namespace MailOdds.Model
             {
                 writer.WritePropertyName("metadata");
                 JsonSerializer.Serialize(writer, job.Metadata, jsonSerializerOptions);
+            }
+            if (job.ErrorMessageOption.IsSet)
+                writer.WriteString("error_message", job.ErrorMessage);
+
+            if (job.RequestIdOption.IsSet)
+                writer.WriteString("request_id", job.RequestId);
+
+            if (job.ArtifactsOption.IsSet)
+            {
+                writer.WritePropertyName("artifacts");
+                JsonSerializer.Serialize(writer, job.Artifacts, jsonSerializerOptions);
             }
         }
     }

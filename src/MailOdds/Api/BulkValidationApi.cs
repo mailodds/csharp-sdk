@@ -2,7 +2,7 @@
 /*
  * MailOdds Email Validation API
  *
- * MailOdds provides email validation services to help maintain clean email lists  and improve deliverability. The API performs multiple validation checks including  format verification, domain validation, MX record checking, and disposable email detection.  ## Authentication  All API requests require authentication using a Bearer token. Include your API key  in the Authorization header:  ``` Authorization: Bearer YOUR_API_KEY ```  API keys can be created in the MailOdds dashboard.  ## Rate Limits  Rate limits vary by plan: - Free: 10 requests/minute - Starter: 60 requests/minute   - Pro: 300 requests/minute - Business: 1000 requests/minute - Enterprise: Custom limits  ## Response Format  All responses include: - `schema_version`: API schema version (currently \"1.0\") - `request_id`: Unique request identifier for debugging  Error responses include: - `error`: Machine-readable error code - `message`: Human-readable error description 
+ * MailOdds provides email validation services to help maintain clean email lists  and improve deliverability. The API performs multiple validation checks including  format verification, domain validation, MX record checking, and disposable email detection.  ## Authentication  All API requests require authentication using a Bearer token. Include your API key  in the Authorization header:  ``` Authorization: Bearer YOUR_API_KEY ```  API keys can be created in the MailOdds dashboard.  ## Rate Limits  Rate limits vary by plan: - Free: 10 requests/minute - Starter: 60 requests/minute   - Pro: 300 requests/minute - Business: 1000 requests/minute - Enterprise: Custom limits  ## Response Format  All responses include: - `schema_version`: API schema version (currently \"1.0\") - `request_id`: Unique request identifier for debugging  Error responses include: - `error`: Machine-readable error code - `message`: Human-readable error description  ## Webhooks  MailOdds can send webhook notifications for job completion and email delivery events. Configure webhooks in the dashboard or per-job via the `webhook_url` field.  ### Event Types  | Event | Description | |- -- -- --|- -- -- -- -- -- --| | `job.completed` | Validation job finished processing | | `job.failed` | Validation job failed | | `message.queued` | Email queued for delivery | | `message.delivered` | Email delivered to recipient | | `message.bounced` | Email bounced | | `message.deferred` | Email delivery deferred | | `message.failed` | Email delivery failed | | `message.opened` | Recipient opened the email | | `message.clicked` | Recipient clicked a link |  ### Payload Format  ```json {   \"event\": \"job.completed\",   \"job\": { ... },   \"timestamp\": \"2026-01-15T10:30:00Z\" } ```  ### Webhook Signing  If a webhook secret is configured, each request includes an `X-MailOdds-Signature` header containing an HMAC-SHA256 hex digest of the request body.  **Verification pseudocode:** ``` expected = HMAC-SHA256(webhook_secret, request_body) valid = constant_time_compare(request.headers[\"X-MailOdds-Signature\"], hex(expected)) ```  The payload is serialized with compact JSON (no extra whitespace, sorted keys) before signing.  ### Headers  All webhook requests include: - `Content-Type: application/json` - `User-Agent: MailOdds-Webhook/1.0` - `X-MailOdds-Event: {event_type}` - `X-Request-Id: {uuid}` - `X-MailOdds-Signature: {hmac}` (when secret is configured)  ### Retry Policy  Failed deliveries (non-2xx response or timeout) are retried up to 3 times with exponential backoff (10s, 60s, 300s). 
  *
  * The version of the OpenAPI document: 1.0.0
  * Contact: support@mailodds.com
@@ -239,12 +239,12 @@ namespace MailOdds.Api
         /// List all validation jobs for the authenticated account.
         /// </remarks>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
-        /// <param name="page"> (optional, default to 1)</param>
-        /// <param name="perPage"> (optional, default to 20)</param>
+        /// <param name="cursor">Pagination cursor (ISO timestamp from previous response) (optional)</param>
+        /// <param name="limit">Results per page (optional, default to 50)</param>
         /// <param name="status"> (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IListJobsApiResponse"/>&gt;</returns>
-        Task<IListJobsApiResponse> ListJobsAsync(Option<int> page = default, Option<int> perPage = default, Option<string> status = default, System.Threading.CancellationToken cancellationToken = default);
+        Task<IListJobsApiResponse> ListJobsAsync(Option<string> cursor = default, Option<int> limit = default, Option<string> status = default, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// List validation jobs
@@ -252,12 +252,12 @@ namespace MailOdds.Api
         /// <remarks>
         /// List all validation jobs for the authenticated account.
         /// </remarks>
-        /// <param name="page"> (optional, default to 1)</param>
-        /// <param name="perPage"> (optional, default to 20)</param>
+        /// <param name="cursor">Pagination cursor (ISO timestamp from previous response) (optional)</param>
+        /// <param name="limit">Results per page (optional, default to 50)</param>
         /// <param name="status"> (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IListJobsApiResponse"/>?&gt;</returns>
-        Task<IListJobsApiResponse?> ListJobsOrDefaultAsync(Option<int> page = default, Option<int> perPage = default, Option<string> status = default, System.Threading.CancellationToken cancellationToken = default);
+        Task<IListJobsApiResponse?> ListJobsOrDefaultAsync(Option<string> cursor = default, Option<int> limit = default, Option<string> status = default, System.Threading.CancellationToken cancellationToken = default);
     }
 
     /// <summary>
@@ -3503,15 +3503,19 @@ namespace MailOdds.Api
             partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
         }
 
-        partial void FormatListJobs(ref Option<int> page, ref Option<int> perPage, ref Option<string> status);
+        partial void FormatListJobs(ref Option<string> cursor, ref Option<int> limit, ref Option<string> status);
 
         /// <summary>
         /// Validates the request parameters
         /// </summary>
+        /// <param name="cursor"></param>
         /// <param name="status"></param>
         /// <returns></returns>
-        private void ValidateListJobs(Option<string> status)
+        private void ValidateListJobs(Option<string> cursor, Option<string> status)
         {
+            if (cursor.IsSet && cursor.Value == null)
+                throw new ArgumentNullException(nameof(cursor));
+
             if (status.IsSet && status.Value == null)
                 throw new ArgumentNullException(nameof(status));
         }
@@ -3520,13 +3524,13 @@ namespace MailOdds.Api
         /// Processes the server response
         /// </summary>
         /// <param name="apiResponseLocalVar"></param>
-        /// <param name="page"></param>
-        /// <param name="perPage"></param>
+        /// <param name="cursor"></param>
+        /// <param name="limit"></param>
         /// <param name="status"></param>
-        private void AfterListJobsDefaultImplementation(IListJobsApiResponse apiResponseLocalVar, Option<int> page, Option<int> perPage, Option<string> status)
+        private void AfterListJobsDefaultImplementation(IListJobsApiResponse apiResponseLocalVar, Option<string> cursor, Option<int> limit, Option<string> status)
         {
             bool suppressDefaultLog = false;
-            AfterListJobs(ref suppressDefaultLog, apiResponseLocalVar, page, perPage, status);
+            AfterListJobs(ref suppressDefaultLog, apiResponseLocalVar, cursor, limit, status);
             if (!suppressDefaultLog)
                 Logger.LogInformation("{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
         }
@@ -3536,10 +3540,10 @@ namespace MailOdds.Api
         /// </summary>
         /// <param name="suppressDefaultLog"></param>
         /// <param name="apiResponseLocalVar"></param>
-        /// <param name="page"></param>
-        /// <param name="perPage"></param>
+        /// <param name="cursor"></param>
+        /// <param name="limit"></param>
         /// <param name="status"></param>
-        partial void AfterListJobs(ref bool suppressDefaultLog, IListJobsApiResponse apiResponseLocalVar, Option<int> page, Option<int> perPage, Option<string> status);
+        partial void AfterListJobs(ref bool suppressDefaultLog, IListJobsApiResponse apiResponseLocalVar, Option<string> cursor, Option<int> limit, Option<string> status);
 
         /// <summary>
         /// Logs exceptions that occur while retrieving the server response
@@ -3547,13 +3551,13 @@ namespace MailOdds.Api
         /// <param name="exceptionLocalVar"></param>
         /// <param name="pathFormatLocalVar"></param>
         /// <param name="pathLocalVar"></param>
-        /// <param name="page"></param>
-        /// <param name="perPage"></param>
+        /// <param name="cursor"></param>
+        /// <param name="limit"></param>
         /// <param name="status"></param>
-        private void OnErrorListJobsDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, Option<int> page, Option<int> perPage, Option<string> status)
+        private void OnErrorListJobsDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, Option<string> cursor, Option<int> limit, Option<string> status)
         {
             bool suppressDefaultLogLocalVar = false;
-            OnErrorListJobs(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, page, perPage, status);
+            OnErrorListJobs(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, cursor, limit, status);
             if (!suppressDefaultLogLocalVar)
                 Logger.LogError(exceptionLocalVar, "An error occurred while sending the request to the server.");
         }
@@ -3565,24 +3569,24 @@ namespace MailOdds.Api
         /// <param name="exceptionLocalVar"></param>
         /// <param name="pathFormatLocalVar"></param>
         /// <param name="pathLocalVar"></param>
-        /// <param name="page"></param>
-        /// <param name="perPage"></param>
+        /// <param name="cursor"></param>
+        /// <param name="limit"></param>
         /// <param name="status"></param>
-        partial void OnErrorListJobs(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, Option<int> page, Option<int> perPage, Option<string> status);
+        partial void OnErrorListJobs(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, Option<string> cursor, Option<int> limit, Option<string> status);
 
         /// <summary>
         /// List validation jobs List all validation jobs for the authenticated account.
         /// </summary>
-        /// <param name="page"> (optional, default to 1)</param>
-        /// <param name="perPage"> (optional, default to 20)</param>
+        /// <param name="cursor">Pagination cursor (ISO timestamp from previous response) (optional)</param>
+        /// <param name="limit">Results per page (optional, default to 50)</param>
         /// <param name="status"> (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IListJobsApiResponse"/>&gt;</returns>
-        public async Task<IListJobsApiResponse?> ListJobsOrDefaultAsync(Option<int> page = default, Option<int> perPage = default, Option<string> status = default, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IListJobsApiResponse?> ListJobsOrDefaultAsync(Option<string> cursor = default, Option<int> limit = default, Option<string> status = default, System.Threading.CancellationToken cancellationToken = default)
         {
             try
             {
-                return await ListJobsAsync(page, perPage, status, cancellationToken).ConfigureAwait(false);
+                return await ListJobsAsync(cursor, limit, status, cancellationToken).ConfigureAwait(false);
             }
             catch (Exception)
             {
@@ -3594,20 +3598,20 @@ namespace MailOdds.Api
         /// List validation jobs List all validation jobs for the authenticated account.
         /// </summary>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
-        /// <param name="page"> (optional, default to 1)</param>
-        /// <param name="perPage"> (optional, default to 20)</param>
+        /// <param name="cursor">Pagination cursor (ISO timestamp from previous response) (optional)</param>
+        /// <param name="limit">Results per page (optional, default to 50)</param>
         /// <param name="status"> (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IListJobsApiResponse"/>&gt;</returns>
-        public async Task<IListJobsApiResponse> ListJobsAsync(Option<int> page = default, Option<int> perPage = default, Option<string> status = default, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IListJobsApiResponse> ListJobsAsync(Option<string> cursor = default, Option<int> limit = default, Option<string> status = default, System.Threading.CancellationToken cancellationToken = default)
         {
             UriBuilder uriBuilderLocalVar = new UriBuilder();
 
             try
             {
-                ValidateListJobs(status);
+                ValidateListJobs(cursor, status);
 
-                FormatListJobs(ref page, ref perPage, ref status);
+                FormatListJobs(ref cursor, ref limit, ref status);
 
                 using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
                 {
@@ -3620,11 +3624,11 @@ namespace MailOdds.Api
 
                     System.Collections.Specialized.NameValueCollection parseQueryStringLocalVar = System.Web.HttpUtility.ParseQueryString(string.Empty);
 
-                    if (page.IsSet)
-                        parseQueryStringLocalVar["page"] = ClientUtils.ParameterToString(page.Value);
+                    if (cursor.IsSet)
+                        parseQueryStringLocalVar["cursor"] = ClientUtils.ParameterToString(cursor.Value);
 
-                    if (perPage.IsSet)
-                        parseQueryStringLocalVar["per_page"] = ClientUtils.ParameterToString(perPage.Value);
+                    if (limit.IsSet)
+                        parseQueryStringLocalVar["limit"] = ClientUtils.ParameterToString(limit.Value);
 
                     if (status.IsSet)
                         parseQueryStringLocalVar["status"] = ClientUtils.ParameterToString(status.Value);
@@ -3667,7 +3671,7 @@ namespace MailOdds.Api
                             }
                         }
 
-                        AfterListJobsDefaultImplementation(apiResponseLocalVar, page, perPage, status);
+                        AfterListJobsDefaultImplementation(apiResponseLocalVar, cursor, limit, status);
 
                         Events.ExecuteOnListJobs(apiResponseLocalVar);
 
@@ -3681,7 +3685,7 @@ namespace MailOdds.Api
             }
             catch(Exception e)
             {
-                OnErrorListJobsDefaultImplementation(e, "/v1/jobs", uriBuilderLocalVar.Path, page, perPage, status);
+                OnErrorListJobsDefaultImplementation(e, "/v1/jobs", uriBuilderLocalVar.Path, cursor, limit, status);
                 Events.ExecuteOnErrorListJobs(e);
                 throw;
             }

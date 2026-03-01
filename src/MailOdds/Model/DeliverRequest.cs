@@ -2,7 +2,7 @@
 /*
  * MailOdds Email Validation API
  *
- * MailOdds provides email validation services to help maintain clean email lists  and improve deliverability. The API performs multiple validation checks including  format verification, domain validation, MX record checking, and disposable email detection.  ## Authentication  All API requests require authentication using a Bearer token. Include your API key  in the Authorization header:  ``` Authorization: Bearer YOUR_API_KEY ```  API keys can be created in the MailOdds dashboard.  ## Rate Limits  Rate limits vary by plan: - Free: 10 requests/minute - Starter: 60 requests/minute   - Pro: 300 requests/minute - Business: 1000 requests/minute - Enterprise: Custom limits  ## Response Format  All responses include: - `schema_version`: API schema version (currently \"1.0\") - `request_id`: Unique request identifier for debugging  Error responses include: - `error`: Machine-readable error code - `message`: Human-readable error description 
+ * MailOdds provides email validation services to help maintain clean email lists  and improve deliverability. The API performs multiple validation checks including  format verification, domain validation, MX record checking, and disposable email detection.  ## Authentication  All API requests require authentication using a Bearer token. Include your API key  in the Authorization header:  ``` Authorization: Bearer YOUR_API_KEY ```  API keys can be created in the MailOdds dashboard.  ## Rate Limits  Rate limits vary by plan: - Free: 10 requests/minute - Starter: 60 requests/minute   - Pro: 300 requests/minute - Business: 1000 requests/minute - Enterprise: Custom limits  ## Response Format  All responses include: - `schema_version`: API schema version (currently \"1.0\") - `request_id`: Unique request identifier for debugging  Error responses include: - `error`: Machine-readable error code - `message`: Human-readable error description  ## Webhooks  MailOdds can send webhook notifications for job completion and email delivery events. Configure webhooks in the dashboard or per-job via the `webhook_url` field.  ### Event Types  | Event | Description | |- -- -- --|- -- -- -- -- -- --| | `job.completed` | Validation job finished processing | | `job.failed` | Validation job failed | | `message.queued` | Email queued for delivery | | `message.delivered` | Email delivered to recipient | | `message.bounced` | Email bounced | | `message.deferred` | Email delivery deferred | | `message.failed` | Email delivery failed | | `message.opened` | Recipient opened the email | | `message.clicked` | Recipient clicked a link |  ### Payload Format  ```json {   \"event\": \"job.completed\",   \"job\": { ... },   \"timestamp\": \"2026-01-15T10:30:00Z\" } ```  ### Webhook Signing  If a webhook secret is configured, each request includes an `X-MailOdds-Signature` header containing an HMAC-SHA256 hex digest of the request body.  **Verification pseudocode:** ``` expected = HMAC-SHA256(webhook_secret, request_body) valid = constant_time_compare(request.headers[\"X-MailOdds-Signature\"], hex(expected)) ```  The payload is serialized with compact JSON (no extra whitespace, sorted keys) before signing.  ### Headers  All webhook requests include: - `Content-Type: application/json` - `User-Agent: MailOdds-Webhook/1.0` - `X-MailOdds-Event: {event_type}` - `X-Request-Id: {uuid}` - `X-MailOdds-Signature: {hmac}` (when secret is configured)  ### Retry Policy  Failed deliveries (non-2xx response or timeout) are retried up to 3 times with exponential backoff (10s, 60s, 300s). 
  *
  * The version of the OpenAPI document: 1.0.0
  * Contact: support@mailodds.com
@@ -45,9 +45,12 @@ namespace MailOdds.Model
         /// <param name="tags">Tags for categorization</param>
         /// <param name="campaignType">Campaign type for JSON-LD auto-generation</param>
         /// <param name="structuredData">structuredData</param>
+        /// <param name="schemaData">Key-value pairs for campaign_type JSON-LD resolution (e.g., order_number, tracking_url)</param>
+        /// <param name="autoDetectSchema">Auto-detect JSON-LD structured data type from subject line (default to false)</param>
+        /// <param name="aiSummary">Hidden text summary for AI email assistants (max 500 characters)</param>
         /// <param name="options">options</param>
         [JsonConstructor]
-        public DeliverRequest(List<DeliverRequestToInner> to, string from, string subject, string domainId, Option<string?> html = default, Option<string?> text = default, Option<string?> replyTo = default, Option<Object?> headers = default, Option<List<string>?> tags = default, Option<CampaignTypeEnum?> campaignType = default, Option<DeliverRequestStructuredData?> structuredData = default, Option<DeliverRequestOptions?> options = default)
+        public DeliverRequest(List<DeliverRequestToInner> to, string from, string subject, string domainId, Option<string?> html = default, Option<string?> text = default, Option<string?> replyTo = default, Option<Object?> headers = default, Option<List<string>?> tags = default, Option<CampaignTypeEnum?> campaignType = default, Option<DeliverRequestStructuredData?> structuredData = default, Option<Dictionary<string, string>?> schemaData = default, Option<bool?> autoDetectSchema = default, Option<string?> aiSummary = default, Option<DeliverRequestOptions?> options = default)
         {
             To = to;
             From = from;
@@ -60,6 +63,9 @@ namespace MailOdds.Model
             TagsOption = tags;
             CampaignTypeOption = campaignType;
             StructuredDataOption = structuredData;
+            SchemaDataOption = schemaData;
+            AutoDetectSchemaOption = autoDetectSchema;
+            AiSummaryOption = aiSummary;
             OptionsOption = options;
             OnCreated();
         }
@@ -371,6 +377,48 @@ namespace MailOdds.Model
         public DeliverRequestStructuredData? StructuredData { get { return this.StructuredDataOption; } set { this.StructuredDataOption = new(value); } }
 
         /// <summary>
+        /// Used to track the state of SchemaData
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<Dictionary<string, string>?> SchemaDataOption { get; private set; }
+
+        /// <summary>
+        /// Key-value pairs for campaign_type JSON-LD resolution (e.g., order_number, tracking_url)
+        /// </summary>
+        /// <value>Key-value pairs for campaign_type JSON-LD resolution (e.g., order_number, tracking_url)</value>
+        [JsonPropertyName("schema_data")]
+        public Dictionary<string, string>? SchemaData { get { return this.SchemaDataOption; } set { this.SchemaDataOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of AutoDetectSchema
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<bool?> AutoDetectSchemaOption { get; private set; }
+
+        /// <summary>
+        /// Auto-detect JSON-LD structured data type from subject line
+        /// </summary>
+        /// <value>Auto-detect JSON-LD structured data type from subject line</value>
+        [JsonPropertyName("auto_detect_schema")]
+        public bool? AutoDetectSchema { get { return this.AutoDetectSchemaOption; } set { this.AutoDetectSchemaOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of AiSummary
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> AiSummaryOption { get; private set; }
+
+        /// <summary>
+        /// Hidden text summary for AI email assistants (max 500 characters)
+        /// </summary>
+        /// <value>Hidden text summary for AI email assistants (max 500 characters)</value>
+        [JsonPropertyName("ai_summary")]
+        public string? AiSummary { get { return this.AiSummaryOption; } set { this.AiSummaryOption = new(value); } }
+
+        /// <summary>
         /// Used to track the state of Options
         /// </summary>
         [JsonIgnore]
@@ -402,6 +450,9 @@ namespace MailOdds.Model
             sb.Append("  Tags: ").Append(Tags).Append("\n");
             sb.Append("  CampaignType: ").Append(CampaignType).Append("\n");
             sb.Append("  StructuredData: ").Append(StructuredData).Append("\n");
+            sb.Append("  SchemaData: ").Append(SchemaData).Append("\n");
+            sb.Append("  AutoDetectSchema: ").Append(AutoDetectSchema).Append("\n");
+            sb.Append("  AiSummary: ").Append(AiSummary).Append("\n");
             sb.Append("  Options: ").Append(Options).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
@@ -412,8 +463,14 @@ namespace MailOdds.Model
         /// </summary>
         /// <param name="validationContext">Validation context</param>
         /// <returns>Validation Result</returns>
-        IEnumerable<System.ComponentModel.DataAnnotations.ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
+        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
         {
+            // AiSummary (string) maxLength
+            if (this.AiSummary != null && this.AiSummary.Length > 500)
+            {
+                yield return new ValidationResult("Invalid value for AiSummary, length must be less than 500.", new [] { "AiSummary" });
+            }
+
             yield break;
         }
     }
@@ -451,6 +508,9 @@ namespace MailOdds.Model
             Option<List<string>?> tags = default;
             Option<DeliverRequest.CampaignTypeEnum?> campaignType = default;
             Option<DeliverRequestStructuredData?> structuredData = default;
+            Option<Dictionary<string, string>?> schemaData = default;
+            Option<bool?> autoDetectSchema = default;
+            Option<string?> aiSummary = default;
             Option<DeliverRequestOptions?> options = default;
 
             while (utf8JsonReader.Read())
@@ -502,6 +562,15 @@ namespace MailOdds.Model
                             break;
                         case "structured_data":
                             structuredData = new Option<DeliverRequestStructuredData?>(JsonSerializer.Deserialize<DeliverRequestStructuredData>(ref utf8JsonReader, jsonSerializerOptions)!);
+                            break;
+                        case "schema_data":
+                            schemaData = new Option<Dictionary<string, string>?>(JsonSerializer.Deserialize<Dictionary<string, string>>(ref utf8JsonReader, jsonSerializerOptions)!);
+                            break;
+                        case "auto_detect_schema":
+                            autoDetectSchema = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
+                            break;
+                        case "ai_summary":
+                            aiSummary = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         case "options":
                             options = new Option<DeliverRequestOptions?>(JsonSerializer.Deserialize<DeliverRequestOptions>(ref utf8JsonReader, jsonSerializerOptions)!);
@@ -557,10 +626,19 @@ namespace MailOdds.Model
             if (structuredData.IsSet && structuredData.Value == null)
                 throw new ArgumentNullException(nameof(structuredData), "Property is not nullable for class DeliverRequest.");
 
+            if (schemaData.IsSet && schemaData.Value == null)
+                throw new ArgumentNullException(nameof(schemaData), "Property is not nullable for class DeliverRequest.");
+
+            if (autoDetectSchema.IsSet && autoDetectSchema.Value == null)
+                throw new ArgumentNullException(nameof(autoDetectSchema), "Property is not nullable for class DeliverRequest.");
+
+            if (aiSummary.IsSet && aiSummary.Value == null)
+                throw new ArgumentNullException(nameof(aiSummary), "Property is not nullable for class DeliverRequest.");
+
             if (options.IsSet && options.Value == null)
                 throw new ArgumentNullException(nameof(options), "Property is not nullable for class DeliverRequest.");
 
-            return new DeliverRequest(to.Value!, from.Value!, subject.Value!, domainId.Value!, html, text, replyTo, headers, tags, campaignType, structuredData, options);
+            return new DeliverRequest(to.Value!, from.Value!, subject.Value!, domainId.Value!, html, text, replyTo, headers, tags, campaignType, structuredData, schemaData, autoDetectSchema, aiSummary, options);
         }
 
         /// <summary>
@@ -617,6 +695,12 @@ namespace MailOdds.Model
             if (deliverRequest.StructuredDataOption.IsSet && deliverRequest.StructuredData == null)
                 throw new ArgumentNullException(nameof(deliverRequest.StructuredData), "Property is required for class DeliverRequest.");
 
+            if (deliverRequest.SchemaDataOption.IsSet && deliverRequest.SchemaData == null)
+                throw new ArgumentNullException(nameof(deliverRequest.SchemaData), "Property is required for class DeliverRequest.");
+
+            if (deliverRequest.AiSummaryOption.IsSet && deliverRequest.AiSummary == null)
+                throw new ArgumentNullException(nameof(deliverRequest.AiSummary), "Property is required for class DeliverRequest.");
+
             if (deliverRequest.OptionsOption.IsSet && deliverRequest.Options == null)
                 throw new ArgumentNullException(nameof(deliverRequest.Options), "Property is required for class DeliverRequest.");
 
@@ -654,6 +738,17 @@ namespace MailOdds.Model
                 writer.WritePropertyName("structured_data");
                 JsonSerializer.Serialize(writer, deliverRequest.StructuredData, jsonSerializerOptions);
             }
+            if (deliverRequest.SchemaDataOption.IsSet)
+            {
+                writer.WritePropertyName("schema_data");
+                JsonSerializer.Serialize(writer, deliverRequest.SchemaData, jsonSerializerOptions);
+            }
+            if (deliverRequest.AutoDetectSchemaOption.IsSet)
+                writer.WriteBoolean("auto_detect_schema", deliverRequest.AutoDetectSchemaOption.Value!.Value);
+
+            if (deliverRequest.AiSummaryOption.IsSet)
+                writer.WriteString("ai_summary", deliverRequest.AiSummary);
+
             if (deliverRequest.OptionsOption.IsSet)
             {
                 writer.WritePropertyName("options");

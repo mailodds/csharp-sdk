@@ -21,7 +21,7 @@ Name | Type | Description | Notes
 **MxHost** | **string** | Primary MX hostname. Omitted when MX not resolved. | [optional] 
 **SmtpCheck** | **bool** | Whether SMTP verification passed. Omitted when SMTP not checked. | [optional] 
 **CatchAll** | **bool** | Whether domain is catch-all. Omitted when SMTP not checked. | [optional] 
-**SuggestedEmail** | **string** | Typo correction suggestion. Omitted when no typo detected. | [optional] 
+**SuggestedEmail** | **string** | Domain typo correction suggestion based on a static lookup table of common misspellings (e.g. gmial.com -&gt; gmail.com). Not validated via SMTP. Omitted when no match found. | [optional] 
 **RetryAfterMs** | **int** | Suggested retry delay in milliseconds. Present only for retry_later action. | [optional] 
 **HasSpf** | **bool** | Whether the domain has an SPF record. Omitted for standard depth. | [optional] 
 **HasDmarc** | **bool** | Whether the domain has a DMARC record. Omitted for standard depth. | [optional] 

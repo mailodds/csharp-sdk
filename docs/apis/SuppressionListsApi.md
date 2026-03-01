@@ -6,6 +6,7 @@ All URIs are relative to *https://api.mailodds.com/v1*
 |--------|--------------|-------------|
 | [**AddSuppression**](SuppressionListsApi.md#addsuppression) | **POST** /v1/suppression | Add suppression entries |
 | [**CheckSuppression**](SuppressionListsApi.md#checksuppression) | **POST** /v1/suppression/check | Check suppression status |
+| [**GetSuppressionAuditLog**](SuppressionListsApi.md#getsuppressionauditlog) | **GET** /v1/suppression/audit | Get suppression audit log |
 | [**GetSuppressionStats**](SuppressionListsApi.md#getsuppressionstats) | **GET** /v1/suppression/stats | Get suppression statistics |
 | [**ListSuppression**](SuppressionListsApi.md#listsuppression) | **GET** /v1/suppression | List suppression entries |
 | [**RemoveSuppression**](SuppressionListsApi.md#removesuppression) | **DELETE** /v1/suppression | Remove suppression entries |
@@ -85,6 +86,44 @@ Check if an email is suppressed.
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
+<a id="getsuppressionauditlog"></a>
+# **GetSuppressionAuditLog**
+> SuppressionAuditResponse GetSuppressionAuditLog (int page = null, int limit = null)
+
+Get suppression audit log
+
+Get a chronological log of suppression list changes (additions, removals).
+
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **page** | **int** |  | [optional] [default to 1] |
+| **limit** | **int** |  | [optional] [default to 20] |
+
+### Return type
+
+[**SuppressionAuditResponse**](SuppressionAuditResponse.md)
+
+### Authorization
+
+[BearerAuth](../README.md#BearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Audit log entries |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
+
+[[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
+
 <a id="getsuppressionstats"></a>
 # **GetSuppressionStats**
 > SuppressionStatsResponse GetSuppressionStats ()
@@ -120,7 +159,7 @@ This endpoint does not need any parameter.
 
 <a id="listsuppression"></a>
 # **ListSuppression**
-> SuppressionListResponse ListSuppression (int page = null, int perPage = null, string type = null, string search = null)
+> SuppressionListResponse ListSuppression (int page = null, int perPage = null, string type = null, string search = null, string source = null)
 
 List suppression entries
 
@@ -135,6 +174,7 @@ List all suppression entries for the account.
 | **perPage** | **int** |  | [optional] [default to 50] |
 | **type** | **string** |  | [optional]  |
 | **search** | **string** |  | [optional]  |
+| **source** | **string** | Filter by entry source (e.g. api, bounce, complaint) | [optional]  |
 
 ### Return type
 

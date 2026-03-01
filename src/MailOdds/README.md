@@ -11,7 +11,7 @@ outputDir: out
 
 # https://openapi-generator.tech/docs/generators/csharp
 additionalProperties:
-  packageGuid: '{0B4DF062-85FE-4606-AE9A-84E7E03BE304}'
+  packageGuid: '{2CC5947D-07C8-45A8-B38A-3B5B551FA796}'
 
 # https://openapi-generator.tech/docs/integrations/#github-integration
 # gitHost:
@@ -91,55 +91,6 @@ namespace YourProject
     }
 }
 ```
-## Sending Email
-
-### Send a Single Email
-
-```cs
-using MailOdds.Api;
-using MailOdds.Model;
-
-var sendingApi = host.Services.GetRequiredService<IEmailSendingApi>();
-
-var request = new DeliverRequest(
-    to: new List<DeliverRequestToInner>
-    {
-        new(email: "recipient@example.com", name: "Jane")
-    },
-    from: "you@yourdomain.com",
-    subject: "Hello from MailOdds",
-    html: "<h1>Welcome!</h1><p>Your order has been confirmed.</p>",
-    domainId: "your-domain-uuid"
-);
-
-IDeliverEmailApiResponse response = await sendingApi.DeliverEmailAsync(request);
-DeliverResponse? result = response.Ok();
-Console.WriteLine(result?.Delivery?.MessageId);
-```
-
-### Managing Sending Domains
-
-```cs
-var domainsApi = host.Services.GetRequiredService<ISendingDomainsApi>();
-
-// List sending domains
-var domainsResponse = await domainsApi.ListSendingDomainsAsync();
-var domains = domainsResponse.Ok();
-foreach (var domain in domains.Domains)
-{
-    Console.WriteLine($"{domain.Domain}: {domain.Status}");
-}
-
-// Add a new sending domain
-var createResponse = await domainsApi.CreateSendingDomainAsync(
-    new CreateSendingDomainRequest(domain: "yourdomain.com")
-);
-var newDomain = createResponse.Created();
-Console.WriteLine(newDomain?.DnsRecords); // DKIM records to add
-```
-
-For batch sending, scheduled delivery, and campaign management, see the [API documentation](https://mailodds.com/docs).
-
 <a id="questions"></a>
 ## Questions
 
@@ -158,7 +109,7 @@ For batch sending, scheduled delivery, and campaign management, see the [API doc
 ## Api Information
 - appName: MailOdds Email Validation API
 - appVersion: 1.0.0
-- appDescription: MailOdds provides email validation services to help maintain clean email lists  and improve deliverability. The API performs multiple validation checks including  format verification, domain validation, MX record checking, and disposable email detection.  ## Authentication  All API requests require authentication using a Bearer token. Include your API key  in the Authorization header:  &#x60;&#x60;&#x60; Authorization: Bearer YOUR_API_KEY &#x60;&#x60;&#x60;  API keys can be created in the MailOdds dashboard.  ## Rate Limits  Rate limits vary by plan: - Free: 10 requests/minute - Starter: 60 requests/minute   - Pro: 300 requests/minute - Business: 1000 requests/minute - Enterprise: Custom limits  ## Response Format  All responses include: - &#x60;schema_version&#x60;: API schema version (currently \&quot;1.0\&quot;) - &#x60;request_id&#x60;: Unique request identifier for debugging  Error responses include: - &#x60;error&#x60;: Machine-readable error code - &#x60;message&#x60;: Human-readable error description 
+- appDescription: MailOdds provides email validation services to help maintain clean email lists  and improve deliverability. The API performs multiple validation checks including  format verification, domain validation, MX record checking, and disposable email detection.  ## Authentication  All API requests require authentication using a Bearer token. Include your API key  in the Authorization header:  &#x60;&#x60;&#x60; Authorization: Bearer YOUR_API_KEY &#x60;&#x60;&#x60;  API keys can be created in the MailOdds dashboard.  ## Rate Limits  Rate limits vary by plan: - Free: 10 requests/minute - Starter: 60 requests/minute   - Pro: 300 requests/minute - Business: 1000 requests/minute - Enterprise: Custom limits  ## Response Format  All responses include: - &#x60;schema_version&#x60;: API schema version (currently \&quot;1.0\&quot;) - &#x60;request_id&#x60;: Unique request identifier for debugging  Error responses include: - &#x60;error&#x60;: Machine-readable error code - &#x60;message&#x60;: Human-readable error description  ## Webhooks  MailOdds can send webhook notifications for job completion and email delivery events. Configure webhooks in the dashboard or per-job via the &#x60;webhook_url&#x60; field.  ### Event Types  | Event | Description | |- -- -- --|- -- -- -- -- -- --| | &#x60;job.completed&#x60; | Validation job finished processing | | &#x60;job.failed&#x60; | Validation job failed | | &#x60;message.queued&#x60; | Email queued for delivery | | &#x60;message.delivered&#x60; | Email delivered to recipient | | &#x60;message.bounced&#x60; | Email bounced | | &#x60;message.deferred&#x60; | Email delivery deferred | | &#x60;message.failed&#x60; | Email delivery failed | | &#x60;message.opened&#x60; | Recipient opened the email | | &#x60;message.clicked&#x60; | Recipient clicked a link |  ### Payload Format  &#x60;&#x60;&#x60;json {   \&quot;event\&quot;: \&quot;job.completed\&quot;,   \&quot;job\&quot;: { ... },   \&quot;timestamp\&quot;: \&quot;2026-01-15T10:30:00Z\&quot; } &#x60;&#x60;&#x60;  ### Webhook Signing  If a webhook secret is configured, each request includes an &#x60;X-MailOdds-Signature&#x60; header containing an HMAC-SHA256 hex digest of the request body.  **Verification pseudocode:** &#x60;&#x60;&#x60; expected &#x3D; HMAC-SHA256(webhook_secret, request_body) valid &#x3D; constant_time_compare(request.headers[\&quot;X-MailOdds-Signature\&quot;], hex(expected)) &#x60;&#x60;&#x60;  The payload is serialized with compact JSON (no extra whitespace, sorted keys) before signing.  ### Headers  All webhook requests include: - &#x60;Content-Type: application/json&#x60; - &#x60;User-Agent: MailOdds-Webhook/1.0&#x60; - &#x60;X-MailOdds-Event: {event_type}&#x60; - &#x60;X-Request-Id: {uuid}&#x60; - &#x60;X-MailOdds-Signature: {hmac}&#x60; (when secret is configured)  ### Retry Policy  Failed deliveries (non-2xx response or timeout) are retried up to 3 times with exponential backoff (10s, 60s, 300s). 
 
 ## Build
 This C# SDK is automatically generated by the [OpenAPI Generator](https://openapi-generator.tech) project.

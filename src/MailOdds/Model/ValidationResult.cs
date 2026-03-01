@@ -2,7 +2,7 @@
 /*
  * MailOdds Email Validation API
  *
- * MailOdds provides email validation services to help maintain clean email lists  and improve deliverability. The API performs multiple validation checks including  format verification, domain validation, MX record checking, and disposable email detection.  ## Authentication  All API requests require authentication using a Bearer token. Include your API key  in the Authorization header:  ``` Authorization: Bearer YOUR_API_KEY ```  API keys can be created in the MailOdds dashboard.  ## Rate Limits  Rate limits vary by plan: - Free: 10 requests/minute - Starter: 60 requests/minute   - Pro: 300 requests/minute - Business: 1000 requests/minute - Enterprise: Custom limits  ## Response Format  All responses include: - `schema_version`: API schema version (currently \"1.0\") - `request_id`: Unique request identifier for debugging  Error responses include: - `error`: Machine-readable error code - `message`: Human-readable error description 
+ * MailOdds provides email validation services to help maintain clean email lists  and improve deliverability. The API performs multiple validation checks including  format verification, domain validation, MX record checking, and disposable email detection.  ## Authentication  All API requests require authentication using a Bearer token. Include your API key  in the Authorization header:  ``` Authorization: Bearer YOUR_API_KEY ```  API keys can be created in the MailOdds dashboard.  ## Rate Limits  Rate limits vary by plan: - Free: 10 requests/minute - Starter: 60 requests/minute   - Pro: 300 requests/minute - Business: 1000 requests/minute - Enterprise: Custom limits  ## Response Format  All responses include: - `schema_version`: API schema version (currently \"1.0\") - `request_id`: Unique request identifier for debugging  Error responses include: - `error`: Machine-readable error code - `message`: Human-readable error description  ## Webhooks  MailOdds can send webhook notifications for job completion and email delivery events. Configure webhooks in the dashboard or per-job via the `webhook_url` field.  ### Event Types  | Event | Description | |- -- -- --|- -- -- -- -- -- --| | `job.completed` | Validation job finished processing | | `job.failed` | Validation job failed | | `message.queued` | Email queued for delivery | | `message.delivered` | Email delivered to recipient | | `message.bounced` | Email bounced | | `message.deferred` | Email delivery deferred | | `message.failed` | Email delivery failed | | `message.opened` | Recipient opened the email | | `message.clicked` | Recipient clicked a link |  ### Payload Format  ```json {   \"event\": \"job.completed\",   \"job\": { ... },   \"timestamp\": \"2026-01-15T10:30:00Z\" } ```  ### Webhook Signing  If a webhook secret is configured, each request includes an `X-MailOdds-Signature` header containing an HMAC-SHA256 hex digest of the request body.  **Verification pseudocode:** ``` expected = HMAC-SHA256(webhook_secret, request_body) valid = constant_time_compare(request.headers[\"X-MailOdds-Signature\"], hex(expected)) ```  The payload is serialized with compact JSON (no extra whitespace, sorted keys) before signing.  ### Headers  All webhook requests include: - `Content-Type: application/json` - `User-Agent: MailOdds-Webhook/1.0` - `X-MailOdds-Event: {event_type}` - `X-Request-Id: {uuid}` - `X-MailOdds-Signature: {hmac}` (when secret is configured)  ### Retry Policy  Failed deliveries (non-2xx response or timeout) are retried up to 3 times with exponential backoff (10s, 60s, 300s). 
  *
  * The version of the OpenAPI document: 1.0.0
  * Contact: support@mailodds.com
@@ -27,7 +27,7 @@ using MailOdds.Client;
 namespace MailOdds.Model
 {
     /// <summary>
-    /// ValidationResult
+    /// Individual result from a bulk validation job
     /// </summary>
     public partial class ValidationResult : IValidatableObject
     {
@@ -36,17 +36,25 @@ namespace MailOdds.Model
         /// </summary>
         /// <param name="email">email</param>
         /// <param name="status">status</param>
-        /// <param name="subStatus">subStatus</param>
         /// <param name="action">action</param>
+        /// <param name="domain">Email domain</param>
         /// <param name="processedAt">processedAt</param>
+        /// <param name="subStatus">Detailed reason. Omitted when none.</param>
+        /// <param name="mxHost">Primary MX hostname. Omitted when not resolved.</param>
+        /// <param name="checks">Detailed check results (JSONB). Omitted when not available.</param>
+        /// <param name="suppression">suppression</param>
         [JsonConstructor]
-        public ValidationResult(Option<string?> email = default, Option<StatusEnum?> status = default, Option<string?> subStatus = default, Option<ActionEnum?> action = default, Option<DateTime?> processedAt = default)
+        public ValidationResult(string email, StatusEnum status, ActionEnum action, string domain, DateTime processedAt, Option<string?> subStatus = default, Option<string?> mxHost = default, Option<Dictionary<string, Object>?> checks = default, Option<ValidationResultSuppression?> suppression = default)
         {
-            EmailOption = email;
-            StatusOption = status;
+            Email = email;
+            Status = status;
+            Action = action;
+            Domain = domain;
+            ProcessedAt = processedAt;
             SubStatusOption = subStatus;
-            ActionOption = action;
-            ProcessedAtOption = processedAt;
+            MxHostOption = mxHost;
+            ChecksOption = checks;
+            SuppressionOption = suppression;
             OnCreated();
         }
 
@@ -140,7 +148,7 @@ namespace MailOdds.Model
         /// <param name="value"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public static string StatusEnumToJsonValue(StatusEnum? value)
+        public static string StatusEnumToJsonValue(StatusEnum value)
         {
             if (value == StatusEnum.Valid)
                 return "valid";
@@ -161,17 +169,10 @@ namespace MailOdds.Model
         }
 
         /// <summary>
-        /// Used to track the state of Status
-        /// </summary>
-        [JsonIgnore]
-        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<StatusEnum?> StatusOption { get; private set; }
-
-        /// <summary>
         /// Gets or Sets Status
         /// </summary>
         [JsonPropertyName("status")]
-        public StatusEnum? Status { get { return this.StatusOption; } set { this.StatusOption = new(value); } }
+        public StatusEnum Status { get; set; }
 
         /// <summary>
         /// Defines Action
@@ -250,7 +251,7 @@ namespace MailOdds.Model
         /// <param name="value"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public static string ActionEnumToJsonValue(ActionEnum? value)
+        public static string ActionEnumToJsonValue(ActionEnum value)
         {
             if (value == ActionEnum.Accept)
                 return "accept";
@@ -268,30 +269,29 @@ namespace MailOdds.Model
         }
 
         /// <summary>
-        /// Used to track the state of Action
-        /// </summary>
-        [JsonIgnore]
-        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<ActionEnum?> ActionOption { get; private set; }
-
-        /// <summary>
         /// Gets or Sets Action
         /// </summary>
         [JsonPropertyName("action")]
-        public ActionEnum? Action { get { return this.ActionOption; } set { this.ActionOption = new(value); } }
-
-        /// <summary>
-        /// Used to track the state of Email
-        /// </summary>
-        [JsonIgnore]
-        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<string?> EmailOption { get; private set; }
+        public ActionEnum Action { get; set; }
 
         /// <summary>
         /// Gets or Sets Email
         /// </summary>
         [JsonPropertyName("email")]
-        public string? Email { get { return this.EmailOption; } set { this.EmailOption = new(value); } }
+        public string Email { get; set; }
+
+        /// <summary>
+        /// Email domain
+        /// </summary>
+        /// <value>Email domain</value>
+        [JsonPropertyName("domain")]
+        public string Domain { get; set; }
+
+        /// <summary>
+        /// Gets or Sets ProcessedAt
+        /// </summary>
+        [JsonPropertyName("processed_at")]
+        public DateTime ProcessedAt { get; set; }
 
         /// <summary>
         /// Used to track the state of SubStatus
@@ -301,23 +301,52 @@ namespace MailOdds.Model
         public Option<string?> SubStatusOption { get; private set; }
 
         /// <summary>
-        /// Gets or Sets SubStatus
+        /// Detailed reason. Omitted when none.
         /// </summary>
+        /// <value>Detailed reason. Omitted when none.</value>
         [JsonPropertyName("sub_status")]
         public string? SubStatus { get { return this.SubStatusOption; } set { this.SubStatusOption = new(value); } }
 
         /// <summary>
-        /// Used to track the state of ProcessedAt
+        /// Used to track the state of MxHost
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<DateTime?> ProcessedAtOption { get; private set; }
+        public Option<string?> MxHostOption { get; private set; }
 
         /// <summary>
-        /// Gets or Sets ProcessedAt
+        /// Primary MX hostname. Omitted when not resolved.
         /// </summary>
-        [JsonPropertyName("processed_at")]
-        public DateTime? ProcessedAt { get { return this.ProcessedAtOption; } set { this.ProcessedAtOption = new(value); } }
+        /// <value>Primary MX hostname. Omitted when not resolved.</value>
+        [JsonPropertyName("mx_host")]
+        public string? MxHost { get { return this.MxHostOption; } set { this.MxHostOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of Checks
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<Dictionary<string, Object>?> ChecksOption { get; private set; }
+
+        /// <summary>
+        /// Detailed check results (JSONB). Omitted when not available.
+        /// </summary>
+        /// <value>Detailed check results (JSONB). Omitted when not available.</value>
+        [JsonPropertyName("checks")]
+        public Dictionary<string, Object>? Checks { get { return this.ChecksOption; } set { this.ChecksOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of Suppression
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<ValidationResultSuppression?> SuppressionOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets Suppression
+        /// </summary>
+        [JsonPropertyName("suppression")]
+        public ValidationResultSuppression? Suppression { get { return this.SuppressionOption; } set { this.SuppressionOption = new(value); } }
 
         /// <summary>
         /// Returns the string presentation of the object
@@ -329,9 +358,13 @@ namespace MailOdds.Model
             sb.Append("class ValidationResult {\n");
             sb.Append("  Email: ").Append(Email).Append("\n");
             sb.Append("  Status: ").Append(Status).Append("\n");
-            sb.Append("  SubStatus: ").Append(SubStatus).Append("\n");
             sb.Append("  Action: ").Append(Action).Append("\n");
+            sb.Append("  Domain: ").Append(Domain).Append("\n");
             sb.Append("  ProcessedAt: ").Append(ProcessedAt).Append("\n");
+            sb.Append("  SubStatus: ").Append(SubStatus).Append("\n");
+            sb.Append("  MxHost: ").Append(MxHost).Append("\n");
+            sb.Append("  Checks: ").Append(Checks).Append("\n");
+            sb.Append("  Suppression: ").Append(Suppression).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -341,7 +374,7 @@ namespace MailOdds.Model
         /// </summary>
         /// <param name="validationContext">Validation context</param>
         /// <returns>Validation Result</returns>
-        IEnumerable<System.ComponentModel.DataAnnotations.ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
+        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
         {
             yield break;
         }
@@ -376,9 +409,13 @@ namespace MailOdds.Model
 
             Option<string?> email = default;
             Option<ValidationResult.StatusEnum?> status = default;
-            Option<string?> subStatus = default;
             Option<ValidationResult.ActionEnum?> action = default;
+            Option<string?> domain = default;
             Option<DateTime?> processedAt = default;
+            Option<string?> subStatus = default;
+            Option<string?> mxHost = default;
+            Option<Dictionary<string, Object>?> checks = default;
+            Option<ValidationResultSuppression?> suppression = default;
 
             while (utf8JsonReader.Read())
             {
@@ -403,16 +440,28 @@ namespace MailOdds.Model
                             if (statusRawValue != null)
                                 status = new Option<ValidationResult.StatusEnum?>(ValidationResult.StatusEnumFromStringOrDefault(statusRawValue));
                             break;
-                        case "sub_status":
-                            subStatus = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
                         case "action":
                             string? actionRawValue = utf8JsonReader.GetString();
                             if (actionRawValue != null)
                                 action = new Option<ValidationResult.ActionEnum?>(ValidationResult.ActionEnumFromStringOrDefault(actionRawValue));
                             break;
+                        case "domain":
+                            domain = new Option<string?>(utf8JsonReader.GetString()!);
+                            break;
                         case "processed_at":
                             processedAt = new Option<DateTime?>(JsonSerializer.Deserialize<DateTime>(ref utf8JsonReader, jsonSerializerOptions));
+                            break;
+                        case "sub_status":
+                            subStatus = new Option<string?>(utf8JsonReader.GetString()!);
+                            break;
+                        case "mx_host":
+                            mxHost = new Option<string?>(utf8JsonReader.GetString()!);
+                            break;
+                        case "checks":
+                            checks = new Option<Dictionary<string, Object>?>(JsonSerializer.Deserialize<Dictionary<string, Object>>(ref utf8JsonReader, jsonSerializerOptions)!);
+                            break;
+                        case "suppression":
+                            suppression = new Option<ValidationResultSuppression?>(JsonSerializer.Deserialize<ValidationResultSuppression>(ref utf8JsonReader, jsonSerializerOptions)!);
                             break;
                         default:
                             break;
@@ -420,22 +469,49 @@ namespace MailOdds.Model
                 }
             }
 
+            if (!email.IsSet)
+                throw new ArgumentException("Property is required for class ValidationResult.", nameof(email));
+
+            if (!status.IsSet)
+                throw new ArgumentException("Property is required for class ValidationResult.", nameof(status));
+
+            if (!action.IsSet)
+                throw new ArgumentException("Property is required for class ValidationResult.", nameof(action));
+
+            if (!domain.IsSet)
+                throw new ArgumentException("Property is required for class ValidationResult.", nameof(domain));
+
+            if (!processedAt.IsSet)
+                throw new ArgumentException("Property is required for class ValidationResult.", nameof(processedAt));
+
             if (email.IsSet && email.Value == null)
                 throw new ArgumentNullException(nameof(email), "Property is not nullable for class ValidationResult.");
 
             if (status.IsSet && status.Value == null)
                 throw new ArgumentNullException(nameof(status), "Property is not nullable for class ValidationResult.");
 
-            if (subStatus.IsSet && subStatus.Value == null)
-                throw new ArgumentNullException(nameof(subStatus), "Property is not nullable for class ValidationResult.");
-
             if (action.IsSet && action.Value == null)
                 throw new ArgumentNullException(nameof(action), "Property is not nullable for class ValidationResult.");
+
+            if (domain.IsSet && domain.Value == null)
+                throw new ArgumentNullException(nameof(domain), "Property is not nullable for class ValidationResult.");
 
             if (processedAt.IsSet && processedAt.Value == null)
                 throw new ArgumentNullException(nameof(processedAt), "Property is not nullable for class ValidationResult.");
 
-            return new ValidationResult(email, status, subStatus, action, processedAt);
+            if (subStatus.IsSet && subStatus.Value == null)
+                throw new ArgumentNullException(nameof(subStatus), "Property is not nullable for class ValidationResult.");
+
+            if (mxHost.IsSet && mxHost.Value == null)
+                throw new ArgumentNullException(nameof(mxHost), "Property is not nullable for class ValidationResult.");
+
+            if (checks.IsSet && checks.Value == null)
+                throw new ArgumentNullException(nameof(checks), "Property is not nullable for class ValidationResult.");
+
+            if (suppression.IsSet && suppression.Value == null)
+                throw new ArgumentNullException(nameof(suppression), "Property is not nullable for class ValidationResult.");
+
+            return new ValidationResult(email.Value!, status.Value!.Value!, action.Value!.Value!, domain.Value!, processedAt.Value!.Value!, subStatus, mxHost, checks, suppression);
         }
 
         /// <summary>
@@ -462,24 +538,50 @@ namespace MailOdds.Model
         /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, ValidationResult validationResult, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (validationResult.EmailOption.IsSet && validationResult.Email == null)
+            if (validationResult.Email == null)
                 throw new ArgumentNullException(nameof(validationResult.Email), "Property is required for class ValidationResult.");
+
+            if (validationResult.Domain == null)
+                throw new ArgumentNullException(nameof(validationResult.Domain), "Property is required for class ValidationResult.");
 
             if (validationResult.SubStatusOption.IsSet && validationResult.SubStatus == null)
                 throw new ArgumentNullException(nameof(validationResult.SubStatus), "Property is required for class ValidationResult.");
 
-            if (validationResult.EmailOption.IsSet)
-                writer.WriteString("email", validationResult.Email);
+            if (validationResult.MxHostOption.IsSet && validationResult.MxHost == null)
+                throw new ArgumentNullException(nameof(validationResult.MxHost), "Property is required for class ValidationResult.");
 
-            var statusRawValue = ValidationResult.StatusEnumToJsonValue(validationResult.StatusOption.Value!.Value);
+            if (validationResult.ChecksOption.IsSet && validationResult.Checks == null)
+                throw new ArgumentNullException(nameof(validationResult.Checks), "Property is required for class ValidationResult.");
+
+            if (validationResult.SuppressionOption.IsSet && validationResult.Suppression == null)
+                throw new ArgumentNullException(nameof(validationResult.Suppression), "Property is required for class ValidationResult.");
+
+            writer.WriteString("email", validationResult.Email);
+
+            var statusRawValue = ValidationResult.StatusEnumToJsonValue(validationResult.Status);
             writer.WriteString("status", statusRawValue);
+            var actionRawValue = ValidationResult.ActionEnumToJsonValue(validationResult.Action);
+            writer.WriteString("action", actionRawValue);
+            writer.WriteString("domain", validationResult.Domain);
+
+            writer.WriteString("processed_at", validationResult.ProcessedAt.ToString(ProcessedAtFormat));
+
             if (validationResult.SubStatusOption.IsSet)
                 writer.WriteString("sub_status", validationResult.SubStatus);
 
-            var actionRawValue = ValidationResult.ActionEnumToJsonValue(validationResult.ActionOption.Value!.Value);
-            writer.WriteString("action", actionRawValue);
-            if (validationResult.ProcessedAtOption.IsSet)
-                writer.WriteString("processed_at", validationResult.ProcessedAtOption.Value!.Value.ToString(ProcessedAtFormat));
+            if (validationResult.MxHostOption.IsSet)
+                writer.WriteString("mx_host", validationResult.MxHost);
+
+            if (validationResult.ChecksOption.IsSet)
+            {
+                writer.WritePropertyName("checks");
+                JsonSerializer.Serialize(writer, validationResult.Checks, jsonSerializerOptions);
+            }
+            if (validationResult.SuppressionOption.IsSet)
+            {
+                writer.WritePropertyName("suppression");
+                JsonSerializer.Serialize(writer, validationResult.Suppression, jsonSerializerOptions);
+            }
         }
     }
 }

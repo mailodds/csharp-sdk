@@ -327,7 +327,7 @@ Get a presigned URL for uploading large files (>10MB) directly to S3.
 
 <a id="listjobs"></a>
 # **ListJobs**
-> JobListResponse ListJobs (int page = null, int perPage = null, string status = null)
+> JobListResponse ListJobs (string cursor = null, int limit = null, string status = null)
 
 List validation jobs
 
@@ -338,8 +338,8 @@ List all validation jobs for the authenticated account.
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **page** | **int** |  | [optional] [default to 1] |
-| **perPage** | **int** |  | [optional] [default to 20] |
+| **cursor** | **string** | Pagination cursor (ISO timestamp from previous response) | [optional]  |
+| **limit** | **int** | Results per page | [optional] [default to 50] |
 | **status** | **string** |  | [optional]  |
 
 ### Return type

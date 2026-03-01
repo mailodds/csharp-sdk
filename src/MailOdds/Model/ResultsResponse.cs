@@ -2,7 +2,7 @@
 /*
  * MailOdds Email Validation API
  *
- * MailOdds provides email validation services to help maintain clean email lists  and improve deliverability. The API performs multiple validation checks including  format verification, domain validation, MX record checking, and disposable email detection.  ## Authentication  All API requests require authentication using a Bearer token. Include your API key  in the Authorization header:  ``` Authorization: Bearer YOUR_API_KEY ```  API keys can be created in the MailOdds dashboard.  ## Rate Limits  Rate limits vary by plan: - Free: 10 requests/minute - Starter: 60 requests/minute   - Pro: 300 requests/minute - Business: 1000 requests/minute - Enterprise: Custom limits  ## Response Format  All responses include: - `schema_version`: API schema version (currently \"1.0\") - `request_id`: Unique request identifier for debugging  Error responses include: - `error`: Machine-readable error code - `message`: Human-readable error description 
+ * MailOdds provides email validation services to help maintain clean email lists  and improve deliverability. The API performs multiple validation checks including  format verification, domain validation, MX record checking, and disposable email detection.  ## Authentication  All API requests require authentication using a Bearer token. Include your API key  in the Authorization header:  ``` Authorization: Bearer YOUR_API_KEY ```  API keys can be created in the MailOdds dashboard.  ## Rate Limits  Rate limits vary by plan: - Free: 10 requests/minute - Starter: 60 requests/minute   - Pro: 300 requests/minute - Business: 1000 requests/minute - Enterprise: Custom limits  ## Response Format  All responses include: - `schema_version`: API schema version (currently \"1.0\") - `request_id`: Unique request identifier for debugging  Error responses include: - `error`: Machine-readable error code - `message`: Human-readable error description  ## Webhooks  MailOdds can send webhook notifications for job completion and email delivery events. Configure webhooks in the dashboard or per-job via the `webhook_url` field.  ### Event Types  | Event | Description | |- -- -- --|- -- -- -- -- -- --| | `job.completed` | Validation job finished processing | | `job.failed` | Validation job failed | | `message.queued` | Email queued for delivery | | `message.delivered` | Email delivered to recipient | | `message.bounced` | Email bounced | | `message.deferred` | Email delivery deferred | | `message.failed` | Email delivery failed | | `message.opened` | Recipient opened the email | | `message.clicked` | Recipient clicked a link |  ### Payload Format  ```json {   \"event\": \"job.completed\",   \"job\": { ... },   \"timestamp\": \"2026-01-15T10:30:00Z\" } ```  ### Webhook Signing  If a webhook secret is configured, each request includes an `X-MailOdds-Signature` header containing an HMAC-SHA256 hex digest of the request body.  **Verification pseudocode:** ``` expected = HMAC-SHA256(webhook_secret, request_body) valid = constant_time_compare(request.headers[\"X-MailOdds-Signature\"], hex(expected)) ```  The payload is serialized with compact JSON (no extra whitespace, sorted keys) before signing.  ### Headers  All webhook requests include: - `Content-Type: application/json` - `User-Agent: MailOdds-Webhook/1.0` - `X-MailOdds-Event: {event_type}` - `X-Request-Id: {uuid}` - `X-MailOdds-Signature: {hmac}` (when secret is configured)  ### Retry Policy  Failed deliveries (non-2xx response or timeout) are retried up to 3 times with exponential backoff (10s, 60s, 300s). 
  *
  * The version of the OpenAPI document: 1.0.0
  * Contact: support@mailodds.com
@@ -36,14 +36,16 @@ namespace MailOdds.Model
         /// </summary>
         /// <param name="schemaVersion">schemaVersion</param>
         /// <param name="requestId">Unique request identifier</param>
-        /// <param name="results">results</param>
+        /// <param name="job">job</param>
+        /// <param name="data">Validation results for this page</param>
         /// <param name="pagination">pagination</param>
         [JsonConstructor]
-        public ResultsResponse(Option<string?> schemaVersion = default, Option<string?> requestId = default, Option<List<ValidationResult>?> results = default, Option<Pagination?> pagination = default)
+        public ResultsResponse(Option<string?> schemaVersion = default, Option<string?> requestId = default, Option<Job?> job = default, Option<List<ValidationResult>?> data = default, Option<Pagination?> pagination = default)
         {
             SchemaVersionOption = schemaVersion;
             RequestIdOption = requestId;
-            ResultsOption = results;
+            JobOption = job;
+            DataOption = data;
             PaginationOption = pagination;
             OnCreated();
         }
@@ -78,17 +80,31 @@ namespace MailOdds.Model
         public string? RequestId { get { return this.RequestIdOption; } set { this.RequestIdOption = new(value); } }
 
         /// <summary>
-        /// Used to track the state of Results
+        /// Used to track the state of Job
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<List<ValidationResult>?> ResultsOption { get; private set; }
+        public Option<Job?> JobOption { get; private set; }
 
         /// <summary>
-        /// Gets or Sets Results
+        /// Gets or Sets Job
         /// </summary>
-        [JsonPropertyName("results")]
-        public List<ValidationResult>? Results { get { return this.ResultsOption; } set { this.ResultsOption = new(value); } }
+        [JsonPropertyName("job")]
+        public Job? Job { get { return this.JobOption; } set { this.JobOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of Data
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<List<ValidationResult>?> DataOption { get; private set; }
+
+        /// <summary>
+        /// Validation results for this page
+        /// </summary>
+        /// <value>Validation results for this page</value>
+        [JsonPropertyName("data")]
+        public List<ValidationResult>? Data { get { return this.DataOption; } set { this.DataOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Pagination
@@ -113,7 +129,8 @@ namespace MailOdds.Model
             sb.Append("class ResultsResponse {\n");
             sb.Append("  SchemaVersion: ").Append(SchemaVersion).Append("\n");
             sb.Append("  RequestId: ").Append(RequestId).Append("\n");
-            sb.Append("  Results: ").Append(Results).Append("\n");
+            sb.Append("  Job: ").Append(Job).Append("\n");
+            sb.Append("  Data: ").Append(Data).Append("\n");
             sb.Append("  Pagination: ").Append(Pagination).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
@@ -124,7 +141,7 @@ namespace MailOdds.Model
         /// </summary>
         /// <param name="validationContext">Validation context</param>
         /// <returns>Validation Result</returns>
-        IEnumerable<System.ComponentModel.DataAnnotations.ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
+        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
         {
             yield break;
         }
@@ -154,7 +171,8 @@ namespace MailOdds.Model
 
             Option<string?> schemaVersion = default;
             Option<string?> requestId = default;
-            Option<List<ValidationResult>?> results = default;
+            Option<Job?> job = default;
+            Option<List<ValidationResult>?> data = default;
             Option<Pagination?> pagination = default;
 
             while (utf8JsonReader.Read())
@@ -178,8 +196,11 @@ namespace MailOdds.Model
                         case "request_id":
                             requestId = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
-                        case "results":
-                            results = new Option<List<ValidationResult>?>(JsonSerializer.Deserialize<List<ValidationResult>>(ref utf8JsonReader, jsonSerializerOptions)!);
+                        case "job":
+                            job = new Option<Job?>(JsonSerializer.Deserialize<Job>(ref utf8JsonReader, jsonSerializerOptions)!);
+                            break;
+                        case "data":
+                            data = new Option<List<ValidationResult>?>(JsonSerializer.Deserialize<List<ValidationResult>>(ref utf8JsonReader, jsonSerializerOptions)!);
                             break;
                         case "pagination":
                             pagination = new Option<Pagination?>(JsonSerializer.Deserialize<Pagination>(ref utf8JsonReader, jsonSerializerOptions)!);
@@ -196,13 +217,16 @@ namespace MailOdds.Model
             if (requestId.IsSet && requestId.Value == null)
                 throw new ArgumentNullException(nameof(requestId), "Property is not nullable for class ResultsResponse.");
 
-            if (results.IsSet && results.Value == null)
-                throw new ArgumentNullException(nameof(results), "Property is not nullable for class ResultsResponse.");
+            if (job.IsSet && job.Value == null)
+                throw new ArgumentNullException(nameof(job), "Property is not nullable for class ResultsResponse.");
+
+            if (data.IsSet && data.Value == null)
+                throw new ArgumentNullException(nameof(data), "Property is not nullable for class ResultsResponse.");
 
             if (pagination.IsSet && pagination.Value == null)
                 throw new ArgumentNullException(nameof(pagination), "Property is not nullable for class ResultsResponse.");
 
-            return new ResultsResponse(schemaVersion, requestId, results, pagination);
+            return new ResultsResponse(schemaVersion, requestId, job, data, pagination);
         }
 
         /// <summary>
@@ -235,8 +259,11 @@ namespace MailOdds.Model
             if (resultsResponse.RequestIdOption.IsSet && resultsResponse.RequestId == null)
                 throw new ArgumentNullException(nameof(resultsResponse.RequestId), "Property is required for class ResultsResponse.");
 
-            if (resultsResponse.ResultsOption.IsSet && resultsResponse.Results == null)
-                throw new ArgumentNullException(nameof(resultsResponse.Results), "Property is required for class ResultsResponse.");
+            if (resultsResponse.JobOption.IsSet && resultsResponse.Job == null)
+                throw new ArgumentNullException(nameof(resultsResponse.Job), "Property is required for class ResultsResponse.");
+
+            if (resultsResponse.DataOption.IsSet && resultsResponse.Data == null)
+                throw new ArgumentNullException(nameof(resultsResponse.Data), "Property is required for class ResultsResponse.");
 
             if (resultsResponse.PaginationOption.IsSet && resultsResponse.Pagination == null)
                 throw new ArgumentNullException(nameof(resultsResponse.Pagination), "Property is required for class ResultsResponse.");
@@ -247,10 +274,15 @@ namespace MailOdds.Model
             if (resultsResponse.RequestIdOption.IsSet)
                 writer.WriteString("request_id", resultsResponse.RequestId);
 
-            if (resultsResponse.ResultsOption.IsSet)
+            if (resultsResponse.JobOption.IsSet)
             {
-                writer.WritePropertyName("results");
-                JsonSerializer.Serialize(writer, resultsResponse.Results, jsonSerializerOptions);
+                writer.WritePropertyName("job");
+                JsonSerializer.Serialize(writer, resultsResponse.Job, jsonSerializerOptions);
+            }
+            if (resultsResponse.DataOption.IsSet)
+            {
+                writer.WritePropertyName("data");
+                JsonSerializer.Serialize(writer, resultsResponse.Data, jsonSerializerOptions);
             }
             if (resultsResponse.PaginationOption.IsSet)
             {

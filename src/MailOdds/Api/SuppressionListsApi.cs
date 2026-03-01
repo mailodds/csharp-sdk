@@ -2,7 +2,7 @@
 /*
  * MailOdds Email Validation API
  *
- * MailOdds provides email validation services to help maintain clean email lists  and improve deliverability. The API performs multiple validation checks including  format verification, domain validation, MX record checking, and disposable email detection.  ## Authentication  All API requests require authentication using a Bearer token. Include your API key  in the Authorization header:  ``` Authorization: Bearer YOUR_API_KEY ```  API keys can be created in the MailOdds dashboard.  ## Rate Limits  Rate limits vary by plan: - Free: 10 requests/minute - Starter: 60 requests/minute   - Pro: 300 requests/minute - Business: 1000 requests/minute - Enterprise: Custom limits  ## Response Format  All responses include: - `schema_version`: API schema version (currently \"1.0\") - `request_id`: Unique request identifier for debugging  Error responses include: - `error`: Machine-readable error code - `message`: Human-readable error description 
+ * MailOdds provides email validation services to help maintain clean email lists  and improve deliverability. The API performs multiple validation checks including  format verification, domain validation, MX record checking, and disposable email detection.  ## Authentication  All API requests require authentication using a Bearer token. Include your API key  in the Authorization header:  ``` Authorization: Bearer YOUR_API_KEY ```  API keys can be created in the MailOdds dashboard.  ## Rate Limits  Rate limits vary by plan: - Free: 10 requests/minute - Starter: 60 requests/minute   - Pro: 300 requests/minute - Business: 1000 requests/minute - Enterprise: Custom limits  ## Response Format  All responses include: - `schema_version`: API schema version (currently \"1.0\") - `request_id`: Unique request identifier for debugging  Error responses include: - `error`: Machine-readable error code - `message`: Human-readable error description  ## Webhooks  MailOdds can send webhook notifications for job completion and email delivery events. Configure webhooks in the dashboard or per-job via the `webhook_url` field.  ### Event Types  | Event | Description | |- -- -- --|- -- -- -- -- -- --| | `job.completed` | Validation job finished processing | | `job.failed` | Validation job failed | | `message.queued` | Email queued for delivery | | `message.delivered` | Email delivered to recipient | | `message.bounced` | Email bounced | | `message.deferred` | Email delivery deferred | | `message.failed` | Email delivery failed | | `message.opened` | Recipient opened the email | | `message.clicked` | Recipient clicked a link |  ### Payload Format  ```json {   \"event\": \"job.completed\",   \"job\": { ... },   \"timestamp\": \"2026-01-15T10:30:00Z\" } ```  ### Webhook Signing  If a webhook secret is configured, each request includes an `X-MailOdds-Signature` header containing an HMAC-SHA256 hex digest of the request body.  **Verification pseudocode:** ``` expected = HMAC-SHA256(webhook_secret, request_body) valid = constant_time_compare(request.headers[\"X-MailOdds-Signature\"], hex(expected)) ```  The payload is serialized with compact JSON (no extra whitespace, sorted keys) before signing.  ### Headers  All webhook requests include: - `Content-Type: application/json` - `User-Agent: MailOdds-Webhook/1.0` - `X-MailOdds-Event: {event_type}` - `X-Request-Id: {uuid}` - `X-MailOdds-Signature: {hmac}` (when secret is configured)  ### Retry Policy  Failed deliveries (non-2xx response or timeout) are retried up to 3 times with exponential backoff (10s, 60s, 300s). 
  *
  * The version of the OpenAPI document: 1.0.0
  * Contact: support@mailodds.com
@@ -83,6 +83,31 @@ namespace MailOdds.Api
         Task<ICheckSuppressionApiResponse?> CheckSuppressionOrDefaultAsync(CheckSuppressionRequest checkSuppressionRequest, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Get suppression audit log
+        /// </summary>
+        /// <remarks>
+        /// Get a chronological log of suppression list changes (additions, removals).
+        /// </remarks>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="page"> (optional, default to 1)</param>
+        /// <param name="limit"> (optional, default to 20)</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IGetSuppressionAuditLogApiResponse"/>&gt;</returns>
+        Task<IGetSuppressionAuditLogApiResponse> GetSuppressionAuditLogAsync(Option<int> page = default, Option<int> limit = default, System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Get suppression audit log
+        /// </summary>
+        /// <remarks>
+        /// Get a chronological log of suppression list changes (additions, removals).
+        /// </remarks>
+        /// <param name="page"> (optional, default to 1)</param>
+        /// <param name="limit"> (optional, default to 20)</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IGetSuppressionAuditLogApiResponse"/>?&gt;</returns>
+        Task<IGetSuppressionAuditLogApiResponse?> GetSuppressionAuditLogOrDefaultAsync(Option<int> page = default, Option<int> limit = default, System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Get suppression statistics
         /// </summary>
         /// <remarks>
@@ -114,9 +139,10 @@ namespace MailOdds.Api
         /// <param name="perPage"> (optional, default to 50)</param>
         /// <param name="type"> (optional)</param>
         /// <param name="search"> (optional)</param>
+        /// <param name="source">Filter by entry source (e.g. api, bounce, complaint) (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IListSuppressionApiResponse"/>&gt;</returns>
-        Task<IListSuppressionApiResponse> ListSuppressionAsync(Option<int> page = default, Option<int> perPage = default, Option<string> type = default, Option<string> search = default, System.Threading.CancellationToken cancellationToken = default);
+        Task<IListSuppressionApiResponse> ListSuppressionAsync(Option<int> page = default, Option<int> perPage = default, Option<string> type = default, Option<string> search = default, Option<string> source = default, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// List suppression entries
@@ -128,9 +154,10 @@ namespace MailOdds.Api
         /// <param name="perPage"> (optional, default to 50)</param>
         /// <param name="type"> (optional)</param>
         /// <param name="search"> (optional)</param>
+        /// <param name="source">Filter by entry source (e.g. api, bounce, complaint) (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IListSuppressionApiResponse"/>?&gt;</returns>
-        Task<IListSuppressionApiResponse?> ListSuppressionOrDefaultAsync(Option<int> page = default, Option<int> perPage = default, Option<string> type = default, Option<string> search = default, System.Threading.CancellationToken cancellationToken = default);
+        Task<IListSuppressionApiResponse?> ListSuppressionOrDefaultAsync(Option<int> page = default, Option<int> perPage = default, Option<string> type = default, Option<string> search = default, Option<string> source = default, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Remove suppression entries
@@ -184,6 +211,24 @@ namespace MailOdds.Api
     /// The <see cref="ICheckSuppressionApiResponse"/>
     /// </summary>
     public interface ICheckSuppressionApiResponse : MailOdds.Client.IApiResponse, IOk<MailOdds.Model.SuppressionCheckResponse?>, IUnauthorized<MailOdds.Model.ErrorResponse?>
+    {
+        /// <summary>
+        /// Returns true if the response is 200 Ok
+        /// </summary>
+        /// <returns></returns>
+        bool IsOk { get; }
+
+        /// <summary>
+        /// Returns true if the response is 401 Unauthorized
+        /// </summary>
+        /// <returns></returns>
+        bool IsUnauthorized { get; }
+    }
+
+    /// <summary>
+    /// The <see cref="IGetSuppressionAuditLogApiResponse"/>
+    /// </summary>
+    public interface IGetSuppressionAuditLogApiResponse : MailOdds.Client.IApiResponse, IOk<MailOdds.Model.SuppressionAuditResponse?>, IUnauthorized<MailOdds.Model.ErrorResponse?>
     {
         /// <summary>
         /// Returns true if the response is 200 Ok
@@ -295,6 +340,26 @@ namespace MailOdds.Api
         internal void ExecuteOnErrorCheckSuppression(Exception exception)
         {
             OnErrorCheckSuppression?.Invoke(this, new ExceptionEventArgs(exception));
+        }
+
+        /// <summary>
+        /// The event raised after the server response
+        /// </summary>
+        public event EventHandler<ApiResponseEventArgs>? OnGetSuppressionAuditLog;
+
+        /// <summary>
+        /// The event raised after an error querying the server
+        /// </summary>
+        public event EventHandler<ExceptionEventArgs>? OnErrorGetSuppressionAuditLog;
+
+        internal void ExecuteOnGetSuppressionAuditLog(SuppressionListsApi.GetSuppressionAuditLogApiResponse apiResponse)
+        {
+            OnGetSuppressionAuditLog?.Invoke(this, new ApiResponseEventArgs(apiResponse));
+        }
+
+        internal void ExecuteOnErrorGetSuppressionAuditLog(Exception exception)
+        {
+            OnErrorGetSuppressionAuditLog?.Invoke(this, new ExceptionEventArgs(exception));
         }
 
         /// <summary>
@@ -1049,6 +1114,299 @@ namespace MailOdds.Api
             partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
         }
 
+        partial void FormatGetSuppressionAuditLog(ref Option<int> page, ref Option<int> limit);
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="apiResponseLocalVar"></param>
+        /// <param name="page"></param>
+        /// <param name="limit"></param>
+        private void AfterGetSuppressionAuditLogDefaultImplementation(IGetSuppressionAuditLogApiResponse apiResponseLocalVar, Option<int> page, Option<int> limit)
+        {
+            bool suppressDefaultLog = false;
+            AfterGetSuppressionAuditLog(ref suppressDefaultLog, apiResponseLocalVar, page, limit);
+            if (!suppressDefaultLog)
+                Logger.LogInformation("{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="suppressDefaultLog"></param>
+        /// <param name="apiResponseLocalVar"></param>
+        /// <param name="page"></param>
+        /// <param name="limit"></param>
+        partial void AfterGetSuppressionAuditLog(ref bool suppressDefaultLog, IGetSuppressionAuditLogApiResponse apiResponseLocalVar, Option<int> page, Option<int> limit);
+
+        /// <summary>
+        /// Logs exceptions that occur while retrieving the server response
+        /// </summary>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        /// <param name="page"></param>
+        /// <param name="limit"></param>
+        private void OnErrorGetSuppressionAuditLogDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, Option<int> page, Option<int> limit)
+        {
+            bool suppressDefaultLogLocalVar = false;
+            OnErrorGetSuppressionAuditLog(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, page, limit);
+            if (!suppressDefaultLogLocalVar)
+                Logger.LogError(exceptionLocalVar, "An error occurred while sending the request to the server.");
+        }
+
+        /// <summary>
+        /// A partial method that gives developers a way to provide customized exception handling
+        /// </summary>
+        /// <param name="suppressDefaultLogLocalVar"></param>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        /// <param name="page"></param>
+        /// <param name="limit"></param>
+        partial void OnErrorGetSuppressionAuditLog(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, Option<int> page, Option<int> limit);
+
+        /// <summary>
+        /// Get suppression audit log Get a chronological log of suppression list changes (additions, removals).
+        /// </summary>
+        /// <param name="page"> (optional, default to 1)</param>
+        /// <param name="limit"> (optional, default to 20)</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IGetSuppressionAuditLogApiResponse"/>&gt;</returns>
+        public async Task<IGetSuppressionAuditLogApiResponse?> GetSuppressionAuditLogOrDefaultAsync(Option<int> page = default, Option<int> limit = default, System.Threading.CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                return await GetSuppressionAuditLogAsync(page, limit, cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Get suppression audit log Get a chronological log of suppression list changes (additions, removals).
+        /// </summary>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="page"> (optional, default to 1)</param>
+        /// <param name="limit"> (optional, default to 20)</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IGetSuppressionAuditLogApiResponse"/>&gt;</returns>
+        public async Task<IGetSuppressionAuditLogApiResponse> GetSuppressionAuditLogAsync(Option<int> page = default, Option<int> limit = default, System.Threading.CancellationToken cancellationToken = default)
+        {
+            UriBuilder uriBuilderLocalVar = new UriBuilder();
+
+            try
+            {
+                FormatGetSuppressionAuditLog(ref page, ref limit);
+
+                using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
+                {
+                    uriBuilderLocalVar.Host = HttpClient.BaseAddress!.Host;
+                    uriBuilderLocalVar.Port = HttpClient.BaseAddress.Port;
+                    uriBuilderLocalVar.Scheme = HttpClient.BaseAddress.Scheme;
+                    uriBuilderLocalVar.Path = HttpClient.BaseAddress.AbsolutePath == "/"
+                        ? "/v1/suppression/audit"
+                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/v1/suppression/audit");
+
+                    System.Collections.Specialized.NameValueCollection parseQueryStringLocalVar = System.Web.HttpUtility.ParseQueryString(string.Empty);
+
+                    if (page.IsSet)
+                        parseQueryStringLocalVar["page"] = ClientUtils.ParameterToString(page.Value);
+
+                    if (limit.IsSet)
+                        parseQueryStringLocalVar["limit"] = ClientUtils.ParameterToString(limit.Value);
+
+                    uriBuilderLocalVar.Query = parseQueryStringLocalVar.ToString();
+
+                    List<TokenBase> tokenBaseLocalVars = new List<TokenBase>();
+                    httpRequestMessageLocalVar.RequestUri = uriBuilderLocalVar.Uri;
+
+                    BearerToken bearerTokenLocalVar1 = (BearerToken) await BearerTokenProvider.GetAsync(cancellation: cancellationToken).ConfigureAwait(false);
+
+                    tokenBaseLocalVars.Add(bearerTokenLocalVar1);
+
+                    bearerTokenLocalVar1.UseInHeader(httpRequestMessageLocalVar, "");
+
+                    string[] acceptLocalVars = new string[] {
+                        "application/json"
+                    };
+
+                    string? acceptLocalVar = ClientUtils.SelectHeaderAccept(acceptLocalVars);
+
+                    if (acceptLocalVar != null)
+                        httpRequestMessageLocalVar.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(acceptLocalVar));
+
+                    httpRequestMessageLocalVar.Method = HttpMethod.Get;
+
+                    DateTime requestedAtLocalVar = DateTime.UtcNow;
+
+                    using (HttpResponseMessage httpResponseMessageLocalVar = await HttpClient.SendAsync(httpRequestMessageLocalVar, cancellationToken).ConfigureAwait(false))
+                    {
+                        ILogger<GetSuppressionAuditLogApiResponse> apiResponseLoggerLocalVar = LoggerFactory.CreateLogger<GetSuppressionAuditLogApiResponse>();
+                        GetSuppressionAuditLogApiResponse apiResponseLocalVar;
+
+                        switch ((int)httpResponseMessageLocalVar.StatusCode) {
+                            default: {
+                                string responseContentLocalVar = await httpResponseMessageLocalVar.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/v1/suppression/audit", requestedAtLocalVar, _jsonSerializerOptions);
+
+                                break;
+                            }
+                        }
+
+                        AfterGetSuppressionAuditLogDefaultImplementation(apiResponseLocalVar, page, limit);
+
+                        Events.ExecuteOnGetSuppressionAuditLog(apiResponseLocalVar);
+
+                        if (apiResponseLocalVar.StatusCode == (HttpStatusCode) 429)
+                            foreach(TokenBase tokenBaseLocalVar in tokenBaseLocalVars)
+                                tokenBaseLocalVar.BeginRateLimit();
+
+                        return apiResponseLocalVar;
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                OnErrorGetSuppressionAuditLogDefaultImplementation(e, "/v1/suppression/audit", uriBuilderLocalVar.Path, page, limit);
+                Events.ExecuteOnErrorGetSuppressionAuditLog(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// The <see cref="GetSuppressionAuditLogApiResponse"/>
+        /// </summary>
+        public partial class GetSuppressionAuditLogApiResponse : MailOdds.Client.ApiResponse, IGetSuppressionAuditLogApiResponse
+        {
+            /// <summary>
+            /// The logger
+            /// </summary>
+            public ILogger<GetSuppressionAuditLogApiResponse> Logger { get; }
+
+            /// <summary>
+            /// The <see cref="GetSuppressionAuditLogApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="rawContent"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public GetSuppressionAuditLogApiResponse(ILogger<GetSuppressionAuditLogApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, string rawContent, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, rawContent, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            /// <summary>
+            /// The <see cref="GetSuppressionAuditLogApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="contentStream"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public GetSuppressionAuditLogApiResponse(ILogger<GetSuppressionAuditLogApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, System.IO.Stream contentStream, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, contentStream, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            partial void OnCreated(global::System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage);
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public bool IsOk => 200 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.SuppressionAuditResponse? Ok()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsOk
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.SuppressionAuditResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryOk([NotNullWhen(true)]out MailOdds.Model.SuppressionAuditResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Ok();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)200);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public bool IsUnauthorized => 401 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.ErrorResponse? Unauthorized()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsUnauthorized
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryUnauthorized([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Unauthorized();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)401);
+                }
+
+                return result != null;
+            }
+
+            private void OnDeserializationErrorDefaultImplementation(Exception exception, HttpStatusCode httpStatusCode)
+            {
+                bool suppressDefaultLog = false;
+                OnDeserializationError(ref suppressDefaultLog, exception, httpStatusCode);
+                if (!suppressDefaultLog)
+                    Logger.LogError(exception, "An error occurred while deserializing the {code} response.", httpStatusCode);
+            }
+
+            partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
+        }
+
         /// <summary>
         /// Processes the server response
         /// </summary>
@@ -1316,21 +1674,25 @@ namespace MailOdds.Api
             partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
         }
 
-        partial void FormatListSuppression(ref Option<int> page, ref Option<int> perPage, ref Option<string> type, ref Option<string> search);
+        partial void FormatListSuppression(ref Option<int> page, ref Option<int> perPage, ref Option<string> type, ref Option<string> search, ref Option<string> source);
 
         /// <summary>
         /// Validates the request parameters
         /// </summary>
         /// <param name="type"></param>
         /// <param name="search"></param>
+        /// <param name="source"></param>
         /// <returns></returns>
-        private void ValidateListSuppression(Option<string> type, Option<string> search)
+        private void ValidateListSuppression(Option<string> type, Option<string> search, Option<string> source)
         {
             if (type.IsSet && type.Value == null)
                 throw new ArgumentNullException(nameof(type));
 
             if (search.IsSet && search.Value == null)
                 throw new ArgumentNullException(nameof(search));
+
+            if (source.IsSet && source.Value == null)
+                throw new ArgumentNullException(nameof(source));
         }
 
         /// <summary>
@@ -1341,10 +1703,11 @@ namespace MailOdds.Api
         /// <param name="perPage"></param>
         /// <param name="type"></param>
         /// <param name="search"></param>
-        private void AfterListSuppressionDefaultImplementation(IListSuppressionApiResponse apiResponseLocalVar, Option<int> page, Option<int> perPage, Option<string> type, Option<string> search)
+        /// <param name="source"></param>
+        private void AfterListSuppressionDefaultImplementation(IListSuppressionApiResponse apiResponseLocalVar, Option<int> page, Option<int> perPage, Option<string> type, Option<string> search, Option<string> source)
         {
             bool suppressDefaultLog = false;
-            AfterListSuppression(ref suppressDefaultLog, apiResponseLocalVar, page, perPage, type, search);
+            AfterListSuppression(ref suppressDefaultLog, apiResponseLocalVar, page, perPage, type, search, source);
             if (!suppressDefaultLog)
                 Logger.LogInformation("{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
         }
@@ -1358,7 +1721,8 @@ namespace MailOdds.Api
         /// <param name="perPage"></param>
         /// <param name="type"></param>
         /// <param name="search"></param>
-        partial void AfterListSuppression(ref bool suppressDefaultLog, IListSuppressionApiResponse apiResponseLocalVar, Option<int> page, Option<int> perPage, Option<string> type, Option<string> search);
+        /// <param name="source"></param>
+        partial void AfterListSuppression(ref bool suppressDefaultLog, IListSuppressionApiResponse apiResponseLocalVar, Option<int> page, Option<int> perPage, Option<string> type, Option<string> search, Option<string> source);
 
         /// <summary>
         /// Logs exceptions that occur while retrieving the server response
@@ -1370,10 +1734,11 @@ namespace MailOdds.Api
         /// <param name="perPage"></param>
         /// <param name="type"></param>
         /// <param name="search"></param>
-        private void OnErrorListSuppressionDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, Option<int> page, Option<int> perPage, Option<string> type, Option<string> search)
+        /// <param name="source"></param>
+        private void OnErrorListSuppressionDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, Option<int> page, Option<int> perPage, Option<string> type, Option<string> search, Option<string> source)
         {
             bool suppressDefaultLogLocalVar = false;
-            OnErrorListSuppression(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, page, perPage, type, search);
+            OnErrorListSuppression(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, page, perPage, type, search, source);
             if (!suppressDefaultLogLocalVar)
                 Logger.LogError(exceptionLocalVar, "An error occurred while sending the request to the server.");
         }
@@ -1389,7 +1754,8 @@ namespace MailOdds.Api
         /// <param name="perPage"></param>
         /// <param name="type"></param>
         /// <param name="search"></param>
-        partial void OnErrorListSuppression(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, Option<int> page, Option<int> perPage, Option<string> type, Option<string> search);
+        /// <param name="source"></param>
+        partial void OnErrorListSuppression(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, Option<int> page, Option<int> perPage, Option<string> type, Option<string> search, Option<string> source);
 
         /// <summary>
         /// List suppression entries List all suppression entries for the account.
@@ -1398,13 +1764,14 @@ namespace MailOdds.Api
         /// <param name="perPage"> (optional, default to 50)</param>
         /// <param name="type"> (optional)</param>
         /// <param name="search"> (optional)</param>
+        /// <param name="source">Filter by entry source (e.g. api, bounce, complaint) (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IListSuppressionApiResponse"/>&gt;</returns>
-        public async Task<IListSuppressionApiResponse?> ListSuppressionOrDefaultAsync(Option<int> page = default, Option<int> perPage = default, Option<string> type = default, Option<string> search = default, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IListSuppressionApiResponse?> ListSuppressionOrDefaultAsync(Option<int> page = default, Option<int> perPage = default, Option<string> type = default, Option<string> search = default, Option<string> source = default, System.Threading.CancellationToken cancellationToken = default)
         {
             try
             {
-                return await ListSuppressionAsync(page, perPage, type, search, cancellationToken).ConfigureAwait(false);
+                return await ListSuppressionAsync(page, perPage, type, search, source, cancellationToken).ConfigureAwait(false);
             }
             catch (Exception)
             {
@@ -1420,17 +1787,18 @@ namespace MailOdds.Api
         /// <param name="perPage"> (optional, default to 50)</param>
         /// <param name="type"> (optional)</param>
         /// <param name="search"> (optional)</param>
+        /// <param name="source">Filter by entry source (e.g. api, bounce, complaint) (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IListSuppressionApiResponse"/>&gt;</returns>
-        public async Task<IListSuppressionApiResponse> ListSuppressionAsync(Option<int> page = default, Option<int> perPage = default, Option<string> type = default, Option<string> search = default, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IListSuppressionApiResponse> ListSuppressionAsync(Option<int> page = default, Option<int> perPage = default, Option<string> type = default, Option<string> search = default, Option<string> source = default, System.Threading.CancellationToken cancellationToken = default)
         {
             UriBuilder uriBuilderLocalVar = new UriBuilder();
 
             try
             {
-                ValidateListSuppression(type, search);
+                ValidateListSuppression(type, search, source);
 
-                FormatListSuppression(ref page, ref perPage, ref type, ref search);
+                FormatListSuppression(ref page, ref perPage, ref type, ref search, ref source);
 
                 using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
                 {
@@ -1454,6 +1822,9 @@ namespace MailOdds.Api
 
                     if (search.IsSet)
                         parseQueryStringLocalVar["search"] = ClientUtils.ParameterToString(search.Value);
+
+                    if (source.IsSet)
+                        parseQueryStringLocalVar["source"] = ClientUtils.ParameterToString(source.Value);
 
                     uriBuilderLocalVar.Query = parseQueryStringLocalVar.ToString();
 
@@ -1493,7 +1864,7 @@ namespace MailOdds.Api
                             }
                         }
 
-                        AfterListSuppressionDefaultImplementation(apiResponseLocalVar, page, perPage, type, search);
+                        AfterListSuppressionDefaultImplementation(apiResponseLocalVar, page, perPage, type, search, source);
 
                         Events.ExecuteOnListSuppression(apiResponseLocalVar);
 
@@ -1507,7 +1878,7 @@ namespace MailOdds.Api
             }
             catch(Exception e)
             {
-                OnErrorListSuppressionDefaultImplementation(e, "/v1/suppression", uriBuilderLocalVar.Path, page, perPage, type, search);
+                OnErrorListSuppressionDefaultImplementation(e, "/v1/suppression", uriBuilderLocalVar.Path, page, perPage, type, search, source);
                 Events.ExecuteOnErrorListSuppression(e);
                 throw;
             }

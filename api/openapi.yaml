@@ -16,7 +16,27 @@ info:
     \nAll responses include:\n- `schema_version`: API schema version (currently \"\
     1.0\")\n- `request_id`: Unique request identifier for debugging\n\nError responses\
     \ include:\n- `error`: Machine-readable error code\n- `message`: Human-readable\
-    \ error description\n"
+    \ error description\n\n## Webhooks\n\nMailOdds can send webhook notifications\
+    \ for job completion and email delivery events.\nConfigure webhooks in the dashboard\
+    \ or per-job via the `webhook_url` field.\n\n### Event Types\n\n| Event | Description\
+    \ |\n|-------|-------------|\n| `job.completed` | Validation job finished processing\
+    \ |\n| `job.failed` | Validation job failed |\n| `message.queued` | Email queued\
+    \ for delivery |\n| `message.delivered` | Email delivered to recipient |\n| `message.bounced`\
+    \ | Email bounced |\n| `message.deferred` | Email delivery deferred |\n| `message.failed`\
+    \ | Email delivery failed |\n| `message.opened` | Recipient opened the email |\n\
+    | `message.clicked` | Recipient clicked a link |\n\n### Payload Format\n\n```json\n\
+    {\n  \"event\": \"job.completed\",\n  \"job\": { ... },\n  \"timestamp\": \"2026-01-15T10:30:00Z\"\
+    \n}\n```\n\n### Webhook Signing\n\nIf a webhook secret is configured, each request\
+    \ includes an `X-MailOdds-Signature` header\ncontaining an HMAC-SHA256 hex digest\
+    \ of the request body.\n\n**Verification pseudocode:**\n```\nexpected = HMAC-SHA256(webhook_secret,\
+    \ request_body)\nvalid = constant_time_compare(request.headers[\"X-MailOdds-Signature\"\
+    ], hex(expected))\n```\n\nThe payload is serialized with compact JSON (no extra\
+    \ whitespace, sorted keys) before signing.\n\n### Headers\n\nAll webhook requests\
+    \ include:\n- `Content-Type: application/json`\n- `User-Agent: MailOdds-Webhook/1.0`\n\
+    - `X-MailOdds-Event: {event_type}`\n- `X-Request-Id: {uuid}`\n- `X-MailOdds-Signature:\
+    \ {hmac}` (when secret is configured)\n\n### Retry Policy\n\nFailed deliveries\
+    \ (non-2xx response or timeout) are retried up to 3 times with exponential backoff\
+    \ (10s, 60s, 300s).\n"
   license:
     name: Proprietary
     url: https://mailodds.com/terms
@@ -125,20 +145,21 @@ paths:
       description: List all validation jobs for the authenticated account.
       operationId: listJobs
       parameters:
-      - explode: true
+      - description: Pagination cursor (ISO timestamp from previous response)
+        explode: true
         in: query
-        name: page
+        name: cursor
         required: false
         schema:
-          default: 1
-          type: integer
+          type: string
         style: form
-      - explode: true
+      - description: Results per page
+        explode: true
         in: query
-        name: per_page
+        name: limit
         required: false
         schema:
-          default: 20
+          default: 50
           maximum: 100
           type: integer
         style: form
@@ -551,6 +572,14 @@ paths:
         schema:
           type: string
         style: form
+      - description: "Filter by entry source (e.g. api, bounce, complaint)"
+        explode: true
+        in: query
+        name: source
+        required: false
+        schema:
+          type: string
+        style: form
       responses:
         "200":
           content:
@@ -642,6 +671,45 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
           description: Unauthorized - Invalid or missing API key
       summary: Get suppression statistics
+      tags:
+      - Suppression Lists
+  /v1/suppression/audit:
+    get:
+      description: "Get a chronological log of suppression list changes (additions,\
+        \ removals)."
+      operationId: getSuppressionAuditLog
+      parameters:
+      - explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          type: integer
+        style: form
+      - explode: true
+        in: query
+        name: limit
+        required: false
+        schema:
+          default: 20
+          maximum: 100
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuppressionAuditResponse"
+          description: Audit log entries
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+      summary: Get suppression audit log
       tags:
       - Suppression Lists
   /v1/telemetry/summary:
@@ -1916,7 +1984,9 @@ components:
           format: date-time
           type: string
         suggested_email:
-          description: Typo correction suggestion. Omitted when no typo detected.
+          description: Domain typo correction suggestion based on a static lookup
+            table of common misspellings (e.g. gmial.com -> gmail.com). Not validated
+            via SMTP. Omitted when no match found.
           type: string
         retry_after_ms:
           description: Suggested retry delay in milliseconds. Present only for retry_later
@@ -1988,7 +2058,8 @@ components:
           description: Custom metadata for the job
           type: object
         webhook_url:
-          description: URL for completion webhook
+          description: URL for completion webhook. Payloads are signed with HMAC-SHA256
+            if a webhook secret is configured (see Webhooks section).
           format: uri
           type: string
         idempotency_key:
@@ -2002,20 +2073,27 @@ components:
         schema_version: "1.0"
         job:
           summary:
-            valid: 5
-            do_not_mail: 7
+            valid: 1
+            do_not_mail: 2
             invalid: 5
-            catch_all: 2
-            unknown: 9
-            cancelled_pending: 3
-          progress_percent: 14
-          completed_at: 2000-01-23T04:56:07.000+00:00
+            catch_all: 5
+            unknown: 7
+          error_message: error_message
+          results_expire_at: 2000-01-23T04:56:07.000+00:00
           metadata: "{}"
           total_count: 0
           created_at: 2000-01-23T04:56:07.000+00:00
+          completed_at: 2000-01-23T04:56:07.000+00:00
+          name: name
+          started_at: 2000-01-23T04:56:07.000+00:00
           processed_count: 6
           id: job_abc123xyz
+          request_id: request_id
           status: pending
+          artifacts:
+            csv_valid: https://openapi-generator.tech
+            csv_invalid: https://openapi-generator.tech
+            csv_all: https://openapi-generator.tech
         request_id: request_id
       properties:
         schema_version:
@@ -2030,23 +2108,33 @@ components:
     Job:
       example:
         summary:
-          valid: 5
-          do_not_mail: 7
+          valid: 1
+          do_not_mail: 2
           invalid: 5
-          catch_all: 2
-          unknown: 9
-          cancelled_pending: 3
-        progress_percent: 14
-        completed_at: 2000-01-23T04:56:07.000+00:00
+          catch_all: 5
+          unknown: 7
+        error_message: error_message
+        results_expire_at: 2000-01-23T04:56:07.000+00:00
         metadata: "{}"
         total_count: 0
         created_at: 2000-01-23T04:56:07.000+00:00
+        completed_at: 2000-01-23T04:56:07.000+00:00
+        name: name
+        started_at: 2000-01-23T04:56:07.000+00:00
         processed_count: 6
         id: job_abc123xyz
+        request_id: request_id
         status: pending
+        artifacts:
+          csv_valid: https://openapi-generator.tech
+          csv_invalid: https://openapi-generator.tech
+          csv_all: https://openapi-generator.tech
       properties:
         id:
           example: job_abc123xyz
+          type: string
+        name:
+          description: Job name (from metadata or auto-generated)
           type: string
         status:
           enum:
@@ -2060,60 +2148,93 @@ components:
           type: integer
         processed_count:
           type: integer
-        progress_percent:
-          maximum: 100
-          minimum: 0
-          type: integer
         summary:
           $ref: "#/components/schemas/Job_summary"
         created_at:
           format: date-time
           type: string
+        started_at:
+          description: When processing began. Omitted if not yet started.
+          format: date-time
+          type: string
         completed_at:
+          description: Omitted if not yet completed.
+          format: date-time
+          type: string
+        results_expire_at:
+          description: When job results will be purged
           format: date-time
           type: string
         metadata:
+          description: Custom metadata attached at creation
           type: object
+        error_message:
+          description: Error details. Present only for failed jobs.
+          type: string
+        request_id:
+          description: Request ID from the job creation request
+          type: string
+        artifacts:
+          $ref: "#/components/schemas/Job_artifacts"
+      required:
+      - created_at
+      - id
+      - name
+      - processed_count
+      - results_expire_at
+      - status
+      - total_count
       type: object
     JobListResponse:
       example:
         schema_version: schema_version
-        pagination:
-          per_page: 4
-          total: 7
-          page: 2
-          total_pages: 1
-        jobs:
+        next_cursor: next_cursor
+        data:
         - summary:
-            valid: 5
-            do_not_mail: 7
+            valid: 1
+            do_not_mail: 2
             invalid: 5
-            catch_all: 2
-            unknown: 9
-            cancelled_pending: 3
-          progress_percent: 14
-          completed_at: 2000-01-23T04:56:07.000+00:00
+            catch_all: 5
+            unknown: 7
+          error_message: error_message
+          results_expire_at: 2000-01-23T04:56:07.000+00:00
           metadata: "{}"
           total_count: 0
           created_at: 2000-01-23T04:56:07.000+00:00
+          completed_at: 2000-01-23T04:56:07.000+00:00
+          name: name
+          started_at: 2000-01-23T04:56:07.000+00:00
           processed_count: 6
           id: job_abc123xyz
+          request_id: request_id
           status: pending
+          artifacts:
+            csv_valid: https://openapi-generator.tech
+            csv_invalid: https://openapi-generator.tech
+            csv_all: https://openapi-generator.tech
         - summary:
-            valid: 5
-            do_not_mail: 7
+            valid: 1
+            do_not_mail: 2
             invalid: 5
-            catch_all: 2
-            unknown: 9
-            cancelled_pending: 3
-          progress_percent: 14
-          completed_at: 2000-01-23T04:56:07.000+00:00
+            catch_all: 5
+            unknown: 7
+          error_message: error_message
+          results_expire_at: 2000-01-23T04:56:07.000+00:00
           metadata: "{}"
           total_count: 0
           created_at: 2000-01-23T04:56:07.000+00:00
+          completed_at: 2000-01-23T04:56:07.000+00:00
+          name: name
+          started_at: 2000-01-23T04:56:07.000+00:00
           processed_count: 6
           id: job_abc123xyz
+          request_id: request_id
           status: pending
+          artifacts:
+            csv_valid: https://openapi-generator.tech
+            csv_invalid: https://openapi-generator.tech
+            csv_all: https://openapi-generator.tech
+        has_more: true
         request_id: request_id
       properties:
         schema_version:
@@ -2121,40 +2242,86 @@ components:
         request_id:
           description: Unique request identifier
           type: string
-        jobs:
+        data:
+          description: List of jobs
           items:
             $ref: "#/components/schemas/Job"
           type: array
-        pagination:
-          $ref: "#/components/schemas/Pagination"
+        next_cursor:
+          description: Cursor for next page. Null when no more results.
+          nullable: true
+          type: string
+        has_more:
+          description: Whether more results exist beyond this page
+          type: boolean
       type: object
     ResultsResponse:
       example:
         schema_version: schema_version
         pagination:
-          per_page: 4
-          total: 7
-          page: 2
-          total_pages: 1
+          per_page: 6
+          total: 1
+          page: 0
+          total_pages: 5
+        data:
+        - checks:
+            key: ""
+          sub_status: sub_status
+          mx_host: mx_host
+          domain: domain
+          suppression:
+            match_type: email
+            match_value: match_value
+          action: accept
+          processed_at: 2000-01-23T04:56:07.000+00:00
+          email: email
+          status: valid
+        - checks:
+            key: ""
+          sub_status: sub_status
+          mx_host: mx_host
+          domain: domain
+          suppression:
+            match_type: email
+            match_value: match_value
+          action: accept
+          processed_at: 2000-01-23T04:56:07.000+00:00
+          email: email
+          status: valid
+        job:
+          summary:
+            valid: 1
+            do_not_mail: 2
+            invalid: 5
+            catch_all: 5
+            unknown: 7
+          error_message: error_message
+          results_expire_at: 2000-01-23T04:56:07.000+00:00
+          metadata: "{}"
+          total_count: 0
+          created_at: 2000-01-23T04:56:07.000+00:00
+          completed_at: 2000-01-23T04:56:07.000+00:00
+          name: name
+          started_at: 2000-01-23T04:56:07.000+00:00
+          processed_count: 6
+          id: job_abc123xyz
+          request_id: request_id
+          status: pending
+          artifacts:
+            csv_valid: https://openapi-generator.tech
+            csv_invalid: https://openapi-generator.tech
+            csv_all: https://openapi-generator.tech
         request_id: request_id
-        results:
-        - sub_status: sub_status
-          action: accept
-          processed_at: 2000-01-23T04:56:07.000+00:00
-          email: email
-          status: valid
-        - sub_status: sub_status
-          action: accept
-          processed_at: 2000-01-23T04:56:07.000+00:00
-          email: email
-          status: valid
       properties:
         schema_version:
           type: string
         request_id:
           description: Unique request identifier
           type: string
-        results:
+        job:
+          $ref: "#/components/schemas/Job"
+        data:
+          description: Validation results for this page
           items:
             $ref: "#/components/schemas/ValidationResult"
           type: array
@@ -2162,8 +2329,16 @@ components:
           $ref: "#/components/schemas/Pagination"
       type: object
     ValidationResult:
+      description: Individual result from a bulk validation job
       example:
+        checks:
+          key: ""
         sub_status: sub_status
+        mx_host: mx_host
+        domain: domain
+        suppression:
+          match_type: email
+          match_value: match_value
         action: accept
         processed_at: 2000-01-23T04:56:07.000+00:00
         email: email
@@ -2180,6 +2355,7 @@ components:
           - unknown
           type: string
         sub_status:
+          description: Detailed reason. Omitted when none.
           type: string
         action:
           enum:
@@ -2188,16 +2364,34 @@ components:
           - reject
           - retry_later
           type: string
+        domain:
+          description: Email domain
+          type: string
+        mx_host:
+          description: Primary MX hostname. Omitted when not resolved.
+          type: string
+        checks:
+          additionalProperties: true
+          description: Detailed check results (JSONB). Omitted when not available.
+          type: object
+        suppression:
+          $ref: "#/components/schemas/ValidationResult_suppression"
         processed_at:
           format: date-time
           type: string
+      required:
+      - action
+      - domain
+      - email
+      - processed_at
+      - status
       type: object
     Pagination:
       example:
-        per_page: 4
-        total: 7
-        page: 2
-        total_pages: 1
+        per_page: 6
+        total: 1
+        page: 0
+        total_pages: 5
       properties:
         page:
           type: integer
@@ -2241,10 +2435,10 @@ components:
           type: email
           value: value
         pagination:
-          per_page: 4
-          total: 7
-          page: 2
-          total_pages: 1
+          per_page: 6
+          total: 1
+          page: 0
+          total_pages: 5
         request_id: request_id
       properties:
         schema_version:
@@ -2370,6 +2564,39 @@ components:
           type: integer
         by_type:
           $ref: "#/components/schemas/SuppressionStatsResponse_by_type"
+      type: object
+    SuppressionAuditResponse:
+      example:
+        schema_version: schema_version
+        entries:
+        - event_type: event_type
+          created_at: 2000-01-23T04:56:07.000+00:00
+          details: "{}"
+          id: 0
+          event_category: event_category
+        - event_type: event_type
+          created_at: 2000-01-23T04:56:07.000+00:00
+          details: "{}"
+          id: 0
+          event_category: event_category
+        pagination:
+          per_page: 6
+          total: 1
+          page: 0
+          total_pages: 5
+        request_id: request_id
+      properties:
+        schema_version:
+          type: string
+        request_id:
+          description: Unique request identifier
+          type: string
+        entries:
+          items:
+            $ref: "#/components/schemas/SuppressionAuditResponse_entries_inner"
+          type: array
+        pagination:
+          $ref: "#/components/schemas/Pagination"
       type: object
     TelemetrySummary:
       description: Validation metrics for building dashboards and monitoring.
@@ -2715,11 +2942,18 @@ components:
       type: object
     DeliverRequest:
       example:
-        domain_id: domain_id
         headers: "{}"
-        reply_to: reply_to
         subject: subject
         campaign_type: order_confirmation
+        tags:
+        - tags
+        - tags
+        auto_detect_schema: false
+        domain_id: domain_id
+        reply_to: reply_to
+        ai_summary: ai_summary
+        schema_data:
+          key: schema_data
         options:
           validate_first: true
         from: from
@@ -2731,9 +2965,6 @@ components:
         - name: name
           email: email
         text: text
-        tags:
-        - tags
-        - tags
       properties:
         to:
           description: List of recipient email addresses
@@ -2782,6 +3013,20 @@ components:
           type: string
         structured_data:
           $ref: "#/components/schemas/DeliverRequest_structured_data"
+        schema_data:
+          additionalProperties:
+            type: string
+          description: "Key-value pairs for campaign_type JSON-LD resolution (e.g.,\
+            \ order_number, tracking_url)"
+          type: object
+        auto_detect_schema:
+          default: false
+          description: Auto-detect JSON-LD structured data type from subject line
+          type: boolean
+        ai_summary:
+          description: Hidden text summary for AI email assistants (max 500 characters)
+          maxLength: 500
+          type: string
         options:
           $ref: "#/components/schemas/DeliverRequest_options"
       required:
@@ -3000,30 +3245,95 @@ components:
       type: object
     SendingDomainIdentityScore:
       example:
-        checks:
+        score: 0
+        max_score: 6
+        percentage: 1
+        breakdown:
           return_path:
-            score: 6.027456183070403
+            max_points: 5
+            verified_at: 2000-01-23T04:56:07.000+00:00
             status: status
+            points: 5
           dkim:
-            score: 6.027456183070403
+            max_points: 5
+            verified_at: 2000-01-23T04:56:07.000+00:00
             status: status
+            points: 5
           spf:
-            score: 6.027456183070403
+            max_points: 5
+            verified_at: 2000-01-23T04:56:07.000+00:00
             status: status
+            points: 5
           mx:
-            score: 6.027456183070403
+            max_points: 5
+            verified_at: 2000-01-23T04:56:07.000+00:00
             status: status
+            points: 5
           dmarc:
-            score: 1.4658129805029452
+            max_points: 5
+            verified_at: 2000-01-23T04:56:07.000+00:00
             status: status
-            policy: policy
-        overall_score: 0.8008281904610115
+            points: 5
+          bimi:
+            max_points: 5
+            verified_at: 2000-01-23T04:56:07.000+00:00
+            status: status
+            points: 5
+        grade: A+
       properties:
-        overall_score:
-          description: Composite score 0-100
-          type: number
-        checks:
-          $ref: "#/components/schemas/SendingDomainIdentityScore_checks"
+        score:
+          description: Total points earned across all checks
+          type: integer
+        max_score:
+          description: Maximum possible score (100)
+          type: integer
+        percentage:
+          description: Score as percentage (same as score since max is 100)
+          type: integer
+        breakdown:
+          $ref: "#/components/schemas/SendingDomainIdentityScore_breakdown"
+        grade:
+          description: "Letter grade (A+, A, B, C, D, F)"
+          enum:
+          - A+
+          - A
+          - B
+          - C
+          - D
+          - F
+          type: string
+      required:
+      - breakdown
+      - grade
+      - max_score
+      - percentage
+      - score
+      type: object
+    IdentityScoreCheck:
+      example:
+        max_points: 5
+        verified_at: 2000-01-23T04:56:07.000+00:00
+        status: status
+        points: 5
+      properties:
+        status:
+          description: "Check status (e.g. verified, pending, missing)"
+          type: string
+        points:
+          description: Points earned for this check
+          type: integer
+        max_points:
+          description: Maximum points available for this check
+          type: integer
+        verified_at:
+          description: When the check was last verified
+          format: date-time
+          nullable: true
+          type: string
+      required:
+      - max_points
+      - points
+      - status
       type: object
     CreateListRequest:
       example:
@@ -3230,6 +3540,92 @@ components:
           type: object
         rules_evaluated:
           type: integer
+      type: object
+    WebhookEvent:
+      description: Webhook payload delivered to your endpoint. Fields vary by event
+        type.
+      properties:
+        event:
+          description: Event type
+          enum:
+          - job.completed
+          - job.failed
+          - message.queued
+          - message.delivered
+          - message.bounced
+          - message.deferred
+          - message.failed
+          - message.opened
+          - message.clicked
+          - test
+          type: string
+        timestamp:
+          description: When the event occurred
+          format: date-time
+          type: string
+        job:
+          $ref: "#/components/schemas/Job"
+        message_id:
+          description: Message ID (present for message.* and delivery events)
+          type: string
+        account_id:
+          description: Account ID (present for delivery events)
+          type: integer
+        domain_id:
+          description: Sending domain UUID (present for delivery events)
+          type: string
+        to:
+          description: Recipient email (present for delivery events)
+          type: string
+        status:
+          description: Delivery status (present for delivery events)
+          type: string
+        smtp_code:
+          description: SMTP response code (present for bounced/deferred/failed)
+          type: integer
+        smtp_response:
+          description: SMTP diagnostic string (present for bounced/deferred/failed)
+          type: string
+        mx_host:
+          description: MX host that handled delivery
+          type: string
+        bounce_type:
+          description: Bounce classification (present for message.bounced)
+          enum:
+          - hard
+          - soft
+          nullable: true
+          type: string
+        enhanced_status_code:
+          description: "Enhanced SMTP status code (e.g., 5.1.1)"
+          type: string
+        attempts:
+          description: Number of delivery attempts
+          type: integer
+        isp:
+          description: Receiving ISP name
+          type: string
+        is_mpp:
+          description: Whether the open was from Apple Mail Privacy Protection
+          type: boolean
+        ip_address:
+          description: Client IP (present for message.opened/clicked)
+          type: string
+        user_agent:
+          description: Client user agent (present for message.opened/clicked)
+          type: string
+        is_bot:
+          description: Whether the event was triggered by a bot (present for message.opened/clicked)
+          type: boolean
+        link_url:
+          description: Clicked URL (present for message.clicked)
+          type: string
+        link_index:
+          description: Position of clicked link in message (present for message.clicked)
+          type: integer
+      required:
+      - event
+      - timestamp
       type: object
     validateBatch_request:
       properties:
@@ -3626,24 +4022,41 @@ components:
     getSendingDomainIdentityScore_200_response:
       example:
         identity_score:
-          checks:
+          score: 0
+          max_score: 6
+          percentage: 1
+          breakdown:
             return_path:
-              score: 6.027456183070403
+              max_points: 5
+              verified_at: 2000-01-23T04:56:07.000+00:00
               status: status
+              points: 5
             dkim:
-              score: 6.027456183070403
+              max_points: 5
+              verified_at: 2000-01-23T04:56:07.000+00:00
               status: status
+              points: 5
             spf:
-              score: 6.027456183070403
+              max_points: 5
+              verified_at: 2000-01-23T04:56:07.000+00:00
               status: status
+              points: 5
             mx:
-              score: 6.027456183070403
+              max_points: 5
+              verified_at: 2000-01-23T04:56:07.000+00:00
               status: status
+              points: 5
             dmarc:
-              score: 1.4658129805029452
+              max_points: 5
+              verified_at: 2000-01-23T04:56:07.000+00:00
               status: status
-              policy: policy
-          overall_score: 0.8008281904610115
+              points: 5
+            bimi:
+              max_points: 5
+              verified_at: 2000-01-23T04:56:07.000+00:00
+              status: status
+              points: 5
+          grade: A+
       properties:
         identity_score:
           $ref: "#/components/schemas/SendingDomainIdentityScore"
@@ -3909,13 +4322,13 @@ components:
           type: string
       type: object
     Job_summary:
+      description: Status breakdown. Present when processing has started.
       example:
-        valid: 5
-        do_not_mail: 7
+        valid: 1
+        do_not_mail: 2
         invalid: 5
-        catch_all: 2
-        unknown: 9
-        cancelled_pending: 3
+        catch_all: 5
+        unknown: 7
       properties:
         valid:
           type: integer
@@ -3927,8 +4340,40 @@ components:
           type: integer
         unknown:
           type: integer
-        cancelled_pending:
-          type: integer
+      type: object
+    Job_artifacts:
+      description: Download URLs for completed jobs. Present only when status is completed.
+      example:
+        csv_valid: https://openapi-generator.tech
+        csv_invalid: https://openapi-generator.tech
+        csv_all: https://openapi-generator.tech
+      properties:
+        csv_all:
+          description: CSV with all results
+          format: uri
+          type: string
+        csv_valid:
+          description: CSV with valid emails only
+          format: uri
+          type: string
+        csv_invalid:
+          description: CSV with invalid emails only
+          format: uri
+          type: string
+      type: object
+    ValidationResult_suppression:
+      description: Present only when email matched a suppression entry.
+      example:
+        match_type: email
+        match_value: match_value
+      properties:
+        match_type:
+          enum:
+          - email
+          - domain
+          type: string
+        match_value:
+          type: string
       type: object
     PresignedUploadResponse_upload:
       example:
@@ -3975,6 +4420,28 @@ components:
           type: integer
         domain:
           type: integer
+      type: object
+    SuppressionAuditResponse_entries_inner:
+      example:
+        event_type: event_type
+        created_at: 2000-01-23T04:56:07.000+00:00
+        details: "{}"
+        id: 0
+        event_category: event_category
+      properties:
+        id:
+          type: integer
+        event_type:
+          description: Audit event type
+          type: string
+        event_category:
+          type: string
+        details:
+          description: Event-specific details
+          type: object
+        created_at:
+          format: date-time
+          type: string
       type: object
     TelemetrySummary_totals:
       example:
@@ -4234,59 +4701,52 @@ components:
         ns:
           $ref: "#/components/schemas/SendingDomain_dns_records_ns"
       type: object
-    SendingDomainIdentityScore_checks_dkim:
-      example:
-        score: 6.027456183070403
-        status: status
-      properties:
-        status:
-          type: string
-        score:
-          type: number
-      type: object
-    SendingDomainIdentityScore_checks_dmarc:
-      example:
-        score: 1.4658129805029452
-        status: status
-        policy: policy
-      properties:
-        status:
-          type: string
-        score:
-          type: number
-        policy:
-          type: string
-      type: object
-    SendingDomainIdentityScore_checks:
-      description: Individual check results
+    SendingDomainIdentityScore_breakdown:
+      description: Per-check scoring breakdown
       example:
         return_path:
-          score: 6.027456183070403
+          max_points: 5
+          verified_at: 2000-01-23T04:56:07.000+00:00
           status: status
+          points: 5
         dkim:
-          score: 6.027456183070403
+          max_points: 5
+          verified_at: 2000-01-23T04:56:07.000+00:00
           status: status
+          points: 5
         spf:
-          score: 6.027456183070403
+          max_points: 5
+          verified_at: 2000-01-23T04:56:07.000+00:00
           status: status
+          points: 5
         mx:
-          score: 6.027456183070403
+          max_points: 5
+          verified_at: 2000-01-23T04:56:07.000+00:00
           status: status
+          points: 5
         dmarc:
-          score: 1.4658129805029452
+          max_points: 5
+          verified_at: 2000-01-23T04:56:07.000+00:00
           status: status
-          policy: policy
+          points: 5
+        bimi:
+          max_points: 5
+          verified_at: 2000-01-23T04:56:07.000+00:00
+          status: status
+          points: 5
       properties:
         dkim:
-          $ref: "#/components/schemas/SendingDomainIdentityScore_checks_dkim"
+          $ref: "#/components/schemas/IdentityScoreCheck"
         spf:
-          $ref: "#/components/schemas/SendingDomainIdentityScore_checks_dkim"
+          $ref: "#/components/schemas/IdentityScoreCheck"
         dmarc:
-          $ref: "#/components/schemas/SendingDomainIdentityScore_checks_dmarc"
+          $ref: "#/components/schemas/IdentityScoreCheck"
         mx:
-          $ref: "#/components/schemas/SendingDomainIdentityScore_checks_dkim"
+          $ref: "#/components/schemas/IdentityScoreCheck"
         return_path:
-          $ref: "#/components/schemas/SendingDomainIdentityScore_checks_dkim"
+          $ref: "#/components/schemas/IdentityScoreCheck"
+        bimi:
+          $ref: "#/components/schemas/IdentityScoreCheck"
       type: object
   securitySchemes:
     BearerAuth:

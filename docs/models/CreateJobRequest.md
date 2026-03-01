@@ -8,7 +8,7 @@ Name | Type | Description | Notes
 **Emails** | **List&lt;string&gt;** | List of emails to validate | 
 **Dedup** | **bool** | Remove duplicate emails | [optional] [default to false]
 **Metadata** | **Object** | Custom metadata for the job | [optional] 
-**WebhookUrl** | **string** | URL for completion webhook | [optional] 
+**WebhookUrl** | **string** | URL for completion webhook. Payloads are signed with HMAC-SHA256 if a webhook secret is configured (see Webhooks section). | [optional] 
 **IdempotencyKey** | **string** | Unique key for idempotent requests | [optional] 
 
 [[Back to Model list]](../../README.md#documentation-for-models) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to README]](../../README.md)

@@ -2,7 +2,7 @@
 /*
  * MailOdds Email Validation API
  *
- * MailOdds provides email validation services to help maintain clean email lists  and improve deliverability. The API performs multiple validation checks including  format verification, domain validation, MX record checking, and disposable email detection.  ## Authentication  All API requests require authentication using a Bearer token. Include your API key  in the Authorization header:  ``` Authorization: Bearer YOUR_API_KEY ```  API keys can be created in the MailOdds dashboard.  ## Rate Limits  Rate limits vary by plan: - Free: 10 requests/minute - Starter: 60 requests/minute   - Pro: 300 requests/minute - Business: 1000 requests/minute - Enterprise: Custom limits  ## Response Format  All responses include: - `schema_version`: API schema version (currently \"1.0\") - `request_id`: Unique request identifier for debugging  Error responses include: - `error`: Machine-readable error code - `message`: Human-readable error description 
+ * MailOdds provides email validation services to help maintain clean email lists  and improve deliverability. The API performs multiple validation checks including  format verification, domain validation, MX record checking, and disposable email detection.  ## Authentication  All API requests require authentication using a Bearer token. Include your API key  in the Authorization header:  ``` Authorization: Bearer YOUR_API_KEY ```  API keys can be created in the MailOdds dashboard.  ## Rate Limits  Rate limits vary by plan: - Free: 10 requests/minute - Starter: 60 requests/minute   - Pro: 300 requests/minute - Business: 1000 requests/minute - Enterprise: Custom limits  ## Response Format  All responses include: - `schema_version`: API schema version (currently \"1.0\") - `request_id`: Unique request identifier for debugging  Error responses include: - `error`: Machine-readable error code - `message`: Human-readable error description  ## Webhooks  MailOdds can send webhook notifications for job completion and email delivery events. Configure webhooks in the dashboard or per-job via the `webhook_url` field.  ### Event Types  | Event | Description | |- -- -- --|- -- -- -- -- -- --| | `job.completed` | Validation job finished processing | | `job.failed` | Validation job failed | | `message.queued` | Email queued for delivery | | `message.delivered` | Email delivered to recipient | | `message.bounced` | Email bounced | | `message.deferred` | Email delivery deferred | | `message.failed` | Email delivery failed | | `message.opened` | Recipient opened the email | | `message.clicked` | Recipient clicked a link |  ### Payload Format  ```json {   \"event\": \"job.completed\",   \"job\": { ... },   \"timestamp\": \"2026-01-15T10:30:00Z\" } ```  ### Webhook Signing  If a webhook secret is configured, each request includes an `X-MailOdds-Signature` header containing an HMAC-SHA256 hex digest of the request body.  **Verification pseudocode:** ``` expected = HMAC-SHA256(webhook_secret, request_body) valid = constant_time_compare(request.headers[\"X-MailOdds-Signature\"], hex(expected)) ```  The payload is serialized with compact JSON (no extra whitespace, sorted keys) before signing.  ### Headers  All webhook requests include: - `Content-Type: application/json` - `User-Agent: MailOdds-Webhook/1.0` - `X-MailOdds-Event: {event_type}` - `X-Request-Id: {uuid}` - `X-MailOdds-Signature: {hmac}` (when secret is configured)  ### Retry Policy  Failed deliveries (non-2xx response or timeout) are retried up to 3 times with exponential backoff (10s, 60s, 300s). 
  *
  * The version of the OpenAPI document: 1.0.0
  * Contact: support@mailodds.com
@@ -50,7 +50,7 @@ namespace MailOdds.Model
         /// <param name="mxHost">Primary MX hostname. Omitted when MX not resolved.</param>
         /// <param name="smtpCheck">Whether SMTP verification passed. Omitted when SMTP not checked.</param>
         /// <param name="catchAll">Whether domain is catch-all. Omitted when SMTP not checked.</param>
-        /// <param name="suggestedEmail">Typo correction suggestion. Omitted when no typo detected.</param>
+        /// <param name="suggestedEmail">Domain typo correction suggestion based on a static lookup table of common misspellings (e.g. gmial.com -&gt; gmail.com). Not validated via SMTP. Omitted when no match found.</param>
         /// <param name="retryAfterMs">Suggested retry delay in milliseconds. Present only for retry_later action.</param>
         /// <param name="hasSpf">Whether the domain has an SPF record. Omitted for standard depth.</param>
         /// <param name="hasDmarc">Whether the domain has a DMARC record. Omitted for standard depth.</param>
@@ -830,9 +830,9 @@ namespace MailOdds.Model
         public Option<string?> SuggestedEmailOption { get; private set; }
 
         /// <summary>
-        /// Typo correction suggestion. Omitted when no typo detected.
+        /// Domain typo correction suggestion based on a static lookup table of common misspellings (e.g. gmial.com -&gt; gmail.com). Not validated via SMTP. Omitted when no match found.
         /// </summary>
-        /// <value>Typo correction suggestion. Omitted when no typo detected.</value>
+        /// <value>Domain typo correction suggestion based on a static lookup table of common misspellings (e.g. gmial.com -&gt; gmail.com). Not validated via SMTP. Omitted when no match found.</value>
         [JsonPropertyName("suggested_email")]
         public string? SuggestedEmail { get { return this.SuggestedEmailOption; } set { this.SuggestedEmailOption = new(value); } }
 
@@ -959,7 +959,7 @@ namespace MailOdds.Model
         /// </summary>
         /// <param name="validationContext">Validation context</param>
         /// <returns>Validation Result</returns>
-        IEnumerable<System.ComponentModel.DataAnnotations.ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
+        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
         {
             yield break;
         }
@@ -1301,11 +1301,8 @@ namespace MailOdds.Model
             if (validationResponse.RequestIdOption.IsSet)
                 writer.WriteString("request_id", validationResponse.RequestId);
 
-            if (validationResponse.SubStatusOption.IsSet && validationResponse.SubStatusOption.Value != null)
-            {
-                var subStatusRawValue = ValidationResponse.SubStatusEnumToJsonValue(validationResponse.SubStatusOption.Value!.Value);
-                writer.WriteString("sub_status", subStatusRawValue);
-            }
+            var subStatusRawValue = ValidationResponse.SubStatusEnumToJsonValue(validationResponse.SubStatusOption.Value!.Value);
+            writer.WriteString("sub_status", subStatusRawValue);
             if (validationResponse.MxHostOption.IsSet)
                 writer.WriteString("mx_host", validationResponse.MxHost);
 
@@ -1327,11 +1324,8 @@ namespace MailOdds.Model
             if (validationResponse.HasDmarcOption.IsSet)
                 writer.WriteBoolean("has_dmarc", validationResponse.HasDmarcOption.Value!.Value);
 
-            if (validationResponse.DmarcPolicyOption.IsSet && validationResponse.DmarcPolicyOption.Value != null)
-            {
-                var dmarcPolicyRawValue = ValidationResponse.DmarcPolicyEnumToJsonValue(validationResponse.DmarcPolicyOption.Value!.Value);
-                writer.WriteString("dmarc_policy", dmarcPolicyRawValue);
-            }
+            var dmarcPolicyRawValue = ValidationResponse.DmarcPolicyEnumToJsonValue(validationResponse.DmarcPolicyOption.Value!.Value);
+            writer.WriteString("dmarc_policy", dmarcPolicyRawValue);
             if (validationResponse.DnsblListedOption.IsSet)
                 writer.WriteBoolean("dnsbl_listed", validationResponse.DnsblListedOption.Value!.Value);
 

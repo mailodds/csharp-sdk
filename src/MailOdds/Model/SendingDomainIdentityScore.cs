@@ -2,7 +2,7 @@
 /*
  * MailOdds Email Validation API
  *
- * MailOdds provides email validation services to help maintain clean email lists  and improve deliverability. The API performs multiple validation checks including  format verification, domain validation, MX record checking, and disposable email detection.  ## Authentication  All API requests require authentication using a Bearer token. Include your API key  in the Authorization header:  ``` Authorization: Bearer YOUR_API_KEY ```  API keys can be created in the MailOdds dashboard.  ## Rate Limits  Rate limits vary by plan: - Free: 10 requests/minute - Starter: 60 requests/minute   - Pro: 300 requests/minute - Business: 1000 requests/minute - Enterprise: Custom limits  ## Response Format  All responses include: - `schema_version`: API schema version (currently \"1.0\") - `request_id`: Unique request identifier for debugging  Error responses include: - `error`: Machine-readable error code - `message`: Human-readable error description 
+ * MailOdds provides email validation services to help maintain clean email lists  and improve deliverability. The API performs multiple validation checks including  format verification, domain validation, MX record checking, and disposable email detection.  ## Authentication  All API requests require authentication using a Bearer token. Include your API key  in the Authorization header:  ``` Authorization: Bearer YOUR_API_KEY ```  API keys can be created in the MailOdds dashboard.  ## Rate Limits  Rate limits vary by plan: - Free: 10 requests/minute - Starter: 60 requests/minute   - Pro: 300 requests/minute - Business: 1000 requests/minute - Enterprise: Custom limits  ## Response Format  All responses include: - `schema_version`: API schema version (currently \"1.0\") - `request_id`: Unique request identifier for debugging  Error responses include: - `error`: Machine-readable error code - `message`: Human-readable error description  ## Webhooks  MailOdds can send webhook notifications for job completion and email delivery events. Configure webhooks in the dashboard or per-job via the `webhook_url` field.  ### Event Types  | Event | Description | |- -- -- --|- -- -- -- -- -- --| | `job.completed` | Validation job finished processing | | `job.failed` | Validation job failed | | `message.queued` | Email queued for delivery | | `message.delivered` | Email delivered to recipient | | `message.bounced` | Email bounced | | `message.deferred` | Email delivery deferred | | `message.failed` | Email delivery failed | | `message.opened` | Recipient opened the email | | `message.clicked` | Recipient clicked a link |  ### Payload Format  ```json {   \"event\": \"job.completed\",   \"job\": { ... },   \"timestamp\": \"2026-01-15T10:30:00Z\" } ```  ### Webhook Signing  If a webhook secret is configured, each request includes an `X-MailOdds-Signature` header containing an HMAC-SHA256 hex digest of the request body.  **Verification pseudocode:** ``` expected = HMAC-SHA256(webhook_secret, request_body) valid = constant_time_compare(request.headers[\"X-MailOdds-Signature\"], hex(expected)) ```  The payload is serialized with compact JSON (no extra whitespace, sorted keys) before signing.  ### Headers  All webhook requests include: - `Content-Type: application/json` - `User-Agent: MailOdds-Webhook/1.0` - `X-MailOdds-Event: {event_type}` - `X-Request-Id: {uuid}` - `X-MailOdds-Signature: {hmac}` (when secret is configured)  ### Retry Policy  Failed deliveries (non-2xx response or timeout) are retried up to 3 times with exponential backoff (10s, 60s, 300s). 
  *
  * The version of the OpenAPI document: 1.0.0
  * Contact: support@mailodds.com
@@ -34,44 +34,180 @@ namespace MailOdds.Model
         /// <summary>
         /// Initializes a new instance of the <see cref="SendingDomainIdentityScore" /> class.
         /// </summary>
-        /// <param name="overallScore">Composite score 0-100</param>
-        /// <param name="checks">checks</param>
+        /// <param name="score">Total points earned across all checks</param>
+        /// <param name="maxScore">Maximum possible score (100)</param>
+        /// <param name="percentage">Score as percentage (same as score since max is 100)</param>
+        /// <param name="breakdown">breakdown</param>
+        /// <param name="grade">Letter grade (A+, A, B, C, D, F)</param>
         [JsonConstructor]
-        public SendingDomainIdentityScore(Option<decimal?> overallScore = default, Option<SendingDomainIdentityScoreChecks?> checks = default)
+        public SendingDomainIdentityScore(int score, int maxScore, int percentage, SendingDomainIdentityScoreBreakdown breakdown, GradeEnum grade)
         {
-            OverallScoreOption = overallScore;
-            ChecksOption = checks;
+            Score = score;
+            MaxScore = maxScore;
+            Percentage = percentage;
+            Breakdown = breakdown;
+            Grade = grade;
             OnCreated();
         }
 
         partial void OnCreated();
 
         /// <summary>
-        /// Used to track the state of OverallScore
+        /// Letter grade (A+, A, B, C, D, F)
         /// </summary>
-        [JsonIgnore]
-        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<decimal?> OverallScoreOption { get; private set; }
+        /// <value>Letter grade (A+, A, B, C, D, F)</value>
+        public enum GradeEnum
+        {
+            /// <summary>
+            /// Enum A for value: A+
+            /// </summary>
+            A = 1,
+
+            /// <summary>
+            /// Enum A2 for value: A
+            /// </summary>
+            A2 = 2,
+
+            /// <summary>
+            /// Enum B for value: B
+            /// </summary>
+            B = 3,
+
+            /// <summary>
+            /// Enum C for value: C
+            /// </summary>
+            C = 4,
+
+            /// <summary>
+            /// Enum D for value: D
+            /// </summary>
+            D = 5,
+
+            /// <summary>
+            /// Enum F for value: F
+            /// </summary>
+            F = 6
+        }
 
         /// <summary>
-        /// Composite score 0-100
+        /// Returns a <see cref="GradeEnum"/>
         /// </summary>
-        /// <value>Composite score 0-100</value>
-        [JsonPropertyName("overall_score")]
-        public decimal? OverallScore { get { return this.OverallScoreOption; } set { this.OverallScoreOption = new(value); } }
+        /// <param name="value"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public static GradeEnum GradeEnumFromString(string value)
+        {
+            if (value.Equals("A+"))
+                return GradeEnum.A;
+
+            if (value.Equals("A"))
+                return GradeEnum.A2;
+
+            if (value.Equals("B"))
+                return GradeEnum.B;
+
+            if (value.Equals("C"))
+                return GradeEnum.C;
+
+            if (value.Equals("D"))
+                return GradeEnum.D;
+
+            if (value.Equals("F"))
+                return GradeEnum.F;
+
+            throw new NotImplementedException($"Could not convert value to type GradeEnum: '{value}'");
+        }
 
         /// <summary>
-        /// Used to track the state of Checks
+        /// Returns a <see cref="GradeEnum"/>
         /// </summary>
-        [JsonIgnore]
-        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<SendingDomainIdentityScoreChecks?> ChecksOption { get; private set; }
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static GradeEnum? GradeEnumFromStringOrDefault(string value)
+        {
+            if (value.Equals("A+"))
+                return GradeEnum.A;
+
+            if (value.Equals("A"))
+                return GradeEnum.A2;
+
+            if (value.Equals("B"))
+                return GradeEnum.B;
+
+            if (value.Equals("C"))
+                return GradeEnum.C;
+
+            if (value.Equals("D"))
+                return GradeEnum.D;
+
+            if (value.Equals("F"))
+                return GradeEnum.F;
+
+            return null;
+        }
 
         /// <summary>
-        /// Gets or Sets Checks
+        /// Converts the <see cref="GradeEnum"/> to the json value
         /// </summary>
-        [JsonPropertyName("checks")]
-        public SendingDomainIdentityScoreChecks? Checks { get { return this.ChecksOption; } set { this.ChecksOption = new(value); } }
+        /// <param name="value"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public static string GradeEnumToJsonValue(GradeEnum value)
+        {
+            if (value == GradeEnum.A)
+                return "A+";
+
+            if (value == GradeEnum.A2)
+                return "A";
+
+            if (value == GradeEnum.B)
+                return "B";
+
+            if (value == GradeEnum.C)
+                return "C";
+
+            if (value == GradeEnum.D)
+                return "D";
+
+            if (value == GradeEnum.F)
+                return "F";
+
+            throw new NotImplementedException($"Value could not be handled: '{value}'");
+        }
+
+        /// <summary>
+        /// Letter grade (A+, A, B, C, D, F)
+        /// </summary>
+        /// <value>Letter grade (A+, A, B, C, D, F)</value>
+        [JsonPropertyName("grade")]
+        public GradeEnum Grade { get; set; }
+
+        /// <summary>
+        /// Total points earned across all checks
+        /// </summary>
+        /// <value>Total points earned across all checks</value>
+        [JsonPropertyName("score")]
+        public int Score { get; set; }
+
+        /// <summary>
+        /// Maximum possible score (100)
+        /// </summary>
+        /// <value>Maximum possible score (100)</value>
+        [JsonPropertyName("max_score")]
+        public int MaxScore { get; set; }
+
+        /// <summary>
+        /// Score as percentage (same as score since max is 100)
+        /// </summary>
+        /// <value>Score as percentage (same as score since max is 100)</value>
+        [JsonPropertyName("percentage")]
+        public int Percentage { get; set; }
+
+        /// <summary>
+        /// Gets or Sets Breakdown
+        /// </summary>
+        [JsonPropertyName("breakdown")]
+        public SendingDomainIdentityScoreBreakdown Breakdown { get; set; }
 
         /// <summary>
         /// Returns the string presentation of the object
@@ -81,8 +217,11 @@ namespace MailOdds.Model
         {
             StringBuilder sb = new StringBuilder();
             sb.Append("class SendingDomainIdentityScore {\n");
-            sb.Append("  OverallScore: ").Append(OverallScore).Append("\n");
-            sb.Append("  Checks: ").Append(Checks).Append("\n");
+            sb.Append("  Score: ").Append(Score).Append("\n");
+            sb.Append("  MaxScore: ").Append(MaxScore).Append("\n");
+            sb.Append("  Percentage: ").Append(Percentage).Append("\n");
+            sb.Append("  Breakdown: ").Append(Breakdown).Append("\n");
+            sb.Append("  Grade: ").Append(Grade).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -92,7 +231,7 @@ namespace MailOdds.Model
         /// </summary>
         /// <param name="validationContext">Validation context</param>
         /// <returns>Validation Result</returns>
-        IEnumerable<System.ComponentModel.DataAnnotations.ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
+        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
         {
             yield break;
         }
@@ -120,8 +259,11 @@ namespace MailOdds.Model
 
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
-            Option<decimal?> overallScore = default;
-            Option<SendingDomainIdentityScoreChecks?> checks = default;
+            Option<int?> score = default;
+            Option<int?> maxScore = default;
+            Option<int?> percentage = default;
+            Option<SendingDomainIdentityScoreBreakdown?> breakdown = default;
+            Option<SendingDomainIdentityScore.GradeEnum?> grade = default;
 
             while (utf8JsonReader.Read())
             {
@@ -138,11 +280,22 @@ namespace MailOdds.Model
 
                     switch (localVarJsonPropertyName)
                     {
-                        case "overall_score":
-                            overallScore = new Option<decimal?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (decimal?)null : utf8JsonReader.GetDecimal());
+                        case "score":
+                            score = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
                             break;
-                        case "checks":
-                            checks = new Option<SendingDomainIdentityScoreChecks?>(JsonSerializer.Deserialize<SendingDomainIdentityScoreChecks>(ref utf8JsonReader, jsonSerializerOptions)!);
+                        case "max_score":
+                            maxScore = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
+                            break;
+                        case "percentage":
+                            percentage = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
+                            break;
+                        case "breakdown":
+                            breakdown = new Option<SendingDomainIdentityScoreBreakdown?>(JsonSerializer.Deserialize<SendingDomainIdentityScoreBreakdown>(ref utf8JsonReader, jsonSerializerOptions)!);
+                            break;
+                        case "grade":
+                            string? gradeRawValue = utf8JsonReader.GetString();
+                            if (gradeRawValue != null)
+                                grade = new Option<SendingDomainIdentityScore.GradeEnum?>(SendingDomainIdentityScore.GradeEnumFromStringOrDefault(gradeRawValue));
                             break;
                         default:
                             break;
@@ -150,13 +303,37 @@ namespace MailOdds.Model
                 }
             }
 
-            if (overallScore.IsSet && overallScore.Value == null)
-                throw new ArgumentNullException(nameof(overallScore), "Property is not nullable for class SendingDomainIdentityScore.");
+            if (!score.IsSet)
+                throw new ArgumentException("Property is required for class SendingDomainIdentityScore.", nameof(score));
 
-            if (checks.IsSet && checks.Value == null)
-                throw new ArgumentNullException(nameof(checks), "Property is not nullable for class SendingDomainIdentityScore.");
+            if (!maxScore.IsSet)
+                throw new ArgumentException("Property is required for class SendingDomainIdentityScore.", nameof(maxScore));
 
-            return new SendingDomainIdentityScore(overallScore, checks);
+            if (!percentage.IsSet)
+                throw new ArgumentException("Property is required for class SendingDomainIdentityScore.", nameof(percentage));
+
+            if (!breakdown.IsSet)
+                throw new ArgumentException("Property is required for class SendingDomainIdentityScore.", nameof(breakdown));
+
+            if (!grade.IsSet)
+                throw new ArgumentException("Property is required for class SendingDomainIdentityScore.", nameof(grade));
+
+            if (score.IsSet && score.Value == null)
+                throw new ArgumentNullException(nameof(score), "Property is not nullable for class SendingDomainIdentityScore.");
+
+            if (maxScore.IsSet && maxScore.Value == null)
+                throw new ArgumentNullException(nameof(maxScore), "Property is not nullable for class SendingDomainIdentityScore.");
+
+            if (percentage.IsSet && percentage.Value == null)
+                throw new ArgumentNullException(nameof(percentage), "Property is not nullable for class SendingDomainIdentityScore.");
+
+            if (breakdown.IsSet && breakdown.Value == null)
+                throw new ArgumentNullException(nameof(breakdown), "Property is not nullable for class SendingDomainIdentityScore.");
+
+            if (grade.IsSet && grade.Value == null)
+                throw new ArgumentNullException(nameof(grade), "Property is not nullable for class SendingDomainIdentityScore.");
+
+            return new SendingDomainIdentityScore(score.Value!.Value!, maxScore.Value!.Value!, percentage.Value!.Value!, breakdown.Value!, grade.Value!.Value!);
         }
 
         /// <summary>
@@ -183,17 +360,19 @@ namespace MailOdds.Model
         /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, SendingDomainIdentityScore sendingDomainIdentityScore, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (sendingDomainIdentityScore.ChecksOption.IsSet && sendingDomainIdentityScore.Checks == null)
-                throw new ArgumentNullException(nameof(sendingDomainIdentityScore.Checks), "Property is required for class SendingDomainIdentityScore.");
+            if (sendingDomainIdentityScore.Breakdown == null)
+                throw new ArgumentNullException(nameof(sendingDomainIdentityScore.Breakdown), "Property is required for class SendingDomainIdentityScore.");
 
-            if (sendingDomainIdentityScore.OverallScoreOption.IsSet)
-                writer.WriteNumber("overall_score", sendingDomainIdentityScore.OverallScoreOption.Value!.Value);
+            writer.WriteNumber("score", sendingDomainIdentityScore.Score);
 
-            if (sendingDomainIdentityScore.ChecksOption.IsSet)
-            {
-                writer.WritePropertyName("checks");
-                JsonSerializer.Serialize(writer, sendingDomainIdentityScore.Checks, jsonSerializerOptions);
-            }
+            writer.WriteNumber("max_score", sendingDomainIdentityScore.MaxScore);
+
+            writer.WriteNumber("percentage", sendingDomainIdentityScore.Percentage);
+
+            writer.WritePropertyName("breakdown");
+            JsonSerializer.Serialize(writer, sendingDomainIdentityScore.Breakdown, jsonSerializerOptions);
+            var gradeRawValue = SendingDomainIdentityScore.GradeEnumToJsonValue(sendingDomainIdentityScore.Grade);
+            writer.WriteString("grade", gradeRawValue);
         }
     }
 }

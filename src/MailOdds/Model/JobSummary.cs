@@ -2,7 +2,7 @@
 /*
  * MailOdds Email Validation API
  *
- * MailOdds provides email validation services to help maintain clean email lists  and improve deliverability. The API performs multiple validation checks including  format verification, domain validation, MX record checking, and disposable email detection.  ## Authentication  All API requests require authentication using a Bearer token. Include your API key  in the Authorization header:  ``` Authorization: Bearer YOUR_API_KEY ```  API keys can be created in the MailOdds dashboard.  ## Rate Limits  Rate limits vary by plan: - Free: 10 requests/minute - Starter: 60 requests/minute   - Pro: 300 requests/minute - Business: 1000 requests/minute - Enterprise: Custom limits  ## Response Format  All responses include: - `schema_version`: API schema version (currently \"1.0\") - `request_id`: Unique request identifier for debugging  Error responses include: - `error`: Machine-readable error code - `message`: Human-readable error description 
+ * MailOdds provides email validation services to help maintain clean email lists  and improve deliverability. The API performs multiple validation checks including  format verification, domain validation, MX record checking, and disposable email detection.  ## Authentication  All API requests require authentication using a Bearer token. Include your API key  in the Authorization header:  ``` Authorization: Bearer YOUR_API_KEY ```  API keys can be created in the MailOdds dashboard.  ## Rate Limits  Rate limits vary by plan: - Free: 10 requests/minute - Starter: 60 requests/minute   - Pro: 300 requests/minute - Business: 1000 requests/minute - Enterprise: Custom limits  ## Response Format  All responses include: - `schema_version`: API schema version (currently \"1.0\") - `request_id`: Unique request identifier for debugging  Error responses include: - `error`: Machine-readable error code - `message`: Human-readable error description  ## Webhooks  MailOdds can send webhook notifications for job completion and email delivery events. Configure webhooks in the dashboard or per-job via the `webhook_url` field.  ### Event Types  | Event | Description | |- -- -- --|- -- -- -- -- -- --| | `job.completed` | Validation job finished processing | | `job.failed` | Validation job failed | | `message.queued` | Email queued for delivery | | `message.delivered` | Email delivered to recipient | | `message.bounced` | Email bounced | | `message.deferred` | Email delivery deferred | | `message.failed` | Email delivery failed | | `message.opened` | Recipient opened the email | | `message.clicked` | Recipient clicked a link |  ### Payload Format  ```json {   \"event\": \"job.completed\",   \"job\": { ... },   \"timestamp\": \"2026-01-15T10:30:00Z\" } ```  ### Webhook Signing  If a webhook secret is configured, each request includes an `X-MailOdds-Signature` header containing an HMAC-SHA256 hex digest of the request body.  **Verification pseudocode:** ``` expected = HMAC-SHA256(webhook_secret, request_body) valid = constant_time_compare(request.headers[\"X-MailOdds-Signature\"], hex(expected)) ```  The payload is serialized with compact JSON (no extra whitespace, sorted keys) before signing.  ### Headers  All webhook requests include: - `Content-Type: application/json` - `User-Agent: MailOdds-Webhook/1.0` - `X-MailOdds-Event: {event_type}` - `X-Request-Id: {uuid}` - `X-MailOdds-Signature: {hmac}` (when secret is configured)  ### Retry Policy  Failed deliveries (non-2xx response or timeout) are retried up to 3 times with exponential backoff (10s, 60s, 300s). 
  *
  * The version of the OpenAPI document: 1.0.0
  * Contact: support@mailodds.com
@@ -27,7 +27,7 @@ using MailOdds.Client;
 namespace MailOdds.Model
 {
     /// <summary>
-    /// JobSummary
+    /// Status breakdown. Present when processing has started.
     /// </summary>
     public partial class JobSummary : IValidatableObject
     {
@@ -39,16 +39,14 @@ namespace MailOdds.Model
         /// <param name="catchAll">catchAll</param>
         /// <param name="doNotMail">doNotMail</param>
         /// <param name="unknown">unknown</param>
-        /// <param name="cancelledPending">cancelledPending</param>
         [JsonConstructor]
-        public JobSummary(Option<int?> valid = default, Option<int?> invalid = default, Option<int?> catchAll = default, Option<int?> doNotMail = default, Option<int?> unknown = default, Option<int?> cancelledPending = default)
+        public JobSummary(Option<int?> valid = default, Option<int?> invalid = default, Option<int?> catchAll = default, Option<int?> doNotMail = default, Option<int?> unknown = default)
         {
             ValidOption = valid;
             InvalidOption = invalid;
             CatchAllOption = catchAll;
             DoNotMailOption = doNotMail;
             UnknownOption = unknown;
-            CancelledPendingOption = cancelledPending;
             OnCreated();
         }
 
@@ -120,19 +118,6 @@ namespace MailOdds.Model
         public int? Unknown { get { return this.UnknownOption; } set { this.UnknownOption = new(value); } }
 
         /// <summary>
-        /// Used to track the state of CancelledPending
-        /// </summary>
-        [JsonIgnore]
-        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> CancelledPendingOption { get; private set; }
-
-        /// <summary>
-        /// Gets or Sets CancelledPending
-        /// </summary>
-        [JsonPropertyName("cancelled_pending")]
-        public int? CancelledPending { get { return this.CancelledPendingOption; } set { this.CancelledPendingOption = new(value); } }
-
-        /// <summary>
         /// Returns the string presentation of the object
         /// </summary>
         /// <returns>String presentation of the object</returns>
@@ -145,7 +130,6 @@ namespace MailOdds.Model
             sb.Append("  CatchAll: ").Append(CatchAll).Append("\n");
             sb.Append("  DoNotMail: ").Append(DoNotMail).Append("\n");
             sb.Append("  Unknown: ").Append(Unknown).Append("\n");
-            sb.Append("  CancelledPending: ").Append(CancelledPending).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -155,7 +139,7 @@ namespace MailOdds.Model
         /// </summary>
         /// <param name="validationContext">Validation context</param>
         /// <returns>Validation Result</returns>
-        IEnumerable<System.ComponentModel.DataAnnotations.ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
+        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
         {
             yield break;
         }
@@ -188,7 +172,6 @@ namespace MailOdds.Model
             Option<int?> catchAll = default;
             Option<int?> doNotMail = default;
             Option<int?> unknown = default;
-            Option<int?> cancelledPending = default;
 
             while (utf8JsonReader.Read())
             {
@@ -220,9 +203,6 @@ namespace MailOdds.Model
                         case "unknown":
                             unknown = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
                             break;
-                        case "cancelled_pending":
-                            cancelledPending = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
-                            break;
                         default:
                             break;
                     }
@@ -244,10 +224,7 @@ namespace MailOdds.Model
             if (unknown.IsSet && unknown.Value == null)
                 throw new ArgumentNullException(nameof(unknown), "Property is not nullable for class JobSummary.");
 
-            if (cancelledPending.IsSet && cancelledPending.Value == null)
-                throw new ArgumentNullException(nameof(cancelledPending), "Property is not nullable for class JobSummary.");
-
-            return new JobSummary(valid, invalid, catchAll, doNotMail, unknown, cancelledPending);
+            return new JobSummary(valid, invalid, catchAll, doNotMail, unknown);
         }
 
         /// <summary>
@@ -288,9 +265,6 @@ namespace MailOdds.Model
 
             if (jobSummary.UnknownOption.IsSet)
                 writer.WriteNumber("unknown", jobSummary.UnknownOption.Value!.Value);
-
-            if (jobSummary.CancelledPendingOption.IsSet)
-                writer.WriteNumber("cancelled_pending", jobSummary.CancelledPendingOption.Value!.Value);
         }
     }
 }
