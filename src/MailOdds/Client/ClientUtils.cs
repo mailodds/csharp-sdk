@@ -1,7 +1,7 @@
 /*
- * MailOdds Email Validation API
+ * MailOdds Email Platform API
  *
- * MailOdds provides email validation services to help maintain clean email lists  and improve deliverability. The API performs multiple validation checks including  format verification, domain validation, MX record checking, and disposable email detection.  ## Authentication  All API requests require authentication using a Bearer token. Include your API key  in the Authorization header:  ``` Authorization: Bearer YOUR_API_KEY ```  API keys can be created in the MailOdds dashboard.  ## Rate Limits  Rate limits vary by plan: - Free: 10 requests/minute - Starter: 60 requests/minute   - Pro: 300 requests/minute - Business: 1000 requests/minute - Enterprise: Custom limits  ## Response Format  All responses include: - `schema_version`: API schema version (currently \"1.0\") - `request_id`: Unique request identifier for debugging  Error responses include: - `error`: Machine-readable error code - `message`: Human-readable error description  ## Webhooks  MailOdds can send webhook notifications for job completion and email delivery events. Configure webhooks in the dashboard or per-job via the `webhook_url` field.  ### Event Types  | Event | Description | |- -- -- --|- -- -- -- -- -- --| | `job.completed` | Validation job finished processing | | `job.failed` | Validation job failed | | `message.queued` | Email queued for delivery | | `message.delivered` | Email delivered to recipient | | `message.bounced` | Email bounced | | `message.deferred` | Email delivery deferred | | `message.failed` | Email delivery failed | | `message.opened` | Recipient opened the email | | `message.clicked` | Recipient clicked a link |  ### Payload Format  ```json {   \"event\": \"job.completed\",   \"job\": { ... },   \"timestamp\": \"2026-01-15T10:30:00Z\" } ```  ### Webhook Signing  If a webhook secret is configured, each request includes an `X-MailOdds-Signature` header containing an HMAC-SHA256 hex digest of the request body.  **Verification pseudocode:** ``` expected = HMAC-SHA256(webhook_secret, request_body) valid = constant_time_compare(request.headers[\"X-MailOdds-Signature\"], hex(expected)) ```  The payload is serialized with compact JSON (no extra whitespace, sorted keys) before signing.  ### Headers  All webhook requests include: - `Content-Type: application/json` - `User-Agent: MailOdds-Webhook/1.0` - `X-MailOdds-Event: {event_type}` - `X-Request-Id: {uuid}` - `X-MailOdds-Signature: {hmac}` (when secret is configured)  ### Retry Policy  Failed deliveries (non-2xx response or timeout) are retried up to 3 times with exponential backoff (10s, 60s, 300s). 
+ * MailOdds is an email platform for validation, sending, campaigns, deliverability monitoring, and analytics. The API performs multi-layer validation checks, delivers transactional and campaign email with DKIM dual signing, and tracks engagement with privacy-first analytics.  ## Authentication  All API requests require authentication using a Bearer token. Include your API key  in the Authorization header:  ``` Authorization: Bearer YOUR_API_KEY ```  API keys can be created in the MailOdds dashboard.  ## Rate Limits  Rate limits vary by plan: - Free: 10 requests/minute - Starter: 60 requests/minute   - Pro: 300 requests/minute - Business: 1000 requests/minute - Enterprise: Custom limits  ## Response Format  All responses include: - `schema_version`: API schema version (currently \"1.0\") - `request_id`: Unique request identifier for debugging  Error responses include: - `error`: Machine-readable error code - `message`: Human-readable error description  ## Webhooks  MailOdds can send webhook notifications for job completion and email delivery events. Configure webhooks in the dashboard or per-job via the `webhook_url` field.  ### Event Types  | Event | Description | |- -- -- --|- -- -- -- -- -- --| | `job.completed` | Validation job finished processing | | `job.failed` | Validation job failed | | `message.queued` | Email queued for delivery | | `message.delivered` | Email delivered to recipient | | `message.bounced` | Email bounced | | `message.deferred` | Email delivery deferred | | `message.failed` | Email delivery failed | | `message.opened` | Recipient opened the email | | `message.clicked` | Recipient clicked a link |  ### Payload Format  ```json {   \"event\": \"job.completed\",   \"job\": { ... },   \"timestamp\": \"2026-01-15T10:30:00Z\" } ```  ### Webhook Signing  If a webhook secret is configured, each request includes an `X-MailOdds-Signature` header containing an HMAC-SHA256 hex digest of the request body.  **Verification pseudocode:** ``` expected = HMAC-SHA256(webhook_secret, request_body) valid = constant_time_compare(request.headers[\"X-MailOdds-Signature\"], hex(expected)) ```  The payload is serialized with compact JSON (no extra whitespace, sorted keys) before signing.  ### Headers  All webhook requests include: - `Content-Type: application/json` - `User-Agent: MailOdds-Webhook/1.0` - `X-MailOdds-Event: {event_type}` - `X-Request-Id: {uuid}` - `X-MailOdds-Signature: {hmac}` (when secret is configured)  ### Retry Policy  Failed deliveries (non-2xx response or timeout) are retried up to 3 times with exponential backoff (10s, 60s, 300s). 
  *
  * The version of the OpenAPI document: 1.0.0
  * Contact: support@mailodds.com
@@ -112,22 +112,40 @@ namespace MailOdds.Client
                 return boolean
                     ? "true"
                     : "false";
+            if (obj is AddBlacklistMonitorRequest.TargetTypeEnum addBlacklistMonitorRequestTargetTypeEnum)
+                return AddBlacklistMonitorRequest.TargetTypeEnumToJsonValue(addBlacklistMonitorRequestTargetTypeEnum);
             if (obj is AddSuppressionRequestEntriesInner.TypeEnum addSuppressionRequestEntriesInnerTypeEnum)
                 return AddSuppressionRequestEntriesInner.TypeEnumToJsonValue(addSuppressionRequestEntriesInnerTypeEnum);
             if (obj is BatchDeliverResponse.StatusEnum batchDeliverResponseStatusEnum)
                 return BatchDeliverResponse.StatusEnumToJsonValue(batchDeliverResponseStatusEnum);
+            if (obj is BlacklistMonitor.TargetTypeEnum blacklistMonitorTargetTypeEnum)
+                return BlacklistMonitor.TargetTypeEnumToJsonValue(blacklistMonitorTargetTypeEnum);
+            if (obj is BounceAnalysisResponseAnalysis.StatusEnum bounceAnalysisResponseAnalysisStatusEnum)
+                return BounceAnalysisResponseAnalysis.StatusEnumToJsonValue(bounceAnalysisResponseAnalysisStatusEnum);
+            if (obj is Campaign.StatusEnum campaignStatusEnum)
+                return Campaign.StatusEnumToJsonValue(campaignStatusEnum);
+            if (obj is ClassifyContent200ResponseContentCheck.VerdictEnum classifyContent200ResponseContentCheckVerdictEnum)
+                return ClassifyContent200ResponseContentCheck.VerdictEnumToJsonValue(classifyContent200ResponseContentCheckVerdictEnum);
+            if (obj is CreateBounceAnalysisRequest.PeriodEnum createBounceAnalysisRequestPeriodEnum)
+                return CreateBounceAnalysisRequest.PeriodEnumToJsonValue(createBounceAnalysisRequestPeriodEnum);
             if (obj is CreatePolicyFromPresetRequest.PresetIdEnum createPolicyFromPresetRequestPresetIdEnum)
                 return CreatePolicyFromPresetRequest.PresetIdEnumToJsonValue(createPolicyFromPresetRequestPresetIdEnum);
             if (obj is DeliverRequest.CampaignTypeEnum deliverRequestCampaignTypeEnum)
                 return DeliverRequest.CampaignTypeEnumToJsonValue(deliverRequestCampaignTypeEnum);
             if (obj is DeliverResponse.StatusEnum deliverResponseStatusEnum)
                 return DeliverResponse.StatusEnumToJsonValue(deliverResponseStatusEnum);
+            if (obj is GetBounceRecords200ResponseRecordsInner.BounceTypeEnum getBounceRecords200ResponseRecordsInnerBounceTypeEnum)
+                return GetBounceRecords200ResponseRecordsInner.BounceTypeEnumToJsonValue(getBounceRecords200ResponseRecordsInnerBounceTypeEnum);
+            if (obj is GetSenderHealth200Response.GradeEnum getSenderHealth200ResponseGradeEnum)
+                return GetSenderHealth200Response.GradeEnumToJsonValue(getSenderHealth200ResponseGradeEnum);
             if (obj is Job.StatusEnum jobStatusEnum)
                 return Job.StatusEnumToJsonValue(jobStatusEnum);
             if (obj is PolicyRule.TypeEnum policyRuleTypeEnum)
                 return PolicyRule.TypeEnumToJsonValue(policyRuleTypeEnum);
             if (obj is PolicyRuleAction.ActionEnum policyRuleActionActionEnum)
                 return PolicyRuleAction.ActionEnumToJsonValue(policyRuleActionActionEnum);
+            if (obj is QueryContactListRequestFiltersInner.OperatorEnum queryContactListRequestFiltersInnerOperatorEnum)
+                return QueryContactListRequestFiltersInner.OperatorEnumToJsonValue(queryContactListRequestFiltersInnerOperatorEnum);
             if (obj is SendingDomain.StatusEnum sendingDomainStatusEnum)
                 return SendingDomain.StatusEnumToJsonValue(sendingDomainStatusEnum);
             if (obj is SendingDomainDnsRecordsNs.StatusEnum sendingDomainDnsRecordsNsStatusEnum)

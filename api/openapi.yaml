@@ -4,31 +4,32 @@ info:
     email: support@mailodds.com
     name: MailOdds Support
     url: https://mailodds.com/contact
-  description: "MailOdds provides email validation services to help maintain clean\
-    \ email lists \nand improve deliverability. The API performs multiple validation\
-    \ checks including \nformat verification, domain validation, MX record checking,\
-    \ and disposable email detection.\n\n## Authentication\n\nAll API requests require\
-    \ authentication using a Bearer token. Include your API key \nin the Authorization\
-    \ header:\n\n```\nAuthorization: Bearer YOUR_API_KEY\n```\n\nAPI keys can be created\
-    \ in the MailOdds dashboard.\n\n## Rate Limits\n\nRate limits vary by plan:\n\
-    - Free: 10 requests/minute\n- Starter: 60 requests/minute  \n- Pro: 300 requests/minute\n\
-    - Business: 1000 requests/minute\n- Enterprise: Custom limits\n\n## Response Format\n\
-    \nAll responses include:\n- `schema_version`: API schema version (currently \"\
-    1.0\")\n- `request_id`: Unique request identifier for debugging\n\nError responses\
-    \ include:\n- `error`: Machine-readable error code\n- `message`: Human-readable\
-    \ error description\n\n## Webhooks\n\nMailOdds can send webhook notifications\
-    \ for job completion and email delivery events.\nConfigure webhooks in the dashboard\
-    \ or per-job via the `webhook_url` field.\n\n### Event Types\n\n| Event | Description\
-    \ |\n|-------|-------------|\n| `job.completed` | Validation job finished processing\
-    \ |\n| `job.failed` | Validation job failed |\n| `message.queued` | Email queued\
-    \ for delivery |\n| `message.delivered` | Email delivered to recipient |\n| `message.bounced`\
-    \ | Email bounced |\n| `message.deferred` | Email delivery deferred |\n| `message.failed`\
-    \ | Email delivery failed |\n| `message.opened` | Recipient opened the email |\n\
-    | `message.clicked` | Recipient clicked a link |\n\n### Payload Format\n\n```json\n\
-    {\n  \"event\": \"job.completed\",\n  \"job\": { ... },\n  \"timestamp\": \"2026-01-15T10:30:00Z\"\
-    \n}\n```\n\n### Webhook Signing\n\nIf a webhook secret is configured, each request\
-    \ includes an `X-MailOdds-Signature` header\ncontaining an HMAC-SHA256 hex digest\
-    \ of the request body.\n\n**Verification pseudocode:**\n```\nexpected = HMAC-SHA256(webhook_secret,\
+  description: "MailOdds is an email platform for validation, sending, campaigns,\
+    \ deliverability monitoring, and analytics. The API performs multi-layer validation\
+    \ checks, delivers transactional and campaign email with DKIM dual signing, and\
+    \ tracks engagement with privacy-first analytics.\n\n## Authentication\n\nAll\
+    \ API requests require authentication using a Bearer token. Include your API key\
+    \ \nin the Authorization header:\n\n```\nAuthorization: Bearer YOUR_API_KEY\n\
+    ```\n\nAPI keys can be created in the MailOdds dashboard.\n\n## Rate Limits\n\n\
+    Rate limits vary by plan:\n- Free: 10 requests/minute\n- Starter: 60 requests/minute\
+    \  \n- Pro: 300 requests/minute\n- Business: 1000 requests/minute\n- Enterprise:\
+    \ Custom limits\n\n## Response Format\n\nAll responses include:\n- `schema_version`:\
+    \ API schema version (currently \"1.0\")\n- `request_id`: Unique request identifier\
+    \ for debugging\n\nError responses include:\n- `error`: Machine-readable error\
+    \ code\n- `message`: Human-readable error description\n\n## Webhooks\n\nMailOdds\
+    \ can send webhook notifications for job completion and email delivery events.\n\
+    Configure webhooks in the dashboard or per-job via the `webhook_url` field.\n\n\
+    ### Event Types\n\n| Event | Description |\n|-------|-------------|\n| `job.completed`\
+    \ | Validation job finished processing |\n| `job.failed` | Validation job failed\
+    \ |\n| `message.queued` | Email queued for delivery |\n| `message.delivered` |\
+    \ Email delivered to recipient |\n| `message.bounced` | Email bounced |\n| `message.deferred`\
+    \ | Email delivery deferred |\n| `message.failed` | Email delivery failed |\n\
+    | `message.opened` | Recipient opened the email |\n| `message.clicked` | Recipient\
+    \ clicked a link |\n\n### Payload Format\n\n```json\n{\n  \"event\": \"job.completed\"\
+    ,\n  \"job\": { ... },\n  \"timestamp\": \"2026-01-15T10:30:00Z\"\n}\n```\n\n\
+    ### Webhook Signing\n\nIf a webhook secret is configured, each request includes\
+    \ an `X-MailOdds-Signature` header\ncontaining an HMAC-SHA256 hex digest of the\
+    \ request body.\n\n**Verification pseudocode:**\n```\nexpected = HMAC-SHA256(webhook_secret,\
     \ request_body)\nvalid = constant_time_compare(request.headers[\"X-MailOdds-Signature\"\
     ], hex(expected))\n```\n\nThe payload is serialized with compact JSON (no extra\
     \ whitespace, sorted keys) before signing.\n\n### Headers\n\nAll webhook requests\
@@ -41,7 +42,7 @@ info:
     name: Proprietary
     url: https://mailodds.com/terms
   termsOfService: https://mailodds.com/terms
-  title: MailOdds Email Validation API
+  title: MailOdds Email Platform API
   version: 1.0.0
 servers:
 - description: Production server
@@ -49,6 +50,14 @@ servers:
 security:
 - BearerAuth: []
 tags:
+- description: Send transactional emails
+  name: Email Sending
+- description: Manage sending domain authentication
+  name: Sending Domains
+- description: Create and send email campaigns with A/B testing
+  name: Campaigns
+- description: Campaign performance analytics and funnel reporting
+  name: Campaign Analytics
 - description: Single email validation endpoints
   name: Email Validation
 - description: Bulk email validation jobs
@@ -57,16 +66,30 @@ tags:
   name: Suppression Lists
 - description: Custom rules to modify validation results
   name: Validation Policies
+- description: Aggregate sender reputation and deliverability scoring
+  name: Sender Health
+- description: Analyze bounce logs and identify deliverability issues
+  name: Bounce Analysis
+- description: Manage subscriber lists and subscriptions
+  name: Subscriber Lists
+- description: Manage contact lists built from validation jobs
+  name: Contact Lists
+- description: Monitor DMARC compliance and authentication alignment
+  name: DMARC Monitoring
+- description: Monitor IP and domain blacklist status
+  name: Blacklist Monitoring
+- description: SMTP handshake and MX configuration audits
+  name: Server Tests
+- description: Email spam scoring and deliverability checks
+  name: Spam Checks
+- description: LLM-powered email content analysis
+  name: Content Classification
+- description: Per-message delivery and engagement event logs
+  name: Message Events
 - description: Webhook configuration
   name: Webhooks
 - description: Health and status endpoints
   name: System
-- description: Send transactional emails
-  name: Email Sending
-- description: Manage sending domain authentication
-  name: Sending Domains
-- description: Manage subscriber lists and subscriptions
-  name: Subscriber Lists
 paths:
   /v1/validate:
     post:
@@ -1800,6 +1823,1683 @@ paths:
       summary: Confirm subscription
       tags:
       - Subscriber Lists
+  /v1/campaigns:
+    get:
+      description: List all campaigns for the authenticated account with pagination.
+      operationId: listCampaigns
+      parameters:
+      - description: Page number
+        explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          type: integer
+        style: form
+      - description: Items per page
+        explode: true
+        in: query
+        name: per_page
+        required: false
+        schema:
+          default: 25
+          maximum: 100
+          type: integer
+        style: form
+      - description: Filter by campaign status
+        explode: true
+        in: query
+        name: status
+        required: false
+        schema:
+          enum:
+          - draft
+          - scheduled
+          - sending
+          - sent
+          - cancelled
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/listCampaigns_200_response"
+          description: Paginated list of campaigns
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+      summary: List campaigns
+      tags:
+      - Campaigns
+    post:
+      description: Create a new email campaign. Campaigns target a subscriber list
+        and support A/B variant testing.
+      operationId: createCampaign
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCampaignRequest"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CampaignResponse"
+          description: Campaign created
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Forbidden - Insufficient permissions or no credits
+      summary: Create a campaign
+      tags:
+      - Campaigns
+  /v1/campaigns/{campaign_id}:
+    get:
+      description: Get a campaign by ID including delivery statistics and engagement
+        metrics.
+      operationId: getCampaign
+      parameters:
+      - description: Campaign UUID
+        explode: false
+        in: path
+        name: campaign_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CampaignResponse"
+          description: Campaign details with stats
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Resource not found
+      summary: Get campaign with stats
+      tags:
+      - Campaigns
+  /v1/campaigns/{campaign_id}/send:
+    post:
+      description: Begin sending a campaign immediately. The campaign must be in draft
+        status with at least one variant and a target list.
+      operationId: sendCampaign
+      parameters:
+      - description: Campaign UUID
+        explode: false
+        in: path
+        name: campaign_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "202":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CampaignResponse"
+          description: Campaign accepted for sending
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Resource not found
+      summary: Send a campaign
+      tags:
+      - Campaigns
+  /v1/campaigns/{campaign_id}/schedule:
+    post:
+      description: Schedule a campaign for future delivery. Provide a send_at timestamp
+        in ISO 8601 format.
+      operationId: scheduleCampaign
+      parameters:
+      - description: Campaign UUID
+        explode: false
+        in: path
+        name: campaign_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/scheduleCampaign_request"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CampaignResponse"
+          description: Campaign scheduled
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Resource not found
+      summary: Schedule a campaign
+      tags:
+      - Campaigns
+  /v1/campaigns/{campaign_id}/cancel:
+    post:
+      description: Cancel a scheduled or in-progress campaign. Messages already delivered
+        are not recalled.
+      operationId: cancelCampaign
+      parameters:
+      - description: Campaign UUID
+        explode: false
+        in: path
+        name: campaign_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CampaignResponse"
+          description: Campaign cancelled
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Resource not found
+      summary: Cancel a campaign
+      tags:
+      - Campaigns
+  /v1/campaigns/{campaign_id}/variants:
+    post:
+      description: "Add an A/B test variant to a campaign. Each variant has its own\
+        \ subject, body, and traffic weight. The campaign must be in draft status."
+      operationId: createCampaignVariant
+      parameters:
+      - description: Campaign UUID
+        explode: false
+        in: path
+        name: campaign_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateVariantRequest"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/createCampaignVariant_201_response"
+          description: Variant created
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Resource not found
+      summary: Create A/B variant
+      tags:
+      - Campaigns
+  /v1/campaigns/{campaign_id}/ab-results:
+    get:
+      description: "Get per-variant performance metrics for an A/B test campaign including\
+        \ open rate, click rate, and statistical confidence."
+      operationId: getCampaignABResults
+      parameters:
+      - description: Campaign UUID
+        explode: false
+        in: path
+        name: campaign_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getCampaignABResults_200_response"
+          description: A/B test results
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Resource not found
+      summary: Get A/B test results
+      tags:
+      - Campaign Analytics
+  /v1/campaigns/{campaign_id}/funnel:
+    get:
+      description: "Get the full delivery and engagement funnel for a campaign showing\
+        \ progression from sent through delivered, opened, and clicked."
+      operationId: getCampaignFunnel
+      parameters:
+      - description: Campaign UUID
+        explode: false
+        in: path
+        name: campaign_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getCampaignFunnel_200_response"
+          description: Campaign funnel analytics
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Resource not found
+      summary: Get campaign funnel
+      tags:
+      - Campaign Analytics
+  /v1/campaigns/{campaign_id}/delivery-confidence:
+    get:
+      description: "Get a predicted delivery confidence score before sending a campaign.\
+        \ Evaluates list quality, sender reputation, and domain authentication."
+      operationId: getCampaignDeliveryConfidence
+      parameters:
+      - description: Campaign UUID
+        explode: false
+        in: path
+        name: campaign_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getCampaignDeliveryConfidence_200_response"
+          description: Delivery confidence score
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Resource not found
+      summary: Get pre-send delivery confidence
+      tags:
+      - Campaign Analytics
+  /v1/sender-health:
+    get:
+      description: "Get an aggregate sender health score (0-100) across all sending\
+        \ domains. Factors in delivery rate, bounce rate, complaint rate, and authentication\
+        \ status."
+      operationId: getSenderHealth
+      parameters:
+      - description: Time period for health calculation
+        explode: true
+        in: query
+        name: period
+        required: false
+        schema:
+          default: 30d
+          enum:
+          - 7d
+          - 30d
+          - 90d
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getSenderHealth_200_response"
+          description: Sender health score
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Forbidden - Insufficient permissions or no credits
+      summary: Get sender health score
+      tags:
+      - Sender Health
+  /v1/sender-health/trend:
+    get:
+      description: Get historical sender health scores over time for trend analysis.
+        Returns daily data points for the requested period.
+      operationId: getSenderHealthTrend
+      parameters:
+      - description: Time period for trend data
+        explode: true
+        in: query
+        name: period
+        required: false
+        schema:
+          default: 30d
+          enum:
+          - 7d
+          - 30d
+          - 90d
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getSenderHealthTrend_200_response"
+          description: Sender health trend
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Forbidden - Insufficient permissions or no credits
+      summary: Get sender health trend
+      tags:
+      - Sender Health
+  /v1/bounce-analyses:
+    post:
+      description: "Submit bounce log data for analysis. Identifies patterns, categorizes\
+        \ bounce types, and provides remediation recommendations."
+      operationId: createBounceAnalysis
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/createBounceAnalysis_request"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BounceAnalysisResponse"
+          description: Bounce analysis created
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Resource not found
+      summary: Analyze bounce logs
+      tags:
+      - Bounce Analysis
+  /v1/bounce-analyses/{analysis_id}:
+    get:
+      description: "Get the results of a bounce analysis including category breakdown,\
+        \ top offenders, and recommendations."
+      operationId: getBounceAnalysis
+      parameters:
+      - description: Bounce analysis UUID
+        explode: false
+        in: path
+        name: analysis_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BounceAnalysisResponse"
+          description: Bounce analysis results
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Resource not found
+      summary: Get bounce analysis
+      tags:
+      - Bounce Analysis
+  /v1/bounce-analyses/{analysis_id}/records:
+    get:
+      description: Get individual bounce records from an analysis with pagination.
+      operationId: getBounceRecords
+      parameters:
+      - description: Bounce analysis UUID
+        explode: false
+        in: path
+        name: analysis_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Page number
+        explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          type: integer
+        style: form
+      - description: Items per page
+        explode: true
+        in: query
+        name: per_page
+        required: false
+        schema:
+          default: 50
+          maximum: 200
+          type: integer
+        style: form
+      - description: Filter by bounce type
+        explode: true
+        in: query
+        name: type
+        required: false
+        schema:
+          enum:
+          - hard
+          - soft
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getBounceRecords_200_response"
+          description: Bounce records
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Resource not found
+      summary: Get bounce records
+      tags:
+      - Bounce Analysis
+  /v1/bounce-analyses/{analysis_id}/cross-reference:
+    get:
+      description: Match bounced emails against your validation history to identify
+        emails that were validated as deliverable but later bounced.
+      operationId: crossReferenceBounces
+      parameters:
+      - description: Bounce analysis UUID
+        explode: false
+        in: path
+        name: analysis_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/crossReferenceBounces_200_response"
+          description: Cross-reference results
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Resource not found
+      summary: Cross-reference bounces with validation logs
+      tags:
+      - Bounce Analysis
+  /v1/campaigns/{campaign_id}/conversions/attribution:
+    get:
+      description: Get first-touch and last-touch attribution comparison for campaign
+        conversions.
+      operationId: getCampaignAttribution
+      parameters:
+      - description: Campaign UUID
+        explode: false
+        in: path
+        name: campaign_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getCampaignAttribution_200_response"
+          description: Attribution data
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Resource not found
+      summary: Get campaign attribution
+      tags:
+      - Campaign Analytics
+  /v1/campaigns/{campaign_id}/provider-intelligence:
+    get:
+      description: "Get per-provider delivery and engagement breakdown for a campaign\
+        \ (e.g. Gmail, Outlook, Yahoo)."
+      operationId: getCampaignProviderIntelligence
+      parameters:
+      - description: Campaign UUID
+        explode: false
+        in: path
+        name: campaign_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getCampaignProviderIntelligence_200_response"
+          description: Provider intelligence data
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Resource not found
+      summary: Get provider intelligence
+      tags:
+      - Campaign Analytics
+  /v1/dmarc-domains:
+    get:
+      description: List all domains being monitored for DMARC compliance.
+      operationId: listDmarcDomains
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/listDmarcDomains_200_response"
+          description: List of monitored domains
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+      summary: List DMARC domains
+      tags:
+      - DMARC Monitoring
+    post:
+      description: Add a domain for DMARC monitoring. A unique reporting address is
+        generated for receiving aggregate DMARC reports.
+      operationId: addDmarcDomain
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/addDmarcDomain_request"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/addDmarcDomain_201_response"
+          description: Domain added
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+      summary: Add DMARC domain
+      tags:
+      - DMARC Monitoring
+  /v1/dmarc-domains/{domain_id}:
+    get:
+      description: Get a single DMARC domain with summary statistics including pass/fail
+        rates.
+      operationId: getDmarcDomain
+      parameters:
+      - description: DMARC domain UUID
+        explode: false
+        in: path
+        name: domain_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Number of days for summary stats
+        explode: true
+        in: query
+        name: days
+        required: false
+        schema:
+          default: 30
+          maximum: 365
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getDmarcDomain_200_response"
+          description: Domain with summary stats
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Resource not found
+      summary: Get DMARC domain
+      tags:
+      - DMARC Monitoring
+  /v1/dmarc-domains/{domain_id}/verify:
+    post:
+      description: Check that the domain has the correct DMARC TXT record pointing
+        to the MailOdds reporting address.
+      operationId: verifyDmarcDomain
+      parameters:
+      - description: DMARC domain UUID
+        explode: false
+        in: path
+        name: domain_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/addDmarcDomain_201_response"
+          description: Verification result
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Resource not found
+      summary: Verify DMARC DNS records
+      tags:
+      - DMARC Monitoring
+  /v1/dmarc-domains/{domain_id}/sources:
+    get:
+      description: Get sending IPs that have sent email for this domain with their
+        DKIM/SPF alignment status.
+      operationId: getDmarcSources
+      parameters:
+      - description: DMARC domain UUID
+        explode: false
+        in: path
+        name: domain_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Number of days to look back
+        explode: true
+        in: query
+        name: days
+        required: false
+        schema:
+          default: 30
+          maximum: 365
+          type: integer
+        style: form
+      - explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          type: integer
+        style: form
+      - explode: true
+        in: query
+        name: per_page
+        required: false
+        schema:
+          default: 20
+          maximum: 100
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getDmarcSources_200_response"
+          description: Sending sources with alignment status
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Resource not found
+      summary: Get DMARC sending sources
+      tags:
+      - DMARC Monitoring
+  /v1/dmarc-domains/{domain_id}/trend:
+    get:
+      description: Get daily pass/fail trend data for DMARC authentication over the
+        specified period.
+      operationId: getDmarcTrend
+      parameters:
+      - description: DMARC domain UUID
+        explode: false
+        in: path
+        name: domain_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Number of days of trend data
+        explode: true
+        in: query
+        name: days
+        required: false
+        schema:
+          default: 30
+          maximum: 365
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getDmarcTrend_200_response"
+          description: Daily trend data
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Resource not found
+      summary: Get DMARC trend
+      tags:
+      - DMARC Monitoring
+  /v1/dmarc-domains/{domain_id}/recommendation:
+    get:
+      description: Get a recommendation for upgrading the domain's DMARC policy based
+        on alignment data.
+      operationId: getDmarcRecommendation
+      parameters:
+      - description: DMARC domain UUID
+        explode: false
+        in: path
+        name: domain_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getDmarcRecommendation_200_response"
+          description: Policy recommendation
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Resource not found
+      summary: Get DMARC policy recommendation
+      tags:
+      - DMARC Monitoring
+  /v1/blacklist-monitors:
+    get:
+      description: List all blacklist monitors for the authenticated account.
+      operationId: listBlacklistMonitors
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/listBlacklistMonitors_200_response"
+          description: List of monitors
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+      summary: List blacklist monitors
+      tags:
+      - Blacklist Monitoring
+    post:
+      description: Add an IP address or domain to monitor against DNS blacklists.
+        An initial check is run immediately.
+      operationId: addBlacklistMonitor
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/addBlacklistMonitor_request"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/addBlacklistMonitor_201_response"
+          description: Monitor created with initial check result
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+      summary: Add blacklist monitor
+      tags:
+      - Blacklist Monitoring
+  /v1/blacklist-monitors/{monitor_id}/check:
+    post:
+      description: Run an on-demand DNSBL check for a monitored IP or domain.
+      operationId: runBlacklistCheck
+      parameters:
+      - description: Monitor UUID
+        explode: false
+        in: path
+        name: monitor_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/runBlacklistCheck_200_response"
+          description: Check result
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Resource not found
+      summary: Run blacklist check
+      tags:
+      - Blacklist Monitoring
+  /v1/blacklist-monitors/{monitor_id}/history:
+    get:
+      description: Get the listing and delisting timeline for a monitored IP or domain.
+      operationId: getBlacklistHistory
+      parameters:
+      - description: Monitor UUID
+        explode: false
+        in: path
+        name: monitor_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          type: integer
+        style: form
+      - explode: true
+        in: query
+        name: per_page
+        required: false
+        schema:
+          default: 20
+          maximum: 100
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getBlacklistHistory_200_response"
+          description: Check history
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Resource not found
+      summary: Get blacklist check history
+      tags:
+      - Blacklist Monitoring
+  /v1/server-tests:
+    get:
+      description: List past server test results with pagination.
+      operationId: listServerTests
+      parameters:
+      - explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          type: integer
+        style: form
+      - explode: true
+        in: query
+        name: per_page
+        required: false
+        schema:
+          default: 20
+          maximum: 100
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/listServerTests_200_response"
+          description: List of server tests
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+      summary: List server tests
+      tags:
+      - Server Tests
+    post:
+      description: Run an SMTP handshake test and MX configuration audit for a domain.
+      operationId: runServerTest
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/runServerTest_request"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/runServerTest_201_response"
+          description: Test result
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+      summary: Run server test
+      tags:
+      - Server Tests
+  /v1/server-tests/{test_id}:
+    get:
+      description: Get the detailed results of a specific server test.
+      operationId: getServerTest
+      parameters:
+      - description: Server test UUID
+        explode: false
+        in: path
+        name: test_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/runServerTest_201_response"
+          description: Server test details
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Resource not found
+      summary: Get server test
+      tags:
+      - Server Tests
+  /v1/contact-lists:
+    get:
+      description: List contact lists for the authenticated account. Contact lists
+        are built from validated email jobs.
+      operationId: listContactLists
+      parameters:
+      - explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          type: integer
+        style: form
+      - explode: true
+        in: query
+        name: per_page
+        required: false
+        schema:
+          default: 20
+          maximum: 100
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/listContactLists_200_response"
+          description: List of contact lists
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Forbidden - Insufficient permissions or no credits
+      summary: List contact lists
+      tags:
+      - Contact Lists
+    post:
+      description: Create a new contact list from one or more completed validation
+        jobs. Only accepted (valid) emails are included.
+      operationId: createContactList
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/createContactList_request"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/createContactList_201_response"
+          description: Contact list created
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Forbidden - Insufficient permissions or no credits
+      summary: Create contact list
+      tags:
+      - Contact Lists
+  /v1/contact-lists/{list_id}/append:
+    post:
+      description: Append validated emails from additional jobs to an existing contact
+        list. Duplicates are automatically skipped.
+      operationId: appendToContactList
+      parameters:
+      - description: Contact list UUID
+        explode: false
+        in: path
+        name: list_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/appendToContactList_request"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/appendToContactList_200_response"
+          description: Append result
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Resource not found
+      summary: Append to contact list
+      tags:
+      - Contact Lists
+  /v1/contact-lists/{list_id}/query:
+    post:
+      description: "Query contact list entries with structured filters. Supports filtering\
+        \ by validation status, domain, and other attributes."
+      operationId: queryContactList
+      parameters:
+      - description: Contact list UUID
+        explode: false
+        in: path
+        name: list_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/queryContactList_request"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/queryContactList_200_response"
+          description: Query results
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Resource not found
+      summary: Query contact list
+      tags:
+      - Contact Lists
+  /v1/contacts/inactive-report:
+    get:
+      description: "Get a report of contacts across all lists with no engagement activity\
+        \ (opens, clicks) in the specified period."
+      operationId: getInactiveContactsReport
+      parameters:
+      - description: Inactivity threshold in days
+        explode: true
+        in: query
+        name: days
+        required: false
+        schema:
+          default: 90
+          maximum: 365
+          minimum: 1
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getInactiveContactsReport_200_response"
+          description: Inactive contacts report
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Forbidden - Insufficient permissions or no credits
+      summary: Get inactive contacts report
+      tags:
+      - Contact Lists
+  /v1/message-events:
+    get:
+      description: Get delivery and engagement events for a specific sent message.
+        Returns events in chronological order with bot detection.
+      operationId: getMessageEvents
+      parameters:
+      - description: UUID of the sent message
+        explode: true
+        in: query
+        name: message_id
+        required: true
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getMessageEvents_200_response"
+          description: Message events with summary
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Forbidden - Insufficient permissions or no credits
+      summary: Get message events
+      tags:
+      - Message Events
+  /v1/content-check:
+    post:
+      description: "Run LLM-powered content analysis on email content. Detects spam\
+        \ signals, compliance issues, and content quality. Provide either subject+html_body\
+        \ or raw content text."
+      operationId: classifyContent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/classifyContent_request"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/classifyContent_200_response"
+          description: Content classification result
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+      summary: Classify email content
+      tags:
+      - Content Classification
+  /v1/spam-checks:
+    get:
+      description: List past spam check results with pagination. Currently available
+        to beta accounts only.
+      operationId: listSpamChecks
+      parameters:
+      - explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          type: integer
+        style: form
+      - explode: true
+        in: query
+        name: per_page
+        required: false
+        schema:
+          default: 20
+          maximum: 100
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/listSpamChecks_200_response"
+          description: List of spam checks
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "403":
+          description: Feature not available - beta access required
+      summary: List spam checks
+      tags:
+      - Spam Checks
+    post:
+      description: "Run backend spam checks on email sending parameters. Checks domain\
+        \ reputation, link safety, and subject line quality. Currently available to\
+        \ beta accounts only."
+      operationId: runSpamCheck
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/runSpamCheck_request"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/runSpamCheck_201_response"
+          description: Spam check result
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "403":
+          description: Feature not available - beta access required
+      summary: Run spam check
+      tags:
+      - Spam Checks
+  /v1/spam-checks/{check_id}:
+    get:
+      description: Get the detailed result of a specific spam check. Currently available
+        to beta accounts only.
+      operationId: getSpamCheck
+      parameters:
+      - description: Spam check UUID
+        explode: false
+        in: path
+        name: check_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/runSpamCheck_201_response"
+          description: Spam check details
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized - Invalid or missing API key
+        "403":
+          description: Feature not available - beta access required
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Resource not found
+      summary: Get spam check
+      tags:
+      - Spam Checks
 components:
   responses:
     BadRequest:
@@ -3541,6 +5241,311 @@ components:
         rules_evaluated:
           type: integer
       type: object
+    Campaign:
+      example:
+        cancelled_at: 2000-01-23T04:56:07.000+00:00
+        from_email: from_email
+        list_id: list_id
+        variant_count: 0
+        scheduled_at: 2000-01-23T04:56:07.000+00:00
+        created_at: 2000-01-23T04:56:07.000+00:00
+        from_name: from_name
+        domain_id: domain_id
+        sent_at: 2000-01-23T04:56:07.000+00:00
+        reply_to: reply_to
+        updated_at: 2000-01-23T04:56:07.000+00:00
+        stats:
+          unsubscribed: 7
+          click_rate: 4.145608029883936
+          complained: 9
+          delivery_rate: 3.616076749251911
+          delivered: 1
+          opened: 5
+          bounced: 2
+          sent: 6
+          clicked: 5
+          open_rate: 2.027123023002322
+        name: name
+        id: id
+        status: draft
+      properties:
+        id:
+          description: Campaign UUID
+          type: string
+        name:
+          description: Campaign name
+          type: string
+        status:
+          enum:
+          - draft
+          - scheduled
+          - sending
+          - sent
+          - cancelled
+          type: string
+        list_id:
+          description: Target subscriber list UUID
+          type: string
+        domain_id:
+          description: Sending domain UUID
+          type: string
+        from_email:
+          type: string
+        from_name:
+          type: string
+        reply_to:
+          nullable: true
+          type: string
+        scheduled_at:
+          format: date-time
+          nullable: true
+          type: string
+        sent_at:
+          format: date-time
+          nullable: true
+          type: string
+        cancelled_at:
+          format: date-time
+          nullable: true
+          type: string
+        variant_count:
+          description: Number of A/B variants
+          type: integer
+        stats:
+          $ref: "#/components/schemas/Campaign_stats"
+        created_at:
+          format: date-time
+          type: string
+        updated_at:
+          format: date-time
+          type: string
+      required:
+      - created_at
+      - domain_id
+      - from_email
+      - id
+      - list_id
+      - name
+      - status
+      type: object
+    CampaignVariant:
+      example:
+        subject: subject
+        name: name
+        weight: 0
+        created_at: 2000-01-23T04:56:07.000+00:00
+        html: html
+        id: id
+        text: text
+        campaign_id: campaign_id
+      properties:
+        id:
+          description: Variant UUID
+          type: string
+        campaign_id:
+          type: string
+        name:
+          description: "Variant name (e.g., \"Variant A\")"
+          type: string
+        subject:
+          type: string
+        html:
+          description: HTML email body
+          type: string
+        text:
+          description: Plain text email body
+          type: string
+        weight:
+          description: Traffic weight percentage (all variant weights must sum to
+            100)
+          type: integer
+        created_at:
+          format: date-time
+          type: string
+      required:
+      - campaign_id
+      - id
+      - name
+      - subject
+      - weight
+      type: object
+    CreateCampaignRequest:
+      example:
+        domain_id: domain_id
+        from_email: from_email
+        list_id: list_id
+        reply_to: reply_to
+        name: name
+        from_name: from_name
+        tags:
+        - tags
+        - tags
+      properties:
+        name:
+          description: Campaign name
+          maxLength: 200
+          type: string
+        list_id:
+          description: Target subscriber list UUID
+          type: string
+        domain_id:
+          description: Sending domain UUID
+          type: string
+        from_email:
+          description: Sender email address (must match the sending domain)
+          format: email
+          type: string
+        from_name:
+          description: Sender display name
+          type: string
+        reply_to:
+          description: Reply-to address
+          format: email
+          type: string
+        tags:
+          description: Tags for categorization
+          items:
+            type: string
+          type: array
+      required:
+      - domain_id
+      - from_email
+      - list_id
+      - name
+      type: object
+    CreateVariantRequest:
+      example:
+        subject: subject
+        name: name
+        weight: 8
+        html: html
+        text: text
+      properties:
+        name:
+          description: "Variant name (e.g., \"Variant A\")"
+          type: string
+        subject:
+          description: Email subject line
+          type: string
+        html:
+          description: HTML email body
+          type: string
+        text:
+          description: Plain text email body
+          type: string
+        weight:
+          description: Traffic weight percentage (all variant weights must sum to
+            100)
+          maximum: 100
+          minimum: 1
+          type: integer
+      required:
+      - name
+      - subject
+      - weight
+      type: object
+    CampaignResponse:
+      example:
+        schema_version: schema_version
+        campaign:
+          cancelled_at: 2000-01-23T04:56:07.000+00:00
+          from_email: from_email
+          list_id: list_id
+          variant_count: 0
+          scheduled_at: 2000-01-23T04:56:07.000+00:00
+          created_at: 2000-01-23T04:56:07.000+00:00
+          from_name: from_name
+          domain_id: domain_id
+          sent_at: 2000-01-23T04:56:07.000+00:00
+          reply_to: reply_to
+          updated_at: 2000-01-23T04:56:07.000+00:00
+          stats:
+            unsubscribed: 7
+            click_rate: 4.145608029883936
+            complained: 9
+            delivery_rate: 3.616076749251911
+            delivered: 1
+            opened: 5
+            bounced: 2
+            sent: 6
+            clicked: 5
+            open_rate: 2.027123023002322
+          name: name
+          id: id
+          status: draft
+        variants:
+        - subject: subject
+          name: name
+          weight: 0
+          created_at: 2000-01-23T04:56:07.000+00:00
+          html: html
+          id: id
+          text: text
+          campaign_id: campaign_id
+        - subject: subject
+          name: name
+          weight: 0
+          created_at: 2000-01-23T04:56:07.000+00:00
+          html: html
+          id: id
+          text: text
+          campaign_id: campaign_id
+        request_id: request_id
+      properties:
+        schema_version:
+          type: string
+        request_id:
+          description: Unique request identifier
+          type: string
+        campaign:
+          $ref: "#/components/schemas/Campaign"
+        variants:
+          description: Campaign variants. Present when fetching a single campaign.
+          items:
+            $ref: "#/components/schemas/CampaignVariant"
+          type: array
+      type: object
+    BounceAnalysisResponse:
+      example:
+        schema_version: schema_version
+        analysis:
+          domain_id: domain_id
+          period: period
+          hard_bounces: 6
+          top_domains:
+          - domain: domain
+            count: 2
+            hard: 4
+            soft: 7
+          - domain: domain
+            count: 2
+            hard: 4
+            soft: 7
+          total_bounces: 0
+          created_at: 2000-01-23T04:56:07.000+00:00
+          soft_bounces: 1
+          id: id
+          categories:
+            invalid_recipient: 5
+            other: 3
+            content_rejection: 9
+            mailbox_full: 5
+            domain_issue: 2
+            policy_rejection: 7
+          recommendations:
+          - recommendations
+          - recommendations
+          status: processing
+        request_id: request_id
+      properties:
+        schema_version:
+          type: string
+        request_id:
+          description: Unique request identifier
+          type: string
+        analysis:
+          $ref: "#/components/schemas/BounceAnalysisResponse_analysis"
+      type: object
     WebhookEvent:
       description: Webhook payload delivered to your endpoint. Fields vary by event
         type.
@@ -3626,6 +5631,204 @@ components:
       required:
       - event
       - timestamp
+      type: object
+    DmarcDomain:
+      example:
+        dns_verified: true
+        domain: domain
+        created_at: 2000-01-23T04:56:07.000+00:00
+        id: id
+        dns_verified_at: 2000-01-23T04:56:07.000+00:00
+        reporting_address: reporting_address
+      properties:
+        id:
+          description: Domain UUID
+          type: string
+        domain:
+          description: Domain name
+          type: string
+        reporting_address:
+          description: DMARC aggregate report receiving address
+          type: string
+        dns_verified:
+          description: Whether DNS record has been verified
+          type: boolean
+        dns_verified_at:
+          format: date-time
+          nullable: true
+          type: string
+        created_at:
+          format: date-time
+          type: string
+      type: object
+    BlacklistMonitor:
+      example:
+        listed_count: 0
+        target_type: ip
+        created_at: 2000-01-23T04:56:07.000+00:00
+        latest_check:
+          checked_at: 2000-01-23T04:56:07.000+00:00
+          listed_on:
+          - listed_on
+          - listed_on
+          id: id
+          clean_on:
+          - clean_on
+          - clean_on
+        id: id
+        target: target
+        status: status
+        last_checked_at: 2000-01-23T04:56:07.000+00:00
+      properties:
+        id:
+          description: Monitor UUID
+          type: string
+        target:
+          description: IP address or domain being monitored
+          type: string
+        target_type:
+          enum:
+          - ip
+          - domain
+          type: string
+        status:
+          description: "Current status (clean, listed)"
+          type: string
+        listed_count:
+          description: Number of blacklists currently listing this target
+          type: integer
+        last_checked_at:
+          format: date-time
+          nullable: true
+          type: string
+        latest_check:
+          $ref: "#/components/schemas/BlacklistMonitor_latest_check"
+        created_at:
+          format: date-time
+          type: string
+      type: object
+    ServerTest:
+      example:
+        mx_records:
+        - ip: ip
+          host: host
+          priority: 0
+        - ip: ip
+          host: host
+          priority: 0
+        score: 1
+        dns_checks:
+          dkim: true
+          spf: true
+          dmarc_policy: dmarc_policy
+          dmarc: true
+        domain: domain
+        created_at: 2000-01-23T04:56:07.000+00:00
+        id: id
+        smtp_check:
+          connectable: true
+          starttls: true
+          banner: banner
+          response_time_ms: 6
+        recommendations:
+        - recommendations
+        - recommendations
+        status: status
+      properties:
+        id:
+          description: Test UUID
+          type: string
+        domain:
+          description: Tested domain
+          type: string
+        status:
+          description: Test status
+          type: string
+        mx_records:
+          items:
+            $ref: "#/components/schemas/ServerTest_mx_records_inner"
+          type: array
+        smtp_check:
+          $ref: "#/components/schemas/ServerTest_smtp_check"
+        dns_checks:
+          $ref: "#/components/schemas/ServerTest_dns_checks"
+        score:
+          description: Overall server configuration score (0-100)
+          type: integer
+        recommendations:
+          items:
+            type: string
+          type: array
+        created_at:
+          format: date-time
+          type: string
+      type: object
+    ContactList:
+      example:
+        email_count: 0
+        updated_at: 2000-01-23T04:56:07.000+00:00
+        name: name
+        created_at: 2000-01-23T04:56:07.000+00:00
+        id: id
+        source_job_ids:
+        - source_job_ids
+        - source_job_ids
+        tags:
+        - tags
+        - tags
+      properties:
+        id:
+          description: Contact list UUID
+          type: string
+        name:
+          type: string
+        email_count:
+          description: Number of emails in the list
+          type: integer
+        tags:
+          items:
+            type: string
+          type: array
+        source_job_ids:
+          description: Validation job IDs this list was built from
+          items:
+            type: string
+          type: array
+        created_at:
+          format: date-time
+          type: string
+        updated_at:
+          format: date-time
+          type: string
+      type: object
+    SpamCheck:
+      example:
+        score: 0.8008281904610115
+        checks:
+          link_safety: "{}"
+          domain_reputation: "{}"
+          subject_analysis: "{}"
+        verdict: verdict
+        created_at: 2000-01-23T04:56:07.000+00:00
+        from_domain: from_domain
+        id: id
+      properties:
+        id:
+          description: Spam check UUID
+          type: string
+        from_domain:
+          type: string
+        score:
+          description: "Overall spam score (0-10, lower is better)"
+          type: number
+        verdict:
+          description: Overall verdict
+          type: string
+        checks:
+          $ref: "#/components/schemas/SpamCheck_checks"
+        created_at:
+          format: date-time
+          type: string
       type: object
     validateBatch_request:
       properties:
@@ -4287,6 +6490,2044 @@ components:
         list_id:
           type: string
       type: object
+    listCampaigns_200_response:
+      example:
+        schema_version: schema_version
+        per_page: 1
+        total: 7
+        pages: 1
+        campaigns:
+        - cancelled_at: 2000-01-23T04:56:07.000+00:00
+          from_email: from_email
+          list_id: list_id
+          variant_count: 0
+          scheduled_at: 2000-01-23T04:56:07.000+00:00
+          created_at: 2000-01-23T04:56:07.000+00:00
+          from_name: from_name
+          domain_id: domain_id
+          sent_at: 2000-01-23T04:56:07.000+00:00
+          reply_to: reply_to
+          updated_at: 2000-01-23T04:56:07.000+00:00
+          stats:
+            unsubscribed: 7
+            click_rate: 4.145608029883936
+            complained: 9
+            delivery_rate: 3.616076749251911
+            delivered: 1
+            opened: 5
+            bounced: 2
+            sent: 6
+            clicked: 5
+            open_rate: 2.027123023002322
+          name: name
+          id: id
+          status: draft
+        - cancelled_at: 2000-01-23T04:56:07.000+00:00
+          from_email: from_email
+          list_id: list_id
+          variant_count: 0
+          scheduled_at: 2000-01-23T04:56:07.000+00:00
+          created_at: 2000-01-23T04:56:07.000+00:00
+          from_name: from_name
+          domain_id: domain_id
+          sent_at: 2000-01-23T04:56:07.000+00:00
+          reply_to: reply_to
+          updated_at: 2000-01-23T04:56:07.000+00:00
+          stats:
+            unsubscribed: 7
+            click_rate: 4.145608029883936
+            complained: 9
+            delivery_rate: 3.616076749251911
+            delivered: 1
+            opened: 5
+            bounced: 2
+            sent: 6
+            clicked: 5
+            open_rate: 2.027123023002322
+          name: name
+          id: id
+          status: draft
+        page: 1
+        request_id: request_id
+      properties:
+        schema_version:
+          type: string
+        request_id:
+          description: Unique request identifier
+          type: string
+        campaigns:
+          items:
+            $ref: "#/components/schemas/Campaign"
+          type: array
+        total:
+          type: integer
+        page:
+          type: integer
+        per_page:
+          type: integer
+        pages:
+          type: integer
+      type: object
+    scheduleCampaign_request:
+      properties:
+        send_at:
+          description: "Scheduled send time (ISO 8601, must be in the future)"
+          format: date-time
+          type: string
+      required:
+      - send_at
+      type: object
+    createCampaignVariant_201_response:
+      example:
+        schema_version: schema_version
+        variant:
+          subject: subject
+          name: name
+          weight: 0
+          created_at: 2000-01-23T04:56:07.000+00:00
+          html: html
+          id: id
+          text: text
+          campaign_id: campaign_id
+        request_id: request_id
+      properties:
+        schema_version:
+          type: string
+        request_id:
+          description: Unique request identifier
+          type: string
+        variant:
+          $ref: "#/components/schemas/CampaignVariant"
+      type: object
+    getCampaignABResults_200_response_variants_inner:
+      example:
+        variant_id: variant_id
+        subject: subject
+        click_rate: 9.301444243932576
+        name: name
+        weight: 0
+        delivered: 1
+        opened: 5
+        bounced: 2
+        sent: 6
+        clicked: 5
+        open_rate: 7.061401241503109
+      properties:
+        variant_id:
+          type: string
+        name:
+          type: string
+        subject:
+          type: string
+        weight:
+          type: integer
+        sent:
+          type: integer
+        delivered:
+          type: integer
+        opened:
+          type: integer
+        clicked:
+          type: integer
+        bounced:
+          type: integer
+        open_rate:
+          type: number
+        click_rate:
+          type: number
+      type: object
+    getCampaignABResults_200_response_winner:
+      description: "Winning variant, or null if no statistical winner yet"
+      example:
+        variant_id: variant_id
+        metric: metric
+        confidence: 3.616076749251911
+      nullable: true
+      properties:
+        variant_id:
+          type: string
+        metric:
+          description: Metric used to determine winner (open_rate or click_rate)
+          type: string
+        confidence:
+          description: Statistical confidence level (0-1)
+          type: number
+      type: object
+    getCampaignABResults_200_response:
+      example:
+        schema_version: schema_version
+        winner:
+          variant_id: variant_id
+          metric: metric
+          confidence: 3.616076749251911
+        variants:
+        - variant_id: variant_id
+          subject: subject
+          click_rate: 9.301444243932576
+          name: name
+          weight: 0
+          delivered: 1
+          opened: 5
+          bounced: 2
+          sent: 6
+          clicked: 5
+          open_rate: 7.061401241503109
+        - variant_id: variant_id
+          subject: subject
+          click_rate: 9.301444243932576
+          name: name
+          weight: 0
+          delivered: 1
+          opened: 5
+          bounced: 2
+          sent: 6
+          clicked: 5
+          open_rate: 7.061401241503109
+        request_id: request_id
+        campaign_id: campaign_id
+      properties:
+        schema_version:
+          type: string
+        request_id:
+          description: Unique request identifier
+          type: string
+        campaign_id:
+          type: string
+        variants:
+          items:
+            $ref: "#/components/schemas/getCampaignABResults_200_response_variants_inner"
+          type: array
+        winner:
+          $ref: "#/components/schemas/getCampaignABResults_200_response_winner"
+      type: object
+    getCampaignFunnel_200_response_funnel:
+      example:
+        unsubscribed: 5
+        complained: 7
+        delivered: 6
+        opened: 1
+        bounced: 2
+        sent: 0
+        clicked: 5
+      properties:
+        sent:
+          type: integer
+        delivered:
+          type: integer
+        opened:
+          type: integer
+        clicked:
+          type: integer
+        unsubscribed:
+          type: integer
+        bounced:
+          type: integer
+        complained:
+          type: integer
+      type: object
+    getCampaignFunnel_200_response_rates:
+      example:
+        click_to_open_rate: 4.145608029883936
+        unsubscribe_rate: 1.2315135367772556
+        click_rate: 2.027123023002322
+        delivery_rate: 9.301444243932576
+        bounce_rate: 7.386281948385884
+        open_rate: 3.616076749251911
+        complaint_rate: 1.0246457001441578
+      properties:
+        delivery_rate:
+          type: number
+        open_rate:
+          type: number
+        click_rate:
+          type: number
+        click_to_open_rate:
+          type: number
+        bounce_rate:
+          type: number
+        unsubscribe_rate:
+          type: number
+        complaint_rate:
+          type: number
+      type: object
+    getCampaignFunnel_200_response:
+      example:
+        schema_version: schema_version
+        funnel:
+          unsubscribed: 5
+          complained: 7
+          delivered: 6
+          opened: 1
+          bounced: 2
+          sent: 0
+          clicked: 5
+        rates:
+          click_to_open_rate: 4.145608029883936
+          unsubscribe_rate: 1.2315135367772556
+          click_rate: 2.027123023002322
+          delivery_rate: 9.301444243932576
+          bounce_rate: 7.386281948385884
+          open_rate: 3.616076749251911
+          complaint_rate: 1.0246457001441578
+        request_id: request_id
+        campaign_id: campaign_id
+      properties:
+        schema_version:
+          type: string
+        request_id:
+          description: Unique request identifier
+          type: string
+        campaign_id:
+          type: string
+        funnel:
+          $ref: "#/components/schemas/getCampaignFunnel_200_response_funnel"
+        rates:
+          $ref: "#/components/schemas/getCampaignFunnel_200_response_rates"
+      type: object
+    getCampaignDeliveryConfidence_200_response_factors_list_quality:
+      example:
+        suppressed_count: 5
+        score: 6
+        validated_pct: 5.962133916683182
+        total_recipients: 1
+      properties:
+        score:
+          type: integer
+        total_recipients:
+          type: integer
+        validated_pct:
+          type: number
+        suppressed_count:
+          type: integer
+      type: object
+    getCampaignDeliveryConfidence_200_response_factors_sender_reputation:
+      example:
+        score: 2
+        recent_bounce_rate: 7.061401241503109
+        recent_complaint_rate: 9.301444243932576
+      properties:
+        score:
+          type: integer
+        recent_bounce_rate:
+          type: number
+        recent_complaint_rate:
+          type: number
+      type: object
+    getCampaignDeliveryConfidence_200_response_factors_domain_auth:
+      example:
+        score: 3
+        dkim: true
+        spf: true
+        dmarc: true
+      properties:
+        score:
+          type: integer
+        dkim:
+          type: boolean
+        spf:
+          type: boolean
+        dmarc:
+          type: boolean
+      type: object
+    getCampaignDeliveryConfidence_200_response_factors:
+      example:
+        list_quality:
+          suppressed_count: 5
+          score: 6
+          validated_pct: 5.962133916683182
+          total_recipients: 1
+        sender_reputation:
+          score: 2
+          recent_bounce_rate: 7.061401241503109
+          recent_complaint_rate: 9.301444243932576
+        domain_auth:
+          score: 3
+          dkim: true
+          spf: true
+          dmarc: true
+      properties:
+        list_quality:
+          $ref: "#/components/schemas/getCampaignDeliveryConfidence_200_response_factors_list_quality"
+        sender_reputation:
+          $ref: "#/components/schemas/getCampaignDeliveryConfidence_200_response_factors_sender_reputation"
+        domain_auth:
+          $ref: "#/components/schemas/getCampaignDeliveryConfidence_200_response_factors_domain_auth"
+      type: object
+    getCampaignDeliveryConfidence_200_response:
+      example:
+        schema_version: schema_version
+        confidence_score: 0
+        request_id: request_id
+        recommendations:
+        - recommendations
+        - recommendations
+        campaign_id: campaign_id
+        factors:
+          list_quality:
+            suppressed_count: 5
+            score: 6
+            validated_pct: 5.962133916683182
+            total_recipients: 1
+          sender_reputation:
+            score: 2
+            recent_bounce_rate: 7.061401241503109
+            recent_complaint_rate: 9.301444243932576
+          domain_auth:
+            score: 3
+            dkim: true
+            spf: true
+            dmarc: true
+      properties:
+        schema_version:
+          type: string
+        request_id:
+          description: Unique request identifier
+          type: string
+        campaign_id:
+          type: string
+        confidence_score:
+          description: Predicted delivery confidence (0-100)
+          type: integer
+        factors:
+          $ref: "#/components/schemas/getCampaignDeliveryConfidence_200_response_factors"
+        recommendations:
+          description: Actionable recommendations to improve delivery confidence
+          items:
+            type: string
+          type: array
+      type: object
+    getSenderHealth_200_response_components_delivery_rate:
+      example:
+        score: 1
+        weight: 5.962133916683182
+        value: 6.027456183070403
+      properties:
+        value:
+          type: number
+        score:
+          type: integer
+        weight:
+          type: number
+      type: object
+    getSenderHealth_200_response_components:
+      example:
+        delivery_rate:
+          score: 1
+          weight: 5.962133916683182
+          value: 6.027456183070403
+        bounce_rate:
+          score: 1
+          weight: 5.962133916683182
+          value: 6.027456183070403
+        complaint_rate:
+          score: 1
+          weight: 5.962133916683182
+          value: 6.027456183070403
+        authentication:
+          score: 1
+          weight: 5.962133916683182
+          value: 6.027456183070403
+      properties:
+        delivery_rate:
+          $ref: "#/components/schemas/getSenderHealth_200_response_components_delivery_rate"
+        bounce_rate:
+          $ref: "#/components/schemas/getSenderHealth_200_response_components_delivery_rate"
+        complaint_rate:
+          $ref: "#/components/schemas/getSenderHealth_200_response_components_delivery_rate"
+        authentication:
+          $ref: "#/components/schemas/getSenderHealth_200_response_components_delivery_rate"
+      type: object
+    getSenderHealth_200_response_volume:
+      example:
+        complained: 9
+        delivered: 2
+        bounced: 7
+        sent: 5
+      properties:
+        sent:
+          type: integer
+        delivered:
+          type: integer
+        bounced:
+          type: integer
+        complained:
+          type: integer
+      type: object
+    getSenderHealth_200_response:
+      example:
+        schema_version: schema_version
+        volume:
+          complained: 9
+          delivered: 2
+          bounced: 7
+          sent: 5
+        score: 0
+        period: period
+        components:
+          delivery_rate:
+            score: 1
+            weight: 5.962133916683182
+            value: 6.027456183070403
+          bounce_rate:
+            score: 1
+            weight: 5.962133916683182
+            value: 6.027456183070403
+          complaint_rate:
+            score: 1
+            weight: 5.962133916683182
+            value: 6.027456183070403
+          authentication:
+            score: 1
+            weight: 5.962133916683182
+            value: 6.027456183070403
+        grade: A+
+        request_id: request_id
+      properties:
+        schema_version:
+          type: string
+        request_id:
+          description: Unique request identifier
+          type: string
+        score:
+          description: Overall sender health score (0-100)
+          type: integer
+        grade:
+          description: Letter grade based on score
+          enum:
+          - A+
+          - A
+          - B
+          - C
+          - D
+          - F
+          type: string
+        period:
+          type: string
+        components:
+          $ref: "#/components/schemas/getSenderHealth_200_response_components"
+        volume:
+          $ref: "#/components/schemas/getSenderHealth_200_response_volume"
+      type: object
+    getSenderHealthTrend_200_response_data_points_inner:
+      example:
+        date: 2000-01-23
+        volume: 5
+        score: 0
+        delivery_rate: 6.027456183070403
+        bounce_rate: 1.4658129805029452
+        complaint_rate: 5.962133916683182
+      properties:
+        date:
+          format: date
+          type: string
+        score:
+          type: integer
+        delivery_rate:
+          type: number
+        bounce_rate:
+          type: number
+        complaint_rate:
+          type: number
+        volume:
+          type: integer
+      type: object
+    getSenderHealthTrend_200_response:
+      example:
+        schema_version: schema_version
+        period: period
+        data_points:
+        - date: 2000-01-23
+          volume: 5
+          score: 0
+          delivery_rate: 6.027456183070403
+          bounce_rate: 1.4658129805029452
+          complaint_rate: 5.962133916683182
+        - date: 2000-01-23
+          volume: 5
+          score: 0
+          delivery_rate: 6.027456183070403
+          bounce_rate: 1.4658129805029452
+          complaint_rate: 5.962133916683182
+        request_id: request_id
+      properties:
+        schema_version:
+          type: string
+        request_id:
+          description: Unique request identifier
+          type: string
+        period:
+          type: string
+        data_points:
+          items:
+            $ref: "#/components/schemas/getSenderHealthTrend_200_response_data_points_inner"
+          type: array
+      type: object
+    createBounceAnalysis_request:
+      properties:
+        domain_id:
+          description: Sending domain UUID to analyze bounces for
+          type: string
+        period:
+          default: 30d
+          description: Time period to analyze
+          enum:
+          - 7d
+          - 30d
+          - 90d
+          type: string
+      required:
+      - domain_id
+      type: object
+    getBounceRecords_200_response_records_inner:
+      example:
+        bounce_type: hard
+        mx_host: mx_host
+        bounced_at: 2000-01-23T04:56:07.000+00:00
+        id: id
+        diagnostic: diagnostic
+        enhanced_status: enhanced_status
+        email: email
+        smtp_code: 0
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        bounce_type:
+          enum:
+          - hard
+          - soft
+          type: string
+        smtp_code:
+          type: integer
+        enhanced_status:
+          type: string
+        diagnostic:
+          type: string
+        mx_host:
+          type: string
+        bounced_at:
+          format: date-time
+          type: string
+      type: object
+    getBounceRecords_200_response:
+      example:
+        schema_version: schema_version
+        pagination:
+          per_page: 6
+          total: 1
+          page: 0
+          total_pages: 5
+        records:
+        - bounce_type: hard
+          mx_host: mx_host
+          bounced_at: 2000-01-23T04:56:07.000+00:00
+          id: id
+          diagnostic: diagnostic
+          enhanced_status: enhanced_status
+          email: email
+          smtp_code: 0
+        - bounce_type: hard
+          mx_host: mx_host
+          bounced_at: 2000-01-23T04:56:07.000+00:00
+          id: id
+          diagnostic: diagnostic
+          enhanced_status: enhanced_status
+          email: email
+          smtp_code: 0
+        request_id: request_id
+      properties:
+        schema_version:
+          type: string
+        request_id:
+          description: Unique request identifier
+          type: string
+        records:
+          items:
+            $ref: "#/components/schemas/getBounceRecords_200_response_records_inner"
+          type: array
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+      type: object
+    crossReferenceBounces_200_response_cross_reference_entries_inner:
+      example:
+        bounce_type: bounce_type
+        bounced_at: 2000-01-23T04:56:07.000+00:00
+        validation_status: validation_status
+        validated_at: 2000-01-23T04:56:07.000+00:00
+        email: email
+      properties:
+        email:
+          type: string
+        bounce_type:
+          type: string
+        bounced_at:
+          format: date-time
+          type: string
+        validation_status:
+          type: string
+        validated_at:
+          format: date-time
+          type: string
+      type: object
+    crossReferenceBounces_200_response_cross_reference:
+      example:
+        entries:
+        - bounce_type: bounce_type
+          bounced_at: 2000-01-23T04:56:07.000+00:00
+          validation_status: validation_status
+          validated_at: 2000-01-23T04:56:07.000+00:00
+          email: email
+        - bounce_type: bounce_type
+          bounced_at: 2000-01-23T04:56:07.000+00:00
+          validation_status: validation_status
+          validated_at: 2000-01-23T04:56:07.000+00:00
+          email: email
+        match_rate: 5.962133916683182
+        total_bounced: 0
+        matched: 6
+        unmatched: 1
+      properties:
+        total_bounced:
+          type: integer
+        matched:
+          description: Bounced emails found in validation logs
+          type: integer
+        unmatched:
+          description: Bounced emails not in validation logs
+          type: integer
+        match_rate:
+          type: number
+        entries:
+          items:
+            $ref: "#/components/schemas/crossReferenceBounces_200_response_cross_reference_entries_inner"
+          type: array
+      type: object
+    crossReferenceBounces_200_response:
+      example:
+        schema_version: schema_version
+        request_id: request_id
+        cross_reference:
+          entries:
+          - bounce_type: bounce_type
+            bounced_at: 2000-01-23T04:56:07.000+00:00
+            validation_status: validation_status
+            validated_at: 2000-01-23T04:56:07.000+00:00
+            email: email
+          - bounce_type: bounce_type
+            bounced_at: 2000-01-23T04:56:07.000+00:00
+            validation_status: validation_status
+            validated_at: 2000-01-23T04:56:07.000+00:00
+            email: email
+          match_rate: 5.962133916683182
+          total_bounced: 0
+          matched: 6
+          unmatched: 1
+      properties:
+        schema_version:
+          type: string
+        request_id:
+          type: string
+        cross_reference:
+          $ref: "#/components/schemas/crossReferenceBounces_200_response_cross_reference"
+      type: object
+    getCampaignAttribution_200_response_attribution_first_touch:
+      example:
+        conversions: 0
+        revenue: 6.027456183070403
+      properties:
+        conversions:
+          type: integer
+        revenue:
+          type: number
+      type: object
+    getCampaignAttribution_200_response_attribution:
+      example:
+        last_touch:
+          conversions: 0
+          revenue: 6.027456183070403
+        first_touch:
+          conversions: 0
+          revenue: 6.027456183070403
+      properties:
+        first_touch:
+          $ref: "#/components/schemas/getCampaignAttribution_200_response_attribution_first_touch"
+        last_touch:
+          $ref: "#/components/schemas/getCampaignAttribution_200_response_attribution_first_touch"
+      type: object
+    getCampaignAttribution_200_response:
+      example:
+        schema_version: schema_version
+        attribution:
+          last_touch:
+            conversions: 0
+            revenue: 6.027456183070403
+          first_touch:
+            conversions: 0
+            revenue: 6.027456183070403
+        request_id: request_id
+        campaign_id: campaign_id
+      properties:
+        schema_version:
+          type: string
+        request_id:
+          type: string
+        campaign_id:
+          type: string
+        attribution:
+          $ref: "#/components/schemas/getCampaignAttribution_200_response_attribution"
+      type: object
+    getCampaignProviderIntelligence_200_response_providers_inner:
+      example:
+        provider: provider
+        click_rate: 9.301444243932576
+        delivery_rate: 2.3021358869347655
+        delivered: 6
+        opened: 5
+        bounced: 1
+        sent: 0
+        clicked: 5
+        open_rate: 7.061401241503109
+      properties:
+        provider:
+          description: "Provider name (e.g. gmail, outlook, yahoo)"
+          type: string
+        sent:
+          type: integer
+        delivered:
+          type: integer
+        bounced:
+          type: integer
+        opened:
+          type: integer
+        clicked:
+          type: integer
+        delivery_rate:
+          type: number
+        open_rate:
+          type: number
+        click_rate:
+          type: number
+      type: object
+    getCampaignProviderIntelligence_200_response:
+      example:
+        schema_version: schema_version
+        request_id: request_id
+        campaign_id: campaign_id
+        providers:
+        - provider: provider
+          click_rate: 9.301444243932576
+          delivery_rate: 2.3021358869347655
+          delivered: 6
+          opened: 5
+          bounced: 1
+          sent: 0
+          clicked: 5
+          open_rate: 7.061401241503109
+        - provider: provider
+          click_rate: 9.301444243932576
+          delivery_rate: 2.3021358869347655
+          delivered: 6
+          opened: 5
+          bounced: 1
+          sent: 0
+          clicked: 5
+          open_rate: 7.061401241503109
+      properties:
+        schema_version:
+          type: string
+        request_id:
+          type: string
+        campaign_id:
+          type: string
+        providers:
+          items:
+            $ref: "#/components/schemas/getCampaignProviderIntelligence_200_response_providers_inner"
+          type: array
+      type: object
+    listDmarcDomains_200_response:
+      example:
+        schema_version: schema_version
+        domains:
+        - dns_verified: true
+          domain: domain
+          created_at: 2000-01-23T04:56:07.000+00:00
+          id: id
+          dns_verified_at: 2000-01-23T04:56:07.000+00:00
+          reporting_address: reporting_address
+        - dns_verified: true
+          domain: domain
+          created_at: 2000-01-23T04:56:07.000+00:00
+          id: id
+          dns_verified_at: 2000-01-23T04:56:07.000+00:00
+          reporting_address: reporting_address
+        request_id: request_id
+      properties:
+        schema_version:
+          type: string
+        request_id:
+          type: string
+        domains:
+          items:
+            $ref: "#/components/schemas/DmarcDomain"
+          type: array
+      type: object
+    addDmarcDomain_request:
+      properties:
+        domain:
+          description: Domain name to monitor
+          example: example.com
+          type: string
+      required:
+      - domain
+      type: object
+    addDmarcDomain_201_response:
+      example:
+        schema_version: schema_version
+        domain:
+          dns_verified: true
+          domain: domain
+          created_at: 2000-01-23T04:56:07.000+00:00
+          id: id
+          dns_verified_at: 2000-01-23T04:56:07.000+00:00
+          reporting_address: reporting_address
+        request_id: request_id
+      properties:
+        schema_version:
+          type: string
+        request_id:
+          type: string
+        domain:
+          $ref: "#/components/schemas/DmarcDomain"
+      type: object
+    getDmarcDomain_200_response_domain_allOf_summary:
+      example:
+        pass_rate: 1.4658129805029452
+        total_reports: 0
+        total_records: 6
+        dkim_aligned: 5.637376656633329
+        fail_rate: 5.962133916683182
+        spf_aligned: 2.3021358869347655
+      properties:
+        total_reports:
+          type: integer
+        total_records:
+          type: integer
+        pass_rate:
+          type: number
+        fail_rate:
+          type: number
+        dkim_aligned:
+          type: number
+        spf_aligned:
+          type: number
+      type: object
+    getDmarcDomain_200_response_domain:
+      allOf:
+      - $ref: "#/components/schemas/DmarcDomain"
+      - properties:
+          summary:
+            $ref: "#/components/schemas/getDmarcDomain_200_response_domain_allOf_summary"
+        type: object
+      example:
+        summary:
+          pass_rate: 1.4658129805029452
+          total_reports: 0
+          total_records: 6
+          dkim_aligned: 5.637376656633329
+          fail_rate: 5.962133916683182
+          spf_aligned: 2.3021358869347655
+        dns_verified: true
+        domain: domain
+        created_at: 2000-01-23T04:56:07.000+00:00
+        id: id
+        dns_verified_at: 2000-01-23T04:56:07.000+00:00
+        reporting_address: reporting_address
+    getDmarcDomain_200_response:
+      example:
+        schema_version: schema_version
+        domain:
+          summary:
+            pass_rate: 1.4658129805029452
+            total_reports: 0
+            total_records: 6
+            dkim_aligned: 5.637376656633329
+            fail_rate: 5.962133916683182
+            spf_aligned: 2.3021358869347655
+          dns_verified: true
+          domain: domain
+          created_at: 2000-01-23T04:56:07.000+00:00
+          id: id
+          dns_verified_at: 2000-01-23T04:56:07.000+00:00
+          reporting_address: reporting_address
+        request_id: request_id
+      properties:
+        schema_version:
+          type: string
+        request_id:
+          type: string
+        domain:
+          $ref: "#/components/schemas/getDmarcDomain_200_response_domain"
+      type: object
+    getDmarcSources_200_response_sources_inner:
+      example:
+        dkim_fail: 1
+        hostname: hostname
+        disposition: disposition
+        dkim_pass: 6
+        org: org
+        count: 0
+        spf_pass: 5
+        spf_fail: 5
+        source_ip: source_ip
+      properties:
+        source_ip:
+          type: string
+        hostname:
+          type: string
+        org:
+          type: string
+        count:
+          type: integer
+        dkim_pass:
+          type: integer
+        dkim_fail:
+          type: integer
+        spf_pass:
+          type: integer
+        spf_fail:
+          type: integer
+        disposition:
+          type: string
+      type: object
+    getDmarcSources_200_response:
+      example:
+        schema_version: schema_version
+        pagination:
+          per_page: 6
+          total: 1
+          page: 0
+          total_pages: 5
+        sources:
+        - dkim_fail: 1
+          hostname: hostname
+          disposition: disposition
+          dkim_pass: 6
+          org: org
+          count: 0
+          spf_pass: 5
+          spf_fail: 5
+          source_ip: source_ip
+        - dkim_fail: 1
+          hostname: hostname
+          disposition: disposition
+          dkim_pass: 6
+          org: org
+          count: 0
+          spf_pass: 5
+          spf_fail: 5
+          source_ip: source_ip
+        request_id: request_id
+      properties:
+        schema_version:
+          type: string
+        request_id:
+          type: string
+        sources:
+          items:
+            $ref: "#/components/schemas/getDmarcSources_200_response_sources_inner"
+          type: array
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+      type: object
+    getDmarcTrend_200_response_trend_inner:
+      example:
+        date: 2000-01-23
+        fail: 6
+        total: 1
+        pass_rate: 5.962133916683182
+        pass: 0
+      properties:
+        date:
+          format: date
+          type: string
+        pass:
+          type: integer
+        fail:
+          type: integer
+        total:
+          type: integer
+        pass_rate:
+          type: number
+      type: object
+    getDmarcTrend_200_response:
+      example:
+        schema_version: schema_version
+        trend:
+        - date: 2000-01-23
+          fail: 6
+          total: 1
+          pass_rate: 5.962133916683182
+          pass: 0
+        - date: 2000-01-23
+          fail: 6
+          total: 1
+          pass_rate: 5.962133916683182
+          pass: 0
+        request_id: request_id
+      properties:
+        schema_version:
+          type: string
+        request_id:
+          type: string
+        trend:
+          items:
+            $ref: "#/components/schemas/getDmarcTrend_200_response_trend_inner"
+          type: array
+      type: object
+    getDmarcRecommendation_200_response_recommendation:
+      example:
+        reasons:
+        - reasons
+        - reasons
+        confidence: 0.8008281904610115
+        current_policy: current_policy
+        ready_to_upgrade: true
+        recommended_policy: recommended_policy
+      properties:
+        current_policy:
+          description: "Current DMARC policy (none, quarantine, reject)"
+          type: string
+        recommended_policy:
+          description: Recommended DMARC policy
+          type: string
+        confidence:
+          description: Confidence level (0-1)
+          type: number
+        reasons:
+          description: Reasons for the recommendation
+          items:
+            type: string
+          type: array
+        ready_to_upgrade:
+          description: Whether it is safe to upgrade
+          type: boolean
+      type: object
+    getDmarcRecommendation_200_response:
+      example:
+        schema_version: schema_version
+        recommendation:
+          reasons:
+          - reasons
+          - reasons
+          confidence: 0.8008281904610115
+          current_policy: current_policy
+          ready_to_upgrade: true
+          recommended_policy: recommended_policy
+        request_id: request_id
+      properties:
+        schema_version:
+          type: string
+        request_id:
+          type: string
+        recommendation:
+          $ref: "#/components/schemas/getDmarcRecommendation_200_response_recommendation"
+      type: object
+    listBlacklistMonitors_200_response:
+      example:
+        schema_version: schema_version
+        request_id: request_id
+        monitors:
+        - listed_count: 0
+          target_type: ip
+          created_at: 2000-01-23T04:56:07.000+00:00
+          latest_check:
+            checked_at: 2000-01-23T04:56:07.000+00:00
+            listed_on:
+            - listed_on
+            - listed_on
+            id: id
+            clean_on:
+            - clean_on
+            - clean_on
+          id: id
+          target: target
+          status: status
+          last_checked_at: 2000-01-23T04:56:07.000+00:00
+        - listed_count: 0
+          target_type: ip
+          created_at: 2000-01-23T04:56:07.000+00:00
+          latest_check:
+            checked_at: 2000-01-23T04:56:07.000+00:00
+            listed_on:
+            - listed_on
+            - listed_on
+            id: id
+            clean_on:
+            - clean_on
+            - clean_on
+          id: id
+          target: target
+          status: status
+          last_checked_at: 2000-01-23T04:56:07.000+00:00
+      properties:
+        schema_version:
+          type: string
+        request_id:
+          type: string
+        monitors:
+          items:
+            $ref: "#/components/schemas/BlacklistMonitor"
+          type: array
+      type: object
+    addBlacklistMonitor_request:
+      properties:
+        target:
+          description: IP address or domain to monitor
+          example: 192.0.2.1
+          type: string
+        target_type:
+          description: Whether the target is an IP or domain
+          enum:
+          - ip
+          - domain
+          type: string
+      required:
+      - target
+      - target_type
+      type: object
+    addBlacklistMonitor_201_response:
+      example:
+        schema_version: schema_version
+        monitor:
+          listed_count: 0
+          target_type: ip
+          created_at: 2000-01-23T04:56:07.000+00:00
+          latest_check:
+            checked_at: 2000-01-23T04:56:07.000+00:00
+            listed_on:
+            - listed_on
+            - listed_on
+            id: id
+            clean_on:
+            - clean_on
+            - clean_on
+          id: id
+          target: target
+          status: status
+          last_checked_at: 2000-01-23T04:56:07.000+00:00
+        request_id: request_id
+      properties:
+        schema_version:
+          type: string
+        request_id:
+          type: string
+        monitor:
+          $ref: "#/components/schemas/BlacklistMonitor"
+      type: object
+    runBlacklistCheck_200_response_check:
+      example:
+        checked_at: 2000-01-23T04:56:07.000+00:00
+        listed_on:
+        - listed_on
+        - listed_on
+        id: id
+        clean_on:
+        - clean_on
+        - clean_on
+      properties:
+        id:
+          type: string
+        listed_on:
+          description: Blacklists where the target is listed
+          items:
+            type: string
+          type: array
+        clean_on:
+          description: Blacklists where the target is clean
+          items:
+            type: string
+          type: array
+        checked_at:
+          format: date-time
+          type: string
+      type: object
+    runBlacklistCheck_200_response:
+      example:
+        schema_version: schema_version
+        monitor:
+          listed_count: 0
+          target_type: ip
+          created_at: 2000-01-23T04:56:07.000+00:00
+          latest_check:
+            checked_at: 2000-01-23T04:56:07.000+00:00
+            listed_on:
+            - listed_on
+            - listed_on
+            id: id
+            clean_on:
+            - clean_on
+            - clean_on
+          id: id
+          target: target
+          status: status
+          last_checked_at: 2000-01-23T04:56:07.000+00:00
+        check:
+          checked_at: 2000-01-23T04:56:07.000+00:00
+          listed_on:
+          - listed_on
+          - listed_on
+          id: id
+          clean_on:
+          - clean_on
+          - clean_on
+        request_id: request_id
+      properties:
+        schema_version:
+          type: string
+        request_id:
+          type: string
+        monitor:
+          $ref: "#/components/schemas/BlacklistMonitor"
+        check:
+          $ref: "#/components/schemas/runBlacklistCheck_200_response_check"
+      type: object
+    getBlacklistHistory_200_response_checks_inner:
+      example:
+        checked_at: 2000-01-23T04:56:07.000+00:00
+        listed_on:
+        - listed_on
+        - listed_on
+        id: id
+        clean_on:
+        - clean_on
+        - clean_on
+      properties:
+        id:
+          type: string
+        listed_on:
+          items:
+            type: string
+          type: array
+        clean_on:
+          items:
+            type: string
+          type: array
+        checked_at:
+          format: date-time
+          type: string
+      type: object
+    getBlacklistHistory_200_response:
+      example:
+        schema_version: schema_version
+        checks:
+        - checked_at: 2000-01-23T04:56:07.000+00:00
+          listed_on:
+          - listed_on
+          - listed_on
+          id: id
+          clean_on:
+          - clean_on
+          - clean_on
+        - checked_at: 2000-01-23T04:56:07.000+00:00
+          listed_on:
+          - listed_on
+          - listed_on
+          id: id
+          clean_on:
+          - clean_on
+          - clean_on
+        pagination:
+          per_page: 6
+          total: 1
+          page: 0
+          total_pages: 5
+        request_id: request_id
+      properties:
+        schema_version:
+          type: string
+        request_id:
+          type: string
+        checks:
+          items:
+            $ref: "#/components/schemas/getBlacklistHistory_200_response_checks_inner"
+          type: array
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+      type: object
+    listServerTests_200_response:
+      example:
+        schema_version: schema_version
+        tests:
+        - mx_records:
+          - ip: ip
+            host: host
+            priority: 0
+          - ip: ip
+            host: host
+            priority: 0
+          score: 1
+          dns_checks:
+            dkim: true
+            spf: true
+            dmarc_policy: dmarc_policy
+            dmarc: true
+          domain: domain
+          created_at: 2000-01-23T04:56:07.000+00:00
+          id: id
+          smtp_check:
+            connectable: true
+            starttls: true
+            banner: banner
+            response_time_ms: 6
+          recommendations:
+          - recommendations
+          - recommendations
+          status: status
+        - mx_records:
+          - ip: ip
+            host: host
+            priority: 0
+          - ip: ip
+            host: host
+            priority: 0
+          score: 1
+          dns_checks:
+            dkim: true
+            spf: true
+            dmarc_policy: dmarc_policy
+            dmarc: true
+          domain: domain
+          created_at: 2000-01-23T04:56:07.000+00:00
+          id: id
+          smtp_check:
+            connectable: true
+            starttls: true
+            banner: banner
+            response_time_ms: 6
+          recommendations:
+          - recommendations
+          - recommendations
+          status: status
+        pagination:
+          per_page: 6
+          total: 1
+          page: 0
+          total_pages: 5
+        request_id: request_id
+      properties:
+        schema_version:
+          type: string
+        request_id:
+          type: string
+        tests:
+          items:
+            $ref: "#/components/schemas/ServerTest"
+          type: array
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+      type: object
+    runServerTest_request:
+      properties:
+        domain:
+          description: Domain to test
+          example: example.com
+          type: string
+      required:
+      - domain
+      type: object
+    runServerTest_201_response:
+      example:
+        schema_version: schema_version
+        test:
+          mx_records:
+          - ip: ip
+            host: host
+            priority: 0
+          - ip: ip
+            host: host
+            priority: 0
+          score: 1
+          dns_checks:
+            dkim: true
+            spf: true
+            dmarc_policy: dmarc_policy
+            dmarc: true
+          domain: domain
+          created_at: 2000-01-23T04:56:07.000+00:00
+          id: id
+          smtp_check:
+            connectable: true
+            starttls: true
+            banner: banner
+            response_time_ms: 6
+          recommendations:
+          - recommendations
+          - recommendations
+          status: status
+        request_id: request_id
+      properties:
+        schema_version:
+          type: string
+        request_id:
+          type: string
+        test:
+          $ref: "#/components/schemas/ServerTest"
+      type: object
+    listContactLists_200_response:
+      example:
+        schema_version: schema_version
+        per_page: 5
+        total: 6
+        pages: 5
+        contact_lists:
+        - email_count: 0
+          updated_at: 2000-01-23T04:56:07.000+00:00
+          name: name
+          created_at: 2000-01-23T04:56:07.000+00:00
+          id: id
+          source_job_ids:
+          - source_job_ids
+          - source_job_ids
+          tags:
+          - tags
+          - tags
+        - email_count: 0
+          updated_at: 2000-01-23T04:56:07.000+00:00
+          name: name
+          created_at: 2000-01-23T04:56:07.000+00:00
+          id: id
+          source_job_ids:
+          - source_job_ids
+          - source_job_ids
+          tags:
+          - tags
+          - tags
+        page: 1
+        request_id: request_id
+      properties:
+        schema_version:
+          type: string
+        request_id:
+          type: string
+        contact_lists:
+          items:
+            $ref: "#/components/schemas/ContactList"
+          type: array
+        total:
+          type: integer
+        page:
+          type: integer
+        per_page:
+          type: integer
+        pages:
+          type: integer
+      type: object
+    createContactList_request:
+      properties:
+        name:
+          description: List name
+          type: string
+        source_job_id:
+          description: Single validation job ID to build list from
+          type: string
+        source_job_ids:
+          description: Multiple validation job IDs to merge into one list
+          items:
+            type: string
+          type: array
+        tags:
+          description: Tags for categorization
+          items:
+            type: string
+          type: array
+      required:
+      - name
+      type: object
+    createContactList_201_response:
+      example:
+        schema_version: schema_version
+        contact_list:
+          email_count: 0
+          updated_at: 2000-01-23T04:56:07.000+00:00
+          name: name
+          created_at: 2000-01-23T04:56:07.000+00:00
+          id: id
+          source_job_ids:
+          - source_job_ids
+          - source_job_ids
+          tags:
+          - tags
+          - tags
+        request_id: request_id
+      properties:
+        schema_version:
+          type: string
+        request_id:
+          type: string
+        contact_list:
+          $ref: "#/components/schemas/ContactList"
+      type: object
+    appendToContactList_request:
+      properties:
+        source_job_ids:
+          description: Validation job IDs to append from
+          items:
+            type: string
+          type: array
+        include_catch_all:
+          default: false
+          description: Include catch-all emails in addition to valid ones
+          type: boolean
+      required:
+      - source_job_ids
+      type: object
+    appendToContactList_200_response:
+      example:
+        schema_version: schema_version
+        duplicate_count: 1
+        candidate_count: 6
+        breakdown: "{}"
+        contact_list:
+          email_count: 0
+          updated_at: 2000-01-23T04:56:07.000+00:00
+          name: name
+          created_at: 2000-01-23T04:56:07.000+00:00
+          id: id
+          source_job_ids:
+          - source_job_ids
+          - source_job_ids
+          tags:
+          - tags
+          - tags
+        added_count: 0
+        request_id: request_id
+      properties:
+        schema_version:
+          type: string
+        request_id:
+          type: string
+        contact_list:
+          $ref: "#/components/schemas/ContactList"
+        added_count:
+          description: Number of new emails added
+          type: integer
+        candidate_count:
+          description: Total candidates from jobs
+          type: integer
+        duplicate_count:
+          description: Duplicates skipped
+          type: integer
+        breakdown:
+          description: Per-status breakdown of candidates
+          type: object
+      type: object
+    queryContactList_request_filters_inner:
+      properties:
+        field:
+          description: Field to filter on
+          type: string
+        operator:
+          enum:
+          - eq
+          - neq
+          - contains
+          - in
+          type: string
+        value:
+          description: Filter value
+      type: object
+    queryContactList_request:
+      properties:
+        filters:
+          description: Array of filter conditions
+          items:
+            $ref: "#/components/schemas/queryContactList_request_filters_inner"
+          type: array
+        page:
+          default: 1
+          type: integer
+        per_page:
+          default: 100
+          maximum: 500
+          type: integer
+      type: object
+    queryContactList_200_response_emails_inner:
+      example:
+        added_at: 2000-01-23T04:56:07.000+00:00
+        domain: domain
+        email: email
+        status: status
+      properties:
+        email:
+          type: string
+        status:
+          type: string
+        domain:
+          type: string
+        added_at:
+          format: date-time
+          type: string
+      type: object
+    queryContactList_200_response:
+      example:
+        schema_version: schema_version
+        emails:
+        - added_at: 2000-01-23T04:56:07.000+00:00
+          domain: domain
+          email: email
+          status: status
+        - added_at: 2000-01-23T04:56:07.000+00:00
+          domain: domain
+          email: email
+          status: status
+        per_page: 1
+        total: 0
+        pages: 5
+        page: 6
+        request_id: request_id
+      properties:
+        schema_version:
+          type: string
+        request_id:
+          type: string
+        emails:
+          items:
+            $ref: "#/components/schemas/queryContactList_200_response_emails_inner"
+          type: array
+        total:
+          type: integer
+        page:
+          type: integer
+        per_page:
+          type: integer
+        pages:
+          type: integer
+      type: object
+    getInactiveContactsReport_200_response_by_list_inner:
+      example:
+        total: 5
+        list_id: list_id
+        inactive_count: 5
+        list_name: list_name
+      properties:
+        list_id:
+          type: string
+        list_name:
+          type: string
+        inactive_count:
+          type: integer
+        total:
+          type: integer
+      type: object
+    getInactiveContactsReport_200_response:
+      example:
+        schema_version: schema_version
+        inactive_rate: 1.4658129805029452
+        inactive_count: 0
+        total_contacts: 6
+        by_list:
+        - total: 5
+          list_id: list_id
+          inactive_count: 5
+          list_name: list_name
+        - total: 5
+          list_id: list_id
+          inactive_count: 5
+          list_name: list_name
+        request_id: request_id
+      properties:
+        schema_version:
+          type: string
+        request_id:
+          type: string
+        inactive_count:
+          type: integer
+        total_contacts:
+          type: integer
+        inactive_rate:
+          type: number
+        by_list:
+          items:
+            $ref: "#/components/schemas/getInactiveContactsReport_200_response_by_list_inner"
+          type: array
+      type: object
+    getMessageEvents_200_response_summary:
+      example:
+        unsubscribed: true
+        bot_opens: 6
+        clicks: 1
+        delivered: true
+        bounced: true
+        human_opens: 0
+      properties:
+        delivered:
+          type: boolean
+        bounced:
+          type: boolean
+        human_opens:
+          type: integer
+        bot_opens:
+          type: integer
+        clicks:
+          type: integer
+        unsubscribed:
+          type: boolean
+      type: object
+    getMessageEvents_200_response_clicks_inner:
+      example:
+        is_bot: true
+        url: url
+        timestamp: 2000-01-23T04:56:07.000+00:00
+      properties:
+        url:
+          type: string
+        is_bot:
+          type: boolean
+        timestamp:
+          format: date-time
+          type: string
+      type: object
+    getMessageEvents_200_response_events_inner:
+      example:
+        event_type: event_type
+        link_url: link_url
+        created_at: 2000-01-23T04:56:07.000+00:00
+        id: id
+        is_bot: true
+      properties:
+        id:
+          type: string
+        event_type:
+          type: string
+        is_bot:
+          type: boolean
+        link_url:
+          type: string
+        created_at:
+          format: date-time
+          type: string
+      type: object
+    getMessageEvents_200_response:
+      example:
+        schema_version: schema_version
+        summary:
+          unsubscribed: true
+          bot_opens: 6
+          clicks: 1
+          delivered: true
+          bounced: true
+          human_opens: 0
+        total: 5
+        recipient: recipient
+        clicks:
+        - is_bot: true
+          url: url
+          timestamp: 2000-01-23T04:56:07.000+00:00
+        - is_bot: true
+          url: url
+          timestamp: 2000-01-23T04:56:07.000+00:00
+        message_id: message_id
+        request_id: request_id
+        events:
+        - event_type: event_type
+          link_url: link_url
+          created_at: 2000-01-23T04:56:07.000+00:00
+          id: id
+          is_bot: true
+        - event_type: event_type
+          link_url: link_url
+          created_at: 2000-01-23T04:56:07.000+00:00
+          id: id
+          is_bot: true
+      properties:
+        schema_version:
+          type: string
+        request_id:
+          type: string
+        message_id:
+          type: string
+        recipient:
+          type: string
+        summary:
+          $ref: "#/components/schemas/getMessageEvents_200_response_summary"
+        clicks:
+          items:
+            $ref: "#/components/schemas/getMessageEvents_200_response_clicks_inner"
+          type: array
+        events:
+          items:
+            $ref: "#/components/schemas/getMessageEvents_200_response_events_inner"
+          type: array
+        total:
+          type: integer
+      type: object
+    classifyContent_request:
+      properties:
+        subject:
+          description: Email subject line
+          type: string
+        html_body:
+          description: HTML email body
+          type: string
+        content:
+          description: Raw text content (alternative to subject+html_body)
+          type: string
+      type: object
+    classifyContent_200_response_content_check_categories_inner:
+      example:
+        score: 6.027456183070403
+        name: name
+        details: details
+      properties:
+        name:
+          type: string
+        score:
+          type: number
+        details:
+          type: string
+      type: object
+    classifyContent_200_response_content_check:
+      example:
+        score: 0.8008281904610115
+        verdict: clean
+        suggestions:
+        - suggestions
+        - suggestions
+        categories:
+        - score: 6.027456183070403
+          name: name
+          details: details
+        - score: 6.027456183070403
+          name: name
+          details: details
+      properties:
+        score:
+          description: Overall content quality score (0-100)
+          type: number
+        verdict:
+          description: Overall verdict
+          enum:
+          - clean
+          - warning
+          - risky
+          type: string
+        categories:
+          items:
+            $ref: "#/components/schemas/classifyContent_200_response_content_check_categories_inner"
+          type: array
+        suggestions:
+          description: Improvement suggestions
+          items:
+            type: string
+          type: array
+      type: object
+    classifyContent_200_response:
+      example:
+        schema_version: schema_version
+        content_check:
+          score: 0.8008281904610115
+          verdict: clean
+          suggestions:
+          - suggestions
+          - suggestions
+          categories:
+          - score: 6.027456183070403
+            name: name
+            details: details
+          - score: 6.027456183070403
+            name: name
+            details: details
+        request_id: request_id
+      properties:
+        schema_version:
+          type: string
+        request_id:
+          type: string
+        content_check:
+          $ref: "#/components/schemas/classifyContent_200_response_content_check"
+      type: object
+    listSpamChecks_200_response:
+      example:
+        schema_version: schema_version
+        pagination:
+          per_page: 6
+          total: 1
+          page: 0
+          total_pages: 5
+        spam_checks:
+        - score: 0.8008281904610115
+          checks:
+            link_safety: "{}"
+            domain_reputation: "{}"
+            subject_analysis: "{}"
+          verdict: verdict
+          created_at: 2000-01-23T04:56:07.000+00:00
+          from_domain: from_domain
+          id: id
+        - score: 0.8008281904610115
+          checks:
+            link_safety: "{}"
+            domain_reputation: "{}"
+            subject_analysis: "{}"
+          verdict: verdict
+          created_at: 2000-01-23T04:56:07.000+00:00
+          from_domain: from_domain
+          id: id
+        request_id: request_id
+      properties:
+        schema_version:
+          type: string
+        request_id:
+          type: string
+        spam_checks:
+          items:
+            $ref: "#/components/schemas/SpamCheck"
+          type: array
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+      type: object
+    runSpamCheck_request:
+      properties:
+        from_domain:
+          description: Sending domain to check
+          type: string
+        links:
+          description: URLs included in the email
+          items:
+            type: string
+          type: array
+        subject_preview:
+          description: Email subject line to analyze
+          type: string
+        client_scores:
+          description: Client-side spam scores to include in analysis
+          type: object
+      required:
+      - from_domain
+      type: object
+    runSpamCheck_201_response:
+      example:
+        schema_version: schema_version
+        spam_check:
+          score: 0.8008281904610115
+          checks:
+            link_safety: "{}"
+            domain_reputation: "{}"
+            subject_analysis: "{}"
+          verdict: verdict
+          created_at: 2000-01-23T04:56:07.000+00:00
+          from_domain: from_domain
+          id: id
+        request_id: request_id
+      properties:
+        schema_version:
+          type: string
+        request_id:
+          type: string
+        spam_check:
+          $ref: "#/components/schemas/SpamCheck"
+      type: object
     ValidationResponse_suppression_match:
       description: Present only when email matched a suppression list entry.
       example:
@@ -4747,6 +8988,231 @@ components:
           $ref: "#/components/schemas/IdentityScoreCheck"
         bimi:
           $ref: "#/components/schemas/IdentityScoreCheck"
+      type: object
+    Campaign_stats:
+      description: Delivery and engagement statistics. Present when the campaign has
+        started sending.
+      example:
+        unsubscribed: 7
+        click_rate: 4.145608029883936
+        complained: 9
+        delivery_rate: 3.616076749251911
+        delivered: 1
+        opened: 5
+        bounced: 2
+        sent: 6
+        clicked: 5
+        open_rate: 2.027123023002322
+      properties:
+        sent:
+          type: integer
+        delivered:
+          type: integer
+        opened:
+          type: integer
+        clicked:
+          type: integer
+        bounced:
+          type: integer
+        unsubscribed:
+          type: integer
+        complained:
+          type: integer
+        delivery_rate:
+          type: number
+        open_rate:
+          type: number
+        click_rate:
+          type: number
+      type: object
+    BounceAnalysisResponse_analysis_categories:
+      description: Bounce category breakdown
+      example:
+        invalid_recipient: 5
+        other: 3
+        content_rejection: 9
+        mailbox_full: 5
+        domain_issue: 2
+        policy_rejection: 7
+      properties:
+        invalid_recipient:
+          type: integer
+        mailbox_full:
+          type: integer
+        domain_issue:
+          type: integer
+        policy_rejection:
+          type: integer
+        content_rejection:
+          type: integer
+        other:
+          type: integer
+      type: object
+    BounceAnalysisResponse_analysis_top_domains_inner:
+      example:
+        domain: domain
+        count: 2
+        hard: 4
+        soft: 7
+      properties:
+        domain:
+          type: string
+        count:
+          type: integer
+        hard:
+          type: integer
+        soft:
+          type: integer
+      type: object
+    BounceAnalysisResponse_analysis:
+      example:
+        domain_id: domain_id
+        period: period
+        hard_bounces: 6
+        top_domains:
+        - domain: domain
+          count: 2
+          hard: 4
+          soft: 7
+        - domain: domain
+          count: 2
+          hard: 4
+          soft: 7
+        total_bounces: 0
+        created_at: 2000-01-23T04:56:07.000+00:00
+        soft_bounces: 1
+        id: id
+        categories:
+          invalid_recipient: 5
+          other: 3
+          content_rejection: 9
+          mailbox_full: 5
+          domain_issue: 2
+          policy_rejection: 7
+        recommendations:
+        - recommendations
+        - recommendations
+        status: processing
+      properties:
+        id:
+          description: Analysis UUID
+          type: string
+        domain_id:
+          type: string
+        period:
+          type: string
+        status:
+          enum:
+          - processing
+          - completed
+          - failed
+          type: string
+        total_bounces:
+          type: integer
+        hard_bounces:
+          type: integer
+        soft_bounces:
+          type: integer
+        categories:
+          $ref: "#/components/schemas/BounceAnalysisResponse_analysis_categories"
+        top_domains:
+          description: Top bouncing recipient domains
+          items:
+            $ref: "#/components/schemas/BounceAnalysisResponse_analysis_top_domains_inner"
+          type: array
+        recommendations:
+          description: Actionable recommendations to reduce bounces
+          items:
+            type: string
+          type: array
+        created_at:
+          format: date-time
+          type: string
+      type: object
+    BlacklistMonitor_latest_check:
+      example:
+        checked_at: 2000-01-23T04:56:07.000+00:00
+        listed_on:
+        - listed_on
+        - listed_on
+        id: id
+        clean_on:
+        - clean_on
+        - clean_on
+      nullable: true
+      properties:
+        id:
+          type: string
+        listed_on:
+          items:
+            type: string
+          type: array
+        clean_on:
+          items:
+            type: string
+          type: array
+        checked_at:
+          format: date-time
+          type: string
+      type: object
+    ServerTest_mx_records_inner:
+      example:
+        ip: ip
+        host: host
+        priority: 0
+      properties:
+        host:
+          type: string
+        priority:
+          type: integer
+        ip:
+          type: string
+      type: object
+    ServerTest_smtp_check:
+      example:
+        connectable: true
+        starttls: true
+        banner: banner
+        response_time_ms: 6
+      properties:
+        connectable:
+          type: boolean
+        banner:
+          type: string
+        starttls:
+          type: boolean
+        response_time_ms:
+          type: integer
+      type: object
+    ServerTest_dns_checks:
+      example:
+        dkim: true
+        spf: true
+        dmarc_policy: dmarc_policy
+        dmarc: true
+      properties:
+        spf:
+          type: boolean
+        dkim:
+          type: boolean
+        dmarc:
+          type: boolean
+        dmarc_policy:
+          type: string
+      type: object
+    SpamCheck_checks:
+      description: Individual check results
+      example:
+        link_safety: "{}"
+        domain_reputation: "{}"
+        subject_analysis: "{}"
+      properties:
+        domain_reputation:
+          type: object
+        link_safety:
+          type: object
+        subject_analysis:
+          type: object
       type: object
   securitySchemes:
     BearerAuth:

@@ -1,7 +1,7 @@
 /*
- * MailOdds Email Validation API
+ * MailOdds Email Platform API
  *
- * MailOdds provides email validation services to help maintain clean email lists  and improve deliverability. The API performs multiple validation checks including  format verification, domain validation, MX record checking, and disposable email detection.  ## Authentication  All API requests require authentication using a Bearer token. Include your API key  in the Authorization header:  ``` Authorization: Bearer YOUR_API_KEY ```  API keys can be created in the MailOdds dashboard.  ## Rate Limits  Rate limits vary by plan: - Free: 10 requests/minute - Starter: 60 requests/minute   - Pro: 300 requests/minute - Business: 1000 requests/minute - Enterprise: Custom limits  ## Response Format  All responses include: - `schema_version`: API schema version (currently \"1.0\") - `request_id`: Unique request identifier for debugging  Error responses include: - `error`: Machine-readable error code - `message`: Human-readable error description  ## Webhooks  MailOdds can send webhook notifications for job completion and email delivery events. Configure webhooks in the dashboard or per-job via the `webhook_url` field.  ### Event Types  | Event | Description | |- -- -- --|- -- -- -- -- -- --| | `job.completed` | Validation job finished processing | | `job.failed` | Validation job failed | | `message.queued` | Email queued for delivery | | `message.delivered` | Email delivered to recipient | | `message.bounced` | Email bounced | | `message.deferred` | Email delivery deferred | | `message.failed` | Email delivery failed | | `message.opened` | Recipient opened the email | | `message.clicked` | Recipient clicked a link |  ### Payload Format  ```json {   \"event\": \"job.completed\",   \"job\": { ... },   \"timestamp\": \"2026-01-15T10:30:00Z\" } ```  ### Webhook Signing  If a webhook secret is configured, each request includes an `X-MailOdds-Signature` header containing an HMAC-SHA256 hex digest of the request body.  **Verification pseudocode:** ``` expected = HMAC-SHA256(webhook_secret, request_body) valid = constant_time_compare(request.headers[\"X-MailOdds-Signature\"], hex(expected)) ```  The payload is serialized with compact JSON (no extra whitespace, sorted keys) before signing.  ### Headers  All webhook requests include: - `Content-Type: application/json` - `User-Agent: MailOdds-Webhook/1.0` - `X-MailOdds-Event: {event_type}` - `X-Request-Id: {uuid}` - `X-MailOdds-Signature: {hmac}` (when secret is configured)  ### Retry Policy  Failed deliveries (non-2xx response or timeout) are retried up to 3 times with exponential backoff (10s, 60s, 300s). 
+ * MailOdds is an email platform for validation, sending, campaigns, deliverability monitoring, and analytics. The API performs multi-layer validation checks, delivers transactional and campaign email with DKIM dual signing, and tracks engagement with privacy-first analytics.  ## Authentication  All API requests require authentication using a Bearer token. Include your API key  in the Authorization header:  ``` Authorization: Bearer YOUR_API_KEY ```  API keys can be created in the MailOdds dashboard.  ## Rate Limits  Rate limits vary by plan: - Free: 10 requests/minute - Starter: 60 requests/minute   - Pro: 300 requests/minute - Business: 1000 requests/minute - Enterprise: Custom limits  ## Response Format  All responses include: - `schema_version`: API schema version (currently \"1.0\") - `request_id`: Unique request identifier for debugging  Error responses include: - `error`: Machine-readable error code - `message`: Human-readable error description  ## Webhooks  MailOdds can send webhook notifications for job completion and email delivery events. Configure webhooks in the dashboard or per-job via the `webhook_url` field.  ### Event Types  | Event | Description | |- -- -- --|- -- -- -- -- -- --| | `job.completed` | Validation job finished processing | | `job.failed` | Validation job failed | | `message.queued` | Email queued for delivery | | `message.delivered` | Email delivered to recipient | | `message.bounced` | Email bounced | | `message.deferred` | Email delivery deferred | | `message.failed` | Email delivery failed | | `message.opened` | Recipient opened the email | | `message.clicked` | Recipient clicked a link |  ### Payload Format  ```json {   \"event\": \"job.completed\",   \"job\": { ... },   \"timestamp\": \"2026-01-15T10:30:00Z\" } ```  ### Webhook Signing  If a webhook secret is configured, each request includes an `X-MailOdds-Signature` header containing an HMAC-SHA256 hex digest of the request body.  **Verification pseudocode:** ``` expected = HMAC-SHA256(webhook_secret, request_body) valid = constant_time_compare(request.headers[\"X-MailOdds-Signature\"], hex(expected)) ```  The payload is serialized with compact JSON (no extra whitespace, sorted keys) before signing.  ### Headers  All webhook requests include: - `Content-Type: application/json` - `User-Agent: MailOdds-Webhook/1.0` - `X-MailOdds-Event: {event_type}` - `X-Request-Id: {uuid}` - `X-MailOdds-Signature: {hmac}` (when secret is configured)  ### Retry Policy  Failed deliveries (non-2xx response or timeout) are retried up to 3 times with exponential backoff (10s, 60s, 300s). 
  *
  * The version of the OpenAPI document: 1.0.0
  * Contact: support@mailodds.com
@@ -71,8 +71,29 @@ namespace MailOdds.Test.Api
         [Fact]
         public void ConfigureApiWithAClientTest()
         {
+            var blacklistMonitoringApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<IBlacklistMonitoringApi>();
+            Assert.True(blacklistMonitoringApi.HttpClient.BaseAddress != null);
+
+            var bounceAnalysisApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<IBounceAnalysisApi>();
+            Assert.True(bounceAnalysisApi.HttpClient.BaseAddress != null);
+
             var bulkValidationApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<IBulkValidationApi>();
             Assert.True(bulkValidationApi.HttpClient.BaseAddress != null);
+
+            var campaignAnalyticsApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<ICampaignAnalyticsApi>();
+            Assert.True(campaignAnalyticsApi.HttpClient.BaseAddress != null);
+
+            var campaignsApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<ICampaignsApi>();
+            Assert.True(campaignsApi.HttpClient.BaseAddress != null);
+
+            var contactListsApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<IContactListsApi>();
+            Assert.True(contactListsApi.HttpClient.BaseAddress != null);
+
+            var contentClassificationApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<IContentClassificationApi>();
+            Assert.True(contentClassificationApi.HttpClient.BaseAddress != null);
+
+            var dMARCMonitoringApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<IDMARCMonitoringApi>();
+            Assert.True(dMARCMonitoringApi.HttpClient.BaseAddress != null);
 
             var emailSendingApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<IEmailSendingApi>();
             Assert.True(emailSendingApi.HttpClient.BaseAddress != null);
@@ -80,8 +101,20 @@ namespace MailOdds.Test.Api
             var emailValidationApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<IEmailValidationApi>();
             Assert.True(emailValidationApi.HttpClient.BaseAddress != null);
 
+            var messageEventsApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<IMessageEventsApi>();
+            Assert.True(messageEventsApi.HttpClient.BaseAddress != null);
+
+            var senderHealthApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<ISenderHealthApi>();
+            Assert.True(senderHealthApi.HttpClient.BaseAddress != null);
+
             var sendingDomainsApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<ISendingDomainsApi>();
             Assert.True(sendingDomainsApi.HttpClient.BaseAddress != null);
+
+            var serverTestsApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<IServerTestsApi>();
+            Assert.True(serverTestsApi.HttpClient.BaseAddress != null);
+
+            var spamChecksApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<ISpamChecksApi>();
+            Assert.True(spamChecksApi.HttpClient.BaseAddress != null);
 
             var subscriberListsApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<ISubscriberListsApi>();
             Assert.True(subscriberListsApi.HttpClient.BaseAddress != null);
@@ -102,8 +135,29 @@ namespace MailOdds.Test.Api
         [Fact]
         public void ConfigureApiWithoutAClientTest()
         {
+            var blacklistMonitoringApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<IBlacklistMonitoringApi>();
+            Assert.True(blacklistMonitoringApi.HttpClient.BaseAddress != null);
+
+            var bounceAnalysisApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<IBounceAnalysisApi>();
+            Assert.True(bounceAnalysisApi.HttpClient.BaseAddress != null);
+
             var bulkValidationApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<IBulkValidationApi>();
             Assert.True(bulkValidationApi.HttpClient.BaseAddress != null);
+
+            var campaignAnalyticsApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<ICampaignAnalyticsApi>();
+            Assert.True(campaignAnalyticsApi.HttpClient.BaseAddress != null);
+
+            var campaignsApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<ICampaignsApi>();
+            Assert.True(campaignsApi.HttpClient.BaseAddress != null);
+
+            var contactListsApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<IContactListsApi>();
+            Assert.True(contactListsApi.HttpClient.BaseAddress != null);
+
+            var contentClassificationApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<IContentClassificationApi>();
+            Assert.True(contentClassificationApi.HttpClient.BaseAddress != null);
+
+            var dMARCMonitoringApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<IDMARCMonitoringApi>();
+            Assert.True(dMARCMonitoringApi.HttpClient.BaseAddress != null);
 
             var emailSendingApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<IEmailSendingApi>();
             Assert.True(emailSendingApi.HttpClient.BaseAddress != null);
@@ -111,8 +165,20 @@ namespace MailOdds.Test.Api
             var emailValidationApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<IEmailValidationApi>();
             Assert.True(emailValidationApi.HttpClient.BaseAddress != null);
 
+            var messageEventsApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<IMessageEventsApi>();
+            Assert.True(messageEventsApi.HttpClient.BaseAddress != null);
+
+            var senderHealthApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<ISenderHealthApi>();
+            Assert.True(senderHealthApi.HttpClient.BaseAddress != null);
+
             var sendingDomainsApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<ISendingDomainsApi>();
             Assert.True(sendingDomainsApi.HttpClient.BaseAddress != null);
+
+            var serverTestsApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<IServerTestsApi>();
+            Assert.True(serverTestsApi.HttpClient.BaseAddress != null);
+
+            var spamChecksApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<ISpamChecksApi>();
+            Assert.True(spamChecksApi.HttpClient.BaseAddress != null);
 
             var subscriberListsApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<ISubscriberListsApi>();
             Assert.True(subscriberListsApi.HttpClient.BaseAddress != null);
@@ -133,8 +199,29 @@ namespace MailOdds.Test.Api
         [Fact]
         public void AddApiWithAClientTest()
         {
+            var blacklistMonitoringApi = _hostUsingAddWithAClient.Services.GetRequiredService<IBlacklistMonitoringApi>();
+            Assert.True(blacklistMonitoringApi.HttpClient.BaseAddress != null);
+            
+            var bounceAnalysisApi = _hostUsingAddWithAClient.Services.GetRequiredService<IBounceAnalysisApi>();
+            Assert.True(bounceAnalysisApi.HttpClient.BaseAddress != null);
+            
             var bulkValidationApi = _hostUsingAddWithAClient.Services.GetRequiredService<IBulkValidationApi>();
             Assert.True(bulkValidationApi.HttpClient.BaseAddress != null);
+            
+            var campaignAnalyticsApi = _hostUsingAddWithAClient.Services.GetRequiredService<ICampaignAnalyticsApi>();
+            Assert.True(campaignAnalyticsApi.HttpClient.BaseAddress != null);
+            
+            var campaignsApi = _hostUsingAddWithAClient.Services.GetRequiredService<ICampaignsApi>();
+            Assert.True(campaignsApi.HttpClient.BaseAddress != null);
+            
+            var contactListsApi = _hostUsingAddWithAClient.Services.GetRequiredService<IContactListsApi>();
+            Assert.True(contactListsApi.HttpClient.BaseAddress != null);
+            
+            var contentClassificationApi = _hostUsingAddWithAClient.Services.GetRequiredService<IContentClassificationApi>();
+            Assert.True(contentClassificationApi.HttpClient.BaseAddress != null);
+            
+            var dMARCMonitoringApi = _hostUsingAddWithAClient.Services.GetRequiredService<IDMARCMonitoringApi>();
+            Assert.True(dMARCMonitoringApi.HttpClient.BaseAddress != null);
             
             var emailSendingApi = _hostUsingAddWithAClient.Services.GetRequiredService<IEmailSendingApi>();
             Assert.True(emailSendingApi.HttpClient.BaseAddress != null);
@@ -142,8 +229,20 @@ namespace MailOdds.Test.Api
             var emailValidationApi = _hostUsingAddWithAClient.Services.GetRequiredService<IEmailValidationApi>();
             Assert.True(emailValidationApi.HttpClient.BaseAddress != null);
             
+            var messageEventsApi = _hostUsingAddWithAClient.Services.GetRequiredService<IMessageEventsApi>();
+            Assert.True(messageEventsApi.HttpClient.BaseAddress != null);
+            
+            var senderHealthApi = _hostUsingAddWithAClient.Services.GetRequiredService<ISenderHealthApi>();
+            Assert.True(senderHealthApi.HttpClient.BaseAddress != null);
+            
             var sendingDomainsApi = _hostUsingAddWithAClient.Services.GetRequiredService<ISendingDomainsApi>();
             Assert.True(sendingDomainsApi.HttpClient.BaseAddress != null);
+            
+            var serverTestsApi = _hostUsingAddWithAClient.Services.GetRequiredService<IServerTestsApi>();
+            Assert.True(serverTestsApi.HttpClient.BaseAddress != null);
+            
+            var spamChecksApi = _hostUsingAddWithAClient.Services.GetRequiredService<ISpamChecksApi>();
+            Assert.True(spamChecksApi.HttpClient.BaseAddress != null);
             
             var subscriberListsApi = _hostUsingAddWithAClient.Services.GetRequiredService<ISubscriberListsApi>();
             Assert.True(subscriberListsApi.HttpClient.BaseAddress != null);
@@ -164,8 +263,29 @@ namespace MailOdds.Test.Api
         [Fact]
         public void AddApiWithoutAClientTest()
         {
+            var blacklistMonitoringApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<IBlacklistMonitoringApi>();
+            Assert.True(blacklistMonitoringApi.HttpClient.BaseAddress != null);
+
+            var bounceAnalysisApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<IBounceAnalysisApi>();
+            Assert.True(bounceAnalysisApi.HttpClient.BaseAddress != null);
+
             var bulkValidationApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<IBulkValidationApi>();
             Assert.True(bulkValidationApi.HttpClient.BaseAddress != null);
+
+            var campaignAnalyticsApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<ICampaignAnalyticsApi>();
+            Assert.True(campaignAnalyticsApi.HttpClient.BaseAddress != null);
+
+            var campaignsApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<ICampaignsApi>();
+            Assert.True(campaignsApi.HttpClient.BaseAddress != null);
+
+            var contactListsApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<IContactListsApi>();
+            Assert.True(contactListsApi.HttpClient.BaseAddress != null);
+
+            var contentClassificationApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<IContentClassificationApi>();
+            Assert.True(contentClassificationApi.HttpClient.BaseAddress != null);
+
+            var dMARCMonitoringApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<IDMARCMonitoringApi>();
+            Assert.True(dMARCMonitoringApi.HttpClient.BaseAddress != null);
 
             var emailSendingApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<IEmailSendingApi>();
             Assert.True(emailSendingApi.HttpClient.BaseAddress != null);
@@ -173,8 +293,20 @@ namespace MailOdds.Test.Api
             var emailValidationApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<IEmailValidationApi>();
             Assert.True(emailValidationApi.HttpClient.BaseAddress != null);
 
+            var messageEventsApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<IMessageEventsApi>();
+            Assert.True(messageEventsApi.HttpClient.BaseAddress != null);
+
+            var senderHealthApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<ISenderHealthApi>();
+            Assert.True(senderHealthApi.HttpClient.BaseAddress != null);
+
             var sendingDomainsApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<ISendingDomainsApi>();
             Assert.True(sendingDomainsApi.HttpClient.BaseAddress != null);
+
+            var serverTestsApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<IServerTestsApi>();
+            Assert.True(serverTestsApi.HttpClient.BaseAddress != null);
+
+            var spamChecksApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<ISpamChecksApi>();
+            Assert.True(spamChecksApi.HttpClient.BaseAddress != null);
 
             var subscriberListsApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<ISubscriberListsApi>();
             Assert.True(subscriberListsApi.HttpClient.BaseAddress != null);
