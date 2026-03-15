@@ -31,3 +31,4 @@ src/MailOdds/MailOdds.csproj
 src/MailOdds.Test/MailOdds.Test.csproj
 # Preserve fix for DepthOption.Value!.Value crash when depth not explicitly set
 src/MailOdds/Model/ValidateRequest.cs
+README.md
