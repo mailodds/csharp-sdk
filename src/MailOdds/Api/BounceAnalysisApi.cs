@@ -83,6 +83,29 @@ namespace MailOdds.Api
         Task<ICrossReferenceBouncesApiResponse?> CrossReferenceBouncesOrDefaultAsync(string analysisId, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Delete bounce analysis
+        /// </summary>
+        /// <remarks>
+        /// Delete a bounce analysis and all associated records.
+        /// </remarks>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="analysisId">Bounce analysis ID</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IDeleteBounceAnalysisApiResponse"/>&gt;</returns>
+        Task<IDeleteBounceAnalysisApiResponse> DeleteBounceAnalysisAsync(string analysisId, System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Delete bounce analysis
+        /// </summary>
+        /// <remarks>
+        /// Delete a bounce analysis and all associated records.
+        /// </remarks>
+        /// <param name="analysisId">Bounce analysis ID</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IDeleteBounceAnalysisApiResponse"/>?&gt;</returns>
+        Task<IDeleteBounceAnalysisApiResponse?> DeleteBounceAnalysisOrDefaultAsync(string analysisId, System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Get bounce analysis
         /// </summary>
         /// <remarks>
@@ -169,6 +192,30 @@ namespace MailOdds.Api
     /// The <see cref="ICrossReferenceBouncesApiResponse"/>
     /// </summary>
     public interface ICrossReferenceBouncesApiResponse : MailOdds.Client.IApiResponse, IOk<MailOdds.Model.CrossReferenceBounces200Response?>, IUnauthorized<MailOdds.Model.ErrorResponse?>, INotFound<MailOdds.Model.ErrorResponse?>
+    {
+        /// <summary>
+        /// Returns true if the response is 200 Ok
+        /// </summary>
+        /// <returns></returns>
+        bool IsOk { get; }
+
+        /// <summary>
+        /// Returns true if the response is 401 Unauthorized
+        /// </summary>
+        /// <returns></returns>
+        bool IsUnauthorized { get; }
+
+        /// <summary>
+        /// Returns true if the response is 404 NotFound
+        /// </summary>
+        /// <returns></returns>
+        bool IsNotFound { get; }
+    }
+
+    /// <summary>
+    /// The <see cref="IDeleteBounceAnalysisApiResponse"/>
+    /// </summary>
+    public interface IDeleteBounceAnalysisApiResponse : MailOdds.Client.IApiResponse, IOk<MailOdds.Model.DeletePolicyRule200Response?>, IUnauthorized<MailOdds.Model.ErrorResponse?>, INotFound<MailOdds.Model.ErrorResponse?>
     {
         /// <summary>
         /// Returns true if the response is 200 Ok
@@ -280,6 +327,26 @@ namespace MailOdds.Api
         internal void ExecuteOnErrorCrossReferenceBounces(Exception exception)
         {
             OnErrorCrossReferenceBounces?.Invoke(this, new ExceptionEventArgs(exception));
+        }
+
+        /// <summary>
+        /// The event raised after the server response
+        /// </summary>
+        public event EventHandler<ApiResponseEventArgs>? OnDeleteBounceAnalysis;
+
+        /// <summary>
+        /// The event raised after an error querying the server
+        /// </summary>
+        public event EventHandler<ExceptionEventArgs>? OnErrorDeleteBounceAnalysis;
+
+        internal void ExecuteOnDeleteBounceAnalysis(BounceAnalysisApi.DeleteBounceAnalysisApiResponse apiResponse)
+        {
+            OnDeleteBounceAnalysis?.Invoke(this, new ApiResponseEventArgs(apiResponse));
+        }
+
+        internal void ExecuteOnErrorDeleteBounceAnalysis(Exception exception)
+        {
+            OnErrorDeleteBounceAnalysis?.Invoke(this, new ExceptionEventArgs(exception));
         }
 
         /// <summary>
@@ -977,6 +1044,335 @@ namespace MailOdds.Api
             /// <param name="result"></param>
             /// <returns></returns>
             public bool TryOk([NotNullWhen(true)]out MailOdds.Model.CrossReferenceBounces200Response? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Ok();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)200);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public bool IsUnauthorized => 401 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.ErrorResponse? Unauthorized()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsUnauthorized
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryUnauthorized([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Unauthorized();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)401);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 404 NotFound
+            /// </summary>
+            /// <returns></returns>
+            public bool IsNotFound => 404 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 404 NotFound
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.ErrorResponse? NotFound()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsNotFound
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 404 NotFound and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryNotFound([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = NotFound();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)404);
+                }
+
+                return result != null;
+            }
+
+            private void OnDeserializationErrorDefaultImplementation(Exception exception, HttpStatusCode httpStatusCode)
+            {
+                bool suppressDefaultLog = false;
+                OnDeserializationError(ref suppressDefaultLog, exception, httpStatusCode);
+                if (!suppressDefaultLog)
+                    Logger.LogError(exception, "An error occurred while deserializing the {code} response.", httpStatusCode);
+            }
+
+            partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
+        }
+
+        partial void FormatDeleteBounceAnalysis(ref string analysisId);
+
+        /// <summary>
+        /// Validates the request parameters
+        /// </summary>
+        /// <param name="analysisId"></param>
+        /// <returns></returns>
+        private void ValidateDeleteBounceAnalysis(string analysisId)
+        {
+            if (analysisId == null)
+                throw new ArgumentNullException(nameof(analysisId));
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="apiResponseLocalVar"></param>
+        /// <param name="analysisId"></param>
+        private void AfterDeleteBounceAnalysisDefaultImplementation(IDeleteBounceAnalysisApiResponse apiResponseLocalVar, string analysisId)
+        {
+            bool suppressDefaultLog = false;
+            AfterDeleteBounceAnalysis(ref suppressDefaultLog, apiResponseLocalVar, analysisId);
+            if (!suppressDefaultLog)
+                Logger.LogInformation("{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="suppressDefaultLog"></param>
+        /// <param name="apiResponseLocalVar"></param>
+        /// <param name="analysisId"></param>
+        partial void AfterDeleteBounceAnalysis(ref bool suppressDefaultLog, IDeleteBounceAnalysisApiResponse apiResponseLocalVar, string analysisId);
+
+        /// <summary>
+        /// Logs exceptions that occur while retrieving the server response
+        /// </summary>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        /// <param name="analysisId"></param>
+        private void OnErrorDeleteBounceAnalysisDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string analysisId)
+        {
+            bool suppressDefaultLogLocalVar = false;
+            OnErrorDeleteBounceAnalysis(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, analysisId);
+            if (!suppressDefaultLogLocalVar)
+                Logger.LogError(exceptionLocalVar, "An error occurred while sending the request to the server.");
+        }
+
+        /// <summary>
+        /// A partial method that gives developers a way to provide customized exception handling
+        /// </summary>
+        /// <param name="suppressDefaultLogLocalVar"></param>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        /// <param name="analysisId"></param>
+        partial void OnErrorDeleteBounceAnalysis(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string analysisId);
+
+        /// <summary>
+        /// Delete bounce analysis Delete a bounce analysis and all associated records.
+        /// </summary>
+        /// <param name="analysisId">Bounce analysis ID</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IDeleteBounceAnalysisApiResponse"/>&gt;</returns>
+        public async Task<IDeleteBounceAnalysisApiResponse?> DeleteBounceAnalysisOrDefaultAsync(string analysisId, System.Threading.CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                return await DeleteBounceAnalysisAsync(analysisId, cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Delete bounce analysis Delete a bounce analysis and all associated records.
+        /// </summary>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="analysisId">Bounce analysis ID</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IDeleteBounceAnalysisApiResponse"/>&gt;</returns>
+        public async Task<IDeleteBounceAnalysisApiResponse> DeleteBounceAnalysisAsync(string analysisId, System.Threading.CancellationToken cancellationToken = default)
+        {
+            UriBuilder uriBuilderLocalVar = new UriBuilder();
+
+            try
+            {
+                ValidateDeleteBounceAnalysis(analysisId);
+
+                FormatDeleteBounceAnalysis(ref analysisId);
+
+                using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
+                {
+                    uriBuilderLocalVar.Host = HttpClient.BaseAddress!.Host;
+                    uriBuilderLocalVar.Port = HttpClient.BaseAddress.Port;
+                    uriBuilderLocalVar.Scheme = HttpClient.BaseAddress.Scheme;
+                    uriBuilderLocalVar.Path = HttpClient.BaseAddress.AbsolutePath == "/"
+                        ? "/v1/bounce-analyses/{analysis_id}"
+                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/v1/bounce-analyses/{analysis_id}");
+                    uriBuilderLocalVar.Path = uriBuilderLocalVar.Path.Replace("%7Banalysis_id%7D", Uri.EscapeDataString(analysisId.ToString()));
+
+                    List<TokenBase> tokenBaseLocalVars = new List<TokenBase>();
+                    httpRequestMessageLocalVar.RequestUri = uriBuilderLocalVar.Uri;
+
+                    BearerToken bearerTokenLocalVar1 = (BearerToken) await BearerTokenProvider.GetAsync(cancellation: cancellationToken).ConfigureAwait(false);
+
+                    tokenBaseLocalVars.Add(bearerTokenLocalVar1);
+
+                    bearerTokenLocalVar1.UseInHeader(httpRequestMessageLocalVar, "");
+
+                    string[] acceptLocalVars = new string[] {
+                        "application/json"
+                    };
+
+                    string? acceptLocalVar = ClientUtils.SelectHeaderAccept(acceptLocalVars);
+
+                    if (acceptLocalVar != null)
+                        httpRequestMessageLocalVar.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(acceptLocalVar));
+
+                    httpRequestMessageLocalVar.Method = HttpMethod.Delete;
+
+                    DateTime requestedAtLocalVar = DateTime.UtcNow;
+
+                    using (HttpResponseMessage httpResponseMessageLocalVar = await HttpClient.SendAsync(httpRequestMessageLocalVar, cancellationToken).ConfigureAwait(false))
+                    {
+                        ILogger<DeleteBounceAnalysisApiResponse> apiResponseLoggerLocalVar = LoggerFactory.CreateLogger<DeleteBounceAnalysisApiResponse>();
+                        DeleteBounceAnalysisApiResponse apiResponseLocalVar;
+
+                        switch ((int)httpResponseMessageLocalVar.StatusCode) {
+                            default: {
+                                string responseContentLocalVar = await httpResponseMessageLocalVar.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/v1/bounce-analyses/{analysis_id}", requestedAtLocalVar, _jsonSerializerOptions);
+
+                                break;
+                            }
+                        }
+
+                        AfterDeleteBounceAnalysisDefaultImplementation(apiResponseLocalVar, analysisId);
+
+                        Events.ExecuteOnDeleteBounceAnalysis(apiResponseLocalVar);
+
+                        if (apiResponseLocalVar.StatusCode == (HttpStatusCode) 429)
+                            foreach(TokenBase tokenBaseLocalVar in tokenBaseLocalVars)
+                                tokenBaseLocalVar.BeginRateLimit();
+
+                        return apiResponseLocalVar;
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                OnErrorDeleteBounceAnalysisDefaultImplementation(e, "/v1/bounce-analyses/{analysis_id}", uriBuilderLocalVar.Path, analysisId);
+                Events.ExecuteOnErrorDeleteBounceAnalysis(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// The <see cref="DeleteBounceAnalysisApiResponse"/>
+        /// </summary>
+        public partial class DeleteBounceAnalysisApiResponse : MailOdds.Client.ApiResponse, IDeleteBounceAnalysisApiResponse
+        {
+            /// <summary>
+            /// The logger
+            /// </summary>
+            public ILogger<DeleteBounceAnalysisApiResponse> Logger { get; }
+
+            /// <summary>
+            /// The <see cref="DeleteBounceAnalysisApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="rawContent"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public DeleteBounceAnalysisApiResponse(ILogger<DeleteBounceAnalysisApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, string rawContent, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, rawContent, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            /// <summary>
+            /// The <see cref="DeleteBounceAnalysisApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="contentStream"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public DeleteBounceAnalysisApiResponse(ILogger<DeleteBounceAnalysisApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, System.IO.Stream contentStream, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, contentStream, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            partial void OnCreated(global::System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage);
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public bool IsOk => 200 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.DeletePolicyRule200Response? Ok()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsOk
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.DeletePolicyRule200Response>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryOk([NotNullWhen(true)]out MailOdds.Model.DeletePolicyRule200Response? result)
             {
                 result = null;
 

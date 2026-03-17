@@ -60,6 +60,29 @@ namespace MailOdds.Api
         Task<IAddDmarcDomainApiResponse?> AddDmarcDomainOrDefaultAsync(AddDmarcDomainRequest addDmarcDomainRequest, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Delete a DMARC domain
+        /// </summary>
+        /// <remarks>
+        /// Delete a DMARC domain and all its associated reports.
+        /// </remarks>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="domainId">DMARC domain UUID</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IDeleteDmarcDomainApiResponse"/>&gt;</returns>
+        Task<IDeleteDmarcDomainApiResponse> DeleteDmarcDomainAsync(string domainId, System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Delete a DMARC domain
+        /// </summary>
+        /// <remarks>
+        /// Delete a DMARC domain and all its associated reports.
+        /// </remarks>
+        /// <param name="domainId">DMARC domain UUID</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IDeleteDmarcDomainApiResponse"/>?&gt;</returns>
+        Task<IDeleteDmarcDomainApiResponse?> DeleteDmarcDomainOrDefaultAsync(string domainId, System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Get DMARC domain
         /// </summary>
         /// <remarks>
@@ -231,6 +254,30 @@ namespace MailOdds.Api
     }
 
     /// <summary>
+    /// The <see cref="IDeleteDmarcDomainApiResponse"/>
+    /// </summary>
+    public interface IDeleteDmarcDomainApiResponse : MailOdds.Client.IApiResponse, IOk<MailOdds.Model.DeletePolicyRule200Response?>, IUnauthorized<MailOdds.Model.ErrorResponse?>, INotFound<MailOdds.Model.ErrorResponse?>
+    {
+        /// <summary>
+        /// Returns true if the response is 200 Ok
+        /// </summary>
+        /// <returns></returns>
+        bool IsOk { get; }
+
+        /// <summary>
+        /// Returns true if the response is 401 Unauthorized
+        /// </summary>
+        /// <returns></returns>
+        bool IsUnauthorized { get; }
+
+        /// <summary>
+        /// Returns true if the response is 404 NotFound
+        /// </summary>
+        /// <returns></returns>
+        bool IsNotFound { get; }
+    }
+
+    /// <summary>
     /// The <see cref="IGetDmarcDomainApiResponse"/>
     /// </summary>
     public interface IGetDmarcDomainApiResponse : MailOdds.Client.IApiResponse, IOk<MailOdds.Model.GetDmarcDomain200Response?>, IUnauthorized<MailOdds.Model.ErrorResponse?>, INotFound<MailOdds.Model.ErrorResponse?>
@@ -391,6 +438,26 @@ namespace MailOdds.Api
         internal void ExecuteOnErrorAddDmarcDomain(Exception exception)
         {
             OnErrorAddDmarcDomain?.Invoke(this, new ExceptionEventArgs(exception));
+        }
+
+        /// <summary>
+        /// The event raised after the server response
+        /// </summary>
+        public event EventHandler<ApiResponseEventArgs>? OnDeleteDmarcDomain;
+
+        /// <summary>
+        /// The event raised after an error querying the server
+        /// </summary>
+        public event EventHandler<ExceptionEventArgs>? OnErrorDeleteDmarcDomain;
+
+        internal void ExecuteOnDeleteDmarcDomain(DMARCMonitoringApi.DeleteDmarcDomainApiResponse apiResponse)
+        {
+            OnDeleteDmarcDomain?.Invoke(this, new ApiResponseEventArgs(apiResponse));
+        }
+
+        internal void ExecuteOnErrorDeleteDmarcDomain(Exception exception)
+        {
+            OnErrorDeleteDmarcDomain?.Invoke(this, new ExceptionEventArgs(exception));
         }
 
         /// <summary>
@@ -886,6 +953,335 @@ namespace MailOdds.Api
                 } catch (Exception e)
                 {
                     OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)401);
+                }
+
+                return result != null;
+            }
+
+            private void OnDeserializationErrorDefaultImplementation(Exception exception, HttpStatusCode httpStatusCode)
+            {
+                bool suppressDefaultLog = false;
+                OnDeserializationError(ref suppressDefaultLog, exception, httpStatusCode);
+                if (!suppressDefaultLog)
+                    Logger.LogError(exception, "An error occurred while deserializing the {code} response.", httpStatusCode);
+            }
+
+            partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
+        }
+
+        partial void FormatDeleteDmarcDomain(ref string domainId);
+
+        /// <summary>
+        /// Validates the request parameters
+        /// </summary>
+        /// <param name="domainId"></param>
+        /// <returns></returns>
+        private void ValidateDeleteDmarcDomain(string domainId)
+        {
+            if (domainId == null)
+                throw new ArgumentNullException(nameof(domainId));
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="apiResponseLocalVar"></param>
+        /// <param name="domainId"></param>
+        private void AfterDeleteDmarcDomainDefaultImplementation(IDeleteDmarcDomainApiResponse apiResponseLocalVar, string domainId)
+        {
+            bool suppressDefaultLog = false;
+            AfterDeleteDmarcDomain(ref suppressDefaultLog, apiResponseLocalVar, domainId);
+            if (!suppressDefaultLog)
+                Logger.LogInformation("{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="suppressDefaultLog"></param>
+        /// <param name="apiResponseLocalVar"></param>
+        /// <param name="domainId"></param>
+        partial void AfterDeleteDmarcDomain(ref bool suppressDefaultLog, IDeleteDmarcDomainApiResponse apiResponseLocalVar, string domainId);
+
+        /// <summary>
+        /// Logs exceptions that occur while retrieving the server response
+        /// </summary>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        /// <param name="domainId"></param>
+        private void OnErrorDeleteDmarcDomainDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string domainId)
+        {
+            bool suppressDefaultLogLocalVar = false;
+            OnErrorDeleteDmarcDomain(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, domainId);
+            if (!suppressDefaultLogLocalVar)
+                Logger.LogError(exceptionLocalVar, "An error occurred while sending the request to the server.");
+        }
+
+        /// <summary>
+        /// A partial method that gives developers a way to provide customized exception handling
+        /// </summary>
+        /// <param name="suppressDefaultLogLocalVar"></param>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        /// <param name="domainId"></param>
+        partial void OnErrorDeleteDmarcDomain(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string domainId);
+
+        /// <summary>
+        /// Delete a DMARC domain Delete a DMARC domain and all its associated reports.
+        /// </summary>
+        /// <param name="domainId">DMARC domain UUID</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IDeleteDmarcDomainApiResponse"/>&gt;</returns>
+        public async Task<IDeleteDmarcDomainApiResponse?> DeleteDmarcDomainOrDefaultAsync(string domainId, System.Threading.CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                return await DeleteDmarcDomainAsync(domainId, cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Delete a DMARC domain Delete a DMARC domain and all its associated reports.
+        /// </summary>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="domainId">DMARC domain UUID</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IDeleteDmarcDomainApiResponse"/>&gt;</returns>
+        public async Task<IDeleteDmarcDomainApiResponse> DeleteDmarcDomainAsync(string domainId, System.Threading.CancellationToken cancellationToken = default)
+        {
+            UriBuilder uriBuilderLocalVar = new UriBuilder();
+
+            try
+            {
+                ValidateDeleteDmarcDomain(domainId);
+
+                FormatDeleteDmarcDomain(ref domainId);
+
+                using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
+                {
+                    uriBuilderLocalVar.Host = HttpClient.BaseAddress!.Host;
+                    uriBuilderLocalVar.Port = HttpClient.BaseAddress.Port;
+                    uriBuilderLocalVar.Scheme = HttpClient.BaseAddress.Scheme;
+                    uriBuilderLocalVar.Path = HttpClient.BaseAddress.AbsolutePath == "/"
+                        ? "/v1/dmarc-domains/{domain_id}"
+                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/v1/dmarc-domains/{domain_id}");
+                    uriBuilderLocalVar.Path = uriBuilderLocalVar.Path.Replace("%7Bdomain_id%7D", Uri.EscapeDataString(domainId.ToString()));
+
+                    List<TokenBase> tokenBaseLocalVars = new List<TokenBase>();
+                    httpRequestMessageLocalVar.RequestUri = uriBuilderLocalVar.Uri;
+
+                    BearerToken bearerTokenLocalVar1 = (BearerToken) await BearerTokenProvider.GetAsync(cancellation: cancellationToken).ConfigureAwait(false);
+
+                    tokenBaseLocalVars.Add(bearerTokenLocalVar1);
+
+                    bearerTokenLocalVar1.UseInHeader(httpRequestMessageLocalVar, "");
+
+                    string[] acceptLocalVars = new string[] {
+                        "application/json"
+                    };
+
+                    string? acceptLocalVar = ClientUtils.SelectHeaderAccept(acceptLocalVars);
+
+                    if (acceptLocalVar != null)
+                        httpRequestMessageLocalVar.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(acceptLocalVar));
+
+                    httpRequestMessageLocalVar.Method = HttpMethod.Delete;
+
+                    DateTime requestedAtLocalVar = DateTime.UtcNow;
+
+                    using (HttpResponseMessage httpResponseMessageLocalVar = await HttpClient.SendAsync(httpRequestMessageLocalVar, cancellationToken).ConfigureAwait(false))
+                    {
+                        ILogger<DeleteDmarcDomainApiResponse> apiResponseLoggerLocalVar = LoggerFactory.CreateLogger<DeleteDmarcDomainApiResponse>();
+                        DeleteDmarcDomainApiResponse apiResponseLocalVar;
+
+                        switch ((int)httpResponseMessageLocalVar.StatusCode) {
+                            default: {
+                                string responseContentLocalVar = await httpResponseMessageLocalVar.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/v1/dmarc-domains/{domain_id}", requestedAtLocalVar, _jsonSerializerOptions);
+
+                                break;
+                            }
+                        }
+
+                        AfterDeleteDmarcDomainDefaultImplementation(apiResponseLocalVar, domainId);
+
+                        Events.ExecuteOnDeleteDmarcDomain(apiResponseLocalVar);
+
+                        if (apiResponseLocalVar.StatusCode == (HttpStatusCode) 429)
+                            foreach(TokenBase tokenBaseLocalVar in tokenBaseLocalVars)
+                                tokenBaseLocalVar.BeginRateLimit();
+
+                        return apiResponseLocalVar;
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                OnErrorDeleteDmarcDomainDefaultImplementation(e, "/v1/dmarc-domains/{domain_id}", uriBuilderLocalVar.Path, domainId);
+                Events.ExecuteOnErrorDeleteDmarcDomain(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// The <see cref="DeleteDmarcDomainApiResponse"/>
+        /// </summary>
+        public partial class DeleteDmarcDomainApiResponse : MailOdds.Client.ApiResponse, IDeleteDmarcDomainApiResponse
+        {
+            /// <summary>
+            /// The logger
+            /// </summary>
+            public ILogger<DeleteDmarcDomainApiResponse> Logger { get; }
+
+            /// <summary>
+            /// The <see cref="DeleteDmarcDomainApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="rawContent"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public DeleteDmarcDomainApiResponse(ILogger<DeleteDmarcDomainApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, string rawContent, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, rawContent, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            /// <summary>
+            /// The <see cref="DeleteDmarcDomainApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="contentStream"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public DeleteDmarcDomainApiResponse(ILogger<DeleteDmarcDomainApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, System.IO.Stream contentStream, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, contentStream, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            partial void OnCreated(global::System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage);
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public bool IsOk => 200 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.DeletePolicyRule200Response? Ok()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsOk
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.DeletePolicyRule200Response>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryOk([NotNullWhen(true)]out MailOdds.Model.DeletePolicyRule200Response? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Ok();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)200);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public bool IsUnauthorized => 401 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.ErrorResponse? Unauthorized()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsUnauthorized
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryUnauthorized([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Unauthorized();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)401);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 404 NotFound
+            /// </summary>
+            /// <returns></returns>
+            public bool IsNotFound => 404 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 404 NotFound
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.ErrorResponse? NotFound()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsNotFound
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 404 NotFound and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryNotFound([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = NotFound();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)404);
                 }
 
                 return result != null;

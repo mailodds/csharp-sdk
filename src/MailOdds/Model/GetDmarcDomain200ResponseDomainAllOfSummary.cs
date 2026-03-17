@@ -34,51 +34,105 @@ namespace MailOdds.Model
         /// <summary>
         /// Initializes a new instance of the <see cref="GetDmarcDomain200ResponseDomainAllOfSummary" /> class.
         /// </summary>
-        /// <param name="totalReports">totalReports</param>
-        /// <param name="totalRecords">totalRecords</param>
+        /// <param name="days">days</param>
+        /// <param name="reportCount">reportCount</param>
+        /// <param name="sourceCount">sourceCount</param>
+        /// <param name="totalMessages">totalMessages</param>
+        /// <param name="totalPass">totalPass</param>
+        /// <param name="totalFail">totalFail</param>
         /// <param name="passRate">passRate</param>
-        /// <param name="failRate">failRate</param>
-        /// <param name="dkimAligned">dkimAligned</param>
-        /// <param name="spfAligned">spfAligned</param>
         [JsonConstructor]
-        public GetDmarcDomain200ResponseDomainAllOfSummary(Option<int?> totalReports = default, Option<int?> totalRecords = default, Option<decimal?> passRate = default, Option<decimal?> failRate = default, Option<decimal?> dkimAligned = default, Option<decimal?> spfAligned = default)
+        public GetDmarcDomain200ResponseDomainAllOfSummary(Option<int?> days = default, Option<int?> reportCount = default, Option<int?> sourceCount = default, Option<int?> totalMessages = default, Option<int?> totalPass = default, Option<int?> totalFail = default, Option<decimal?> passRate = default)
         {
-            TotalReportsOption = totalReports;
-            TotalRecordsOption = totalRecords;
+            DaysOption = days;
+            ReportCountOption = reportCount;
+            SourceCountOption = sourceCount;
+            TotalMessagesOption = totalMessages;
+            TotalPassOption = totalPass;
+            TotalFailOption = totalFail;
             PassRateOption = passRate;
-            FailRateOption = failRate;
-            DkimAlignedOption = dkimAligned;
-            SpfAlignedOption = spfAligned;
             OnCreated();
         }
 
         partial void OnCreated();
 
         /// <summary>
-        /// Used to track the state of TotalReports
+        /// Used to track the state of Days
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> TotalReportsOption { get; private set; }
+        public Option<int?> DaysOption { get; private set; }
 
         /// <summary>
-        /// Gets or Sets TotalReports
+        /// Gets or Sets Days
         /// </summary>
-        [JsonPropertyName("total_reports")]
-        public int? TotalReports { get { return this.TotalReportsOption; } set { this.TotalReportsOption = new(value); } }
+        [JsonPropertyName("days")]
+        public int? Days { get { return this.DaysOption; } set { this.DaysOption = new(value); } }
 
         /// <summary>
-        /// Used to track the state of TotalRecords
+        /// Used to track the state of ReportCount
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> TotalRecordsOption { get; private set; }
+        public Option<int?> ReportCountOption { get; private set; }
 
         /// <summary>
-        /// Gets or Sets TotalRecords
+        /// Gets or Sets ReportCount
         /// </summary>
-        [JsonPropertyName("total_records")]
-        public int? TotalRecords { get { return this.TotalRecordsOption; } set { this.TotalRecordsOption = new(value); } }
+        [JsonPropertyName("report_count")]
+        public int? ReportCount { get { return this.ReportCountOption; } set { this.ReportCountOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of SourceCount
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<int?> SourceCountOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets SourceCount
+        /// </summary>
+        [JsonPropertyName("source_count")]
+        public int? SourceCount { get { return this.SourceCountOption; } set { this.SourceCountOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of TotalMessages
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<int?> TotalMessagesOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets TotalMessages
+        /// </summary>
+        [JsonPropertyName("total_messages")]
+        public int? TotalMessages { get { return this.TotalMessagesOption; } set { this.TotalMessagesOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of TotalPass
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<int?> TotalPassOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets TotalPass
+        /// </summary>
+        [JsonPropertyName("total_pass")]
+        public int? TotalPass { get { return this.TotalPassOption; } set { this.TotalPassOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of TotalFail
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<int?> TotalFailOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets TotalFail
+        /// </summary>
+        [JsonPropertyName("total_fail")]
+        public int? TotalFail { get { return this.TotalFailOption; } set { this.TotalFailOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of PassRate
@@ -94,45 +148,6 @@ namespace MailOdds.Model
         public decimal? PassRate { get { return this.PassRateOption; } set { this.PassRateOption = new(value); } }
 
         /// <summary>
-        /// Used to track the state of FailRate
-        /// </summary>
-        [JsonIgnore]
-        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<decimal?> FailRateOption { get; private set; }
-
-        /// <summary>
-        /// Gets or Sets FailRate
-        /// </summary>
-        [JsonPropertyName("fail_rate")]
-        public decimal? FailRate { get { return this.FailRateOption; } set { this.FailRateOption = new(value); } }
-
-        /// <summary>
-        /// Used to track the state of DkimAligned
-        /// </summary>
-        [JsonIgnore]
-        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<decimal?> DkimAlignedOption { get; private set; }
-
-        /// <summary>
-        /// Gets or Sets DkimAligned
-        /// </summary>
-        [JsonPropertyName("dkim_aligned")]
-        public decimal? DkimAligned { get { return this.DkimAlignedOption; } set { this.DkimAlignedOption = new(value); } }
-
-        /// <summary>
-        /// Used to track the state of SpfAligned
-        /// </summary>
-        [JsonIgnore]
-        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<decimal?> SpfAlignedOption { get; private set; }
-
-        /// <summary>
-        /// Gets or Sets SpfAligned
-        /// </summary>
-        [JsonPropertyName("spf_aligned")]
-        public decimal? SpfAligned { get { return this.SpfAlignedOption; } set { this.SpfAlignedOption = new(value); } }
-
-        /// <summary>
         /// Returns the string presentation of the object
         /// </summary>
         /// <returns>String presentation of the object</returns>
@@ -140,12 +155,13 @@ namespace MailOdds.Model
         {
             StringBuilder sb = new StringBuilder();
             sb.Append("class GetDmarcDomain200ResponseDomainAllOfSummary {\n");
-            sb.Append("  TotalReports: ").Append(TotalReports).Append("\n");
-            sb.Append("  TotalRecords: ").Append(TotalRecords).Append("\n");
+            sb.Append("  Days: ").Append(Days).Append("\n");
+            sb.Append("  ReportCount: ").Append(ReportCount).Append("\n");
+            sb.Append("  SourceCount: ").Append(SourceCount).Append("\n");
+            sb.Append("  TotalMessages: ").Append(TotalMessages).Append("\n");
+            sb.Append("  TotalPass: ").Append(TotalPass).Append("\n");
+            sb.Append("  TotalFail: ").Append(TotalFail).Append("\n");
             sb.Append("  PassRate: ").Append(PassRate).Append("\n");
-            sb.Append("  FailRate: ").Append(FailRate).Append("\n");
-            sb.Append("  DkimAligned: ").Append(DkimAligned).Append("\n");
-            sb.Append("  SpfAligned: ").Append(SpfAligned).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -183,12 +199,13 @@ namespace MailOdds.Model
 
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
-            Option<int?> totalReports = default;
-            Option<int?> totalRecords = default;
+            Option<int?> days = default;
+            Option<int?> reportCount = default;
+            Option<int?> sourceCount = default;
+            Option<int?> totalMessages = default;
+            Option<int?> totalPass = default;
+            Option<int?> totalFail = default;
             Option<decimal?> passRate = default;
-            Option<decimal?> failRate = default;
-            Option<decimal?> dkimAligned = default;
-            Option<decimal?> spfAligned = default;
 
             while (utf8JsonReader.Read())
             {
@@ -205,23 +222,26 @@ namespace MailOdds.Model
 
                     switch (localVarJsonPropertyName)
                     {
-                        case "total_reports":
-                            totalReports = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
+                        case "days":
+                            days = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
                             break;
-                        case "total_records":
-                            totalRecords = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
+                        case "report_count":
+                            reportCount = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
+                            break;
+                        case "source_count":
+                            sourceCount = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
+                            break;
+                        case "total_messages":
+                            totalMessages = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
+                            break;
+                        case "total_pass":
+                            totalPass = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
+                            break;
+                        case "total_fail":
+                            totalFail = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
                             break;
                         case "pass_rate":
                             passRate = new Option<decimal?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (decimal?)null : utf8JsonReader.GetDecimal());
-                            break;
-                        case "fail_rate":
-                            failRate = new Option<decimal?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (decimal?)null : utf8JsonReader.GetDecimal());
-                            break;
-                        case "dkim_aligned":
-                            dkimAligned = new Option<decimal?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (decimal?)null : utf8JsonReader.GetDecimal());
-                            break;
-                        case "spf_aligned":
-                            spfAligned = new Option<decimal?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (decimal?)null : utf8JsonReader.GetDecimal());
                             break;
                         default:
                             break;
@@ -229,25 +249,28 @@ namespace MailOdds.Model
                 }
             }
 
-            if (totalReports.IsSet && totalReports.Value == null)
-                throw new ArgumentNullException(nameof(totalReports), "Property is not nullable for class GetDmarcDomain200ResponseDomainAllOfSummary.");
+            if (days.IsSet && days.Value == null)
+                throw new ArgumentNullException(nameof(days), "Property is not nullable for class GetDmarcDomain200ResponseDomainAllOfSummary.");
 
-            if (totalRecords.IsSet && totalRecords.Value == null)
-                throw new ArgumentNullException(nameof(totalRecords), "Property is not nullable for class GetDmarcDomain200ResponseDomainAllOfSummary.");
+            if (reportCount.IsSet && reportCount.Value == null)
+                throw new ArgumentNullException(nameof(reportCount), "Property is not nullable for class GetDmarcDomain200ResponseDomainAllOfSummary.");
+
+            if (sourceCount.IsSet && sourceCount.Value == null)
+                throw new ArgumentNullException(nameof(sourceCount), "Property is not nullable for class GetDmarcDomain200ResponseDomainAllOfSummary.");
+
+            if (totalMessages.IsSet && totalMessages.Value == null)
+                throw new ArgumentNullException(nameof(totalMessages), "Property is not nullable for class GetDmarcDomain200ResponseDomainAllOfSummary.");
+
+            if (totalPass.IsSet && totalPass.Value == null)
+                throw new ArgumentNullException(nameof(totalPass), "Property is not nullable for class GetDmarcDomain200ResponseDomainAllOfSummary.");
+
+            if (totalFail.IsSet && totalFail.Value == null)
+                throw new ArgumentNullException(nameof(totalFail), "Property is not nullable for class GetDmarcDomain200ResponseDomainAllOfSummary.");
 
             if (passRate.IsSet && passRate.Value == null)
                 throw new ArgumentNullException(nameof(passRate), "Property is not nullable for class GetDmarcDomain200ResponseDomainAllOfSummary.");
 
-            if (failRate.IsSet && failRate.Value == null)
-                throw new ArgumentNullException(nameof(failRate), "Property is not nullable for class GetDmarcDomain200ResponseDomainAllOfSummary.");
-
-            if (dkimAligned.IsSet && dkimAligned.Value == null)
-                throw new ArgumentNullException(nameof(dkimAligned), "Property is not nullable for class GetDmarcDomain200ResponseDomainAllOfSummary.");
-
-            if (spfAligned.IsSet && spfAligned.Value == null)
-                throw new ArgumentNullException(nameof(spfAligned), "Property is not nullable for class GetDmarcDomain200ResponseDomainAllOfSummary.");
-
-            return new GetDmarcDomain200ResponseDomainAllOfSummary(totalReports, totalRecords, passRate, failRate, dkimAligned, spfAligned);
+            return new GetDmarcDomain200ResponseDomainAllOfSummary(days, reportCount, sourceCount, totalMessages, totalPass, totalFail, passRate);
         }
 
         /// <summary>
@@ -274,23 +297,26 @@ namespace MailOdds.Model
         /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, GetDmarcDomain200ResponseDomainAllOfSummary getDmarcDomain200ResponseDomainAllOfSummary, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (getDmarcDomain200ResponseDomainAllOfSummary.TotalReportsOption.IsSet)
-                writer.WriteNumber("total_reports", getDmarcDomain200ResponseDomainAllOfSummary.TotalReportsOption.Value!.Value);
+            if (getDmarcDomain200ResponseDomainAllOfSummary.DaysOption.IsSet)
+                writer.WriteNumber("days", getDmarcDomain200ResponseDomainAllOfSummary.DaysOption.Value!.Value);
 
-            if (getDmarcDomain200ResponseDomainAllOfSummary.TotalRecordsOption.IsSet)
-                writer.WriteNumber("total_records", getDmarcDomain200ResponseDomainAllOfSummary.TotalRecordsOption.Value!.Value);
+            if (getDmarcDomain200ResponseDomainAllOfSummary.ReportCountOption.IsSet)
+                writer.WriteNumber("report_count", getDmarcDomain200ResponseDomainAllOfSummary.ReportCountOption.Value!.Value);
+
+            if (getDmarcDomain200ResponseDomainAllOfSummary.SourceCountOption.IsSet)
+                writer.WriteNumber("source_count", getDmarcDomain200ResponseDomainAllOfSummary.SourceCountOption.Value!.Value);
+
+            if (getDmarcDomain200ResponseDomainAllOfSummary.TotalMessagesOption.IsSet)
+                writer.WriteNumber("total_messages", getDmarcDomain200ResponseDomainAllOfSummary.TotalMessagesOption.Value!.Value);
+
+            if (getDmarcDomain200ResponseDomainAllOfSummary.TotalPassOption.IsSet)
+                writer.WriteNumber("total_pass", getDmarcDomain200ResponseDomainAllOfSummary.TotalPassOption.Value!.Value);
+
+            if (getDmarcDomain200ResponseDomainAllOfSummary.TotalFailOption.IsSet)
+                writer.WriteNumber("total_fail", getDmarcDomain200ResponseDomainAllOfSummary.TotalFailOption.Value!.Value);
 
             if (getDmarcDomain200ResponseDomainAllOfSummary.PassRateOption.IsSet)
                 writer.WriteNumber("pass_rate", getDmarcDomain200ResponseDomainAllOfSummary.PassRateOption.Value!.Value);
-
-            if (getDmarcDomain200ResponseDomainAllOfSummary.FailRateOption.IsSet)
-                writer.WriteNumber("fail_rate", getDmarcDomain200ResponseDomainAllOfSummary.FailRateOption.Value!.Value);
-
-            if (getDmarcDomain200ResponseDomainAllOfSummary.DkimAlignedOption.IsSet)
-                writer.WriteNumber("dkim_aligned", getDmarcDomain200ResponseDomainAllOfSummary.DkimAlignedOption.Value!.Value);
-
-            if (getDmarcDomain200ResponseDomainAllOfSummary.SpfAlignedOption.IsSet)
-                writer.WriteNumber("spf_aligned", getDmarcDomain200ResponseDomainAllOfSummary.SpfAlignedOption.Value!.Value);
         }
     }
 }

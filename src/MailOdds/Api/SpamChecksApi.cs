@@ -37,10 +37,33 @@ namespace MailOdds.Api
         SpamChecksApiEvents Events { get; }
 
         /// <summary>
+        /// Delete spam check
+        /// </summary>
+        /// <remarks>
+        /// Delete a spam check result.
+        /// </remarks>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="checkId">Spam check ID</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IDeleteSpamCheckApiResponse"/>&gt;</returns>
+        Task<IDeleteSpamCheckApiResponse> DeleteSpamCheckAsync(string checkId, System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Delete spam check
+        /// </summary>
+        /// <remarks>
+        /// Delete a spam check result.
+        /// </remarks>
+        /// <param name="checkId">Spam check ID</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IDeleteSpamCheckApiResponse"/>?&gt;</returns>
+        Task<IDeleteSpamCheckApiResponse?> DeleteSpamCheckOrDefaultAsync(string checkId, System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Get spam check
         /// </summary>
         /// <remarks>
-        /// Get the detailed result of a specific spam check. Currently available to beta accounts only.
+        /// Get the detailed result of a specific spam check.
         /// </remarks>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="checkId">Spam check UUID</param>
@@ -52,7 +75,7 @@ namespace MailOdds.Api
         /// Get spam check
         /// </summary>
         /// <remarks>
-        /// Get the detailed result of a specific spam check. Currently available to beta accounts only.
+        /// Get the detailed result of a specific spam check.
         /// </remarks>
         /// <param name="checkId">Spam check UUID</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
@@ -63,7 +86,7 @@ namespace MailOdds.Api
         /// List spam checks
         /// </summary>
         /// <remarks>
-        /// List past spam check results with pagination. Currently available to beta accounts only.
+        /// List past spam check results with pagination.
         /// </remarks>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="page"> (optional, default to 1)</param>
@@ -76,7 +99,7 @@ namespace MailOdds.Api
         /// List spam checks
         /// </summary>
         /// <remarks>
-        /// List past spam check results with pagination. Currently available to beta accounts only.
+        /// List past spam check results with pagination.
         /// </remarks>
         /// <param name="page"> (optional, default to 1)</param>
         /// <param name="perPage"> (optional, default to 20)</param>
@@ -88,7 +111,7 @@ namespace MailOdds.Api
         /// Run spam check
         /// </summary>
         /// <remarks>
-        /// Run backend spam checks on email sending parameters. Checks domain reputation, link safety, and subject line quality. Currently available to beta accounts only.
+        /// Run backend spam checks on email sending parameters. Checks domain reputation, link safety, and subject line quality.
         /// </remarks>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="runSpamCheckRequest"></param>
@@ -100,12 +123,36 @@ namespace MailOdds.Api
         /// Run spam check
         /// </summary>
         /// <remarks>
-        /// Run backend spam checks on email sending parameters. Checks domain reputation, link safety, and subject line quality. Currently available to beta accounts only.
+        /// Run backend spam checks on email sending parameters. Checks domain reputation, link safety, and subject line quality.
         /// </remarks>
         /// <param name="runSpamCheckRequest"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IRunSpamCheckApiResponse"/>?&gt;</returns>
         Task<IRunSpamCheckApiResponse?> RunSpamCheckOrDefaultAsync(RunSpamCheckRequest runSpamCheckRequest, System.Threading.CancellationToken cancellationToken = default);
+    }
+
+    /// <summary>
+    /// The <see cref="IDeleteSpamCheckApiResponse"/>
+    /// </summary>
+    public interface IDeleteSpamCheckApiResponse : MailOdds.Client.IApiResponse, IOk<MailOdds.Model.DeletePolicyRule200Response?>, IUnauthorized<MailOdds.Model.ErrorResponse?>, INotFound<MailOdds.Model.ErrorResponse?>
+    {
+        /// <summary>
+        /// Returns true if the response is 200 Ok
+        /// </summary>
+        /// <returns></returns>
+        bool IsOk { get; }
+
+        /// <summary>
+        /// Returns true if the response is 401 Unauthorized
+        /// </summary>
+        /// <returns></returns>
+        bool IsUnauthorized { get; }
+
+        /// <summary>
+        /// Returns true if the response is 404 NotFound
+        /// </summary>
+        /// <returns></returns>
+        bool IsNotFound { get; }
     }
 
     /// <summary>
@@ -124,12 +171,6 @@ namespace MailOdds.Api
         /// </summary>
         /// <returns></returns>
         bool IsUnauthorized { get; }
-
-        /// <summary>
-        /// Returns true if the response is 403 Forbidden
-        /// </summary>
-        /// <returns></returns>
-        bool IsForbidden { get; }
 
         /// <summary>
         /// Returns true if the response is 404 NotFound
@@ -154,12 +195,6 @@ namespace MailOdds.Api
         /// </summary>
         /// <returns></returns>
         bool IsUnauthorized { get; }
-
-        /// <summary>
-        /// Returns true if the response is 403 Forbidden
-        /// </summary>
-        /// <returns></returns>
-        bool IsForbidden { get; }
     }
 
     /// <summary>
@@ -184,12 +219,6 @@ namespace MailOdds.Api
         /// </summary>
         /// <returns></returns>
         bool IsUnauthorized { get; }
-
-        /// <summary>
-        /// Returns true if the response is 403 Forbidden
-        /// </summary>
-        /// <returns></returns>
-        bool IsForbidden { get; }
     }
 
     /// <summary>
@@ -197,6 +226,26 @@ namespace MailOdds.Api
     /// </summary>
     public class SpamChecksApiEvents
     {
+        /// <summary>
+        /// The event raised after the server response
+        /// </summary>
+        public event EventHandler<ApiResponseEventArgs>? OnDeleteSpamCheck;
+
+        /// <summary>
+        /// The event raised after an error querying the server
+        /// </summary>
+        public event EventHandler<ExceptionEventArgs>? OnErrorDeleteSpamCheck;
+
+        internal void ExecuteOnDeleteSpamCheck(SpamChecksApi.DeleteSpamCheckApiResponse apiResponse)
+        {
+            OnDeleteSpamCheck?.Invoke(this, new ApiResponseEventArgs(apiResponse));
+        }
+
+        internal void ExecuteOnErrorDeleteSpamCheck(Exception exception)
+        {
+            OnErrorDeleteSpamCheck?.Invoke(this, new ExceptionEventArgs(exception));
+        }
+
         /// <summary>
         /// The event raised after the server response
         /// </summary>
@@ -305,6 +354,335 @@ namespace MailOdds.Api
             BearerTokenProvider = bearerTokenProvider;
         }
 
+        partial void FormatDeleteSpamCheck(ref string checkId);
+
+        /// <summary>
+        /// Validates the request parameters
+        /// </summary>
+        /// <param name="checkId"></param>
+        /// <returns></returns>
+        private void ValidateDeleteSpamCheck(string checkId)
+        {
+            if (checkId == null)
+                throw new ArgumentNullException(nameof(checkId));
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="apiResponseLocalVar"></param>
+        /// <param name="checkId"></param>
+        private void AfterDeleteSpamCheckDefaultImplementation(IDeleteSpamCheckApiResponse apiResponseLocalVar, string checkId)
+        {
+            bool suppressDefaultLog = false;
+            AfterDeleteSpamCheck(ref suppressDefaultLog, apiResponseLocalVar, checkId);
+            if (!suppressDefaultLog)
+                Logger.LogInformation("{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="suppressDefaultLog"></param>
+        /// <param name="apiResponseLocalVar"></param>
+        /// <param name="checkId"></param>
+        partial void AfterDeleteSpamCheck(ref bool suppressDefaultLog, IDeleteSpamCheckApiResponse apiResponseLocalVar, string checkId);
+
+        /// <summary>
+        /// Logs exceptions that occur while retrieving the server response
+        /// </summary>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        /// <param name="checkId"></param>
+        private void OnErrorDeleteSpamCheckDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string checkId)
+        {
+            bool suppressDefaultLogLocalVar = false;
+            OnErrorDeleteSpamCheck(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, checkId);
+            if (!suppressDefaultLogLocalVar)
+                Logger.LogError(exceptionLocalVar, "An error occurred while sending the request to the server.");
+        }
+
+        /// <summary>
+        /// A partial method that gives developers a way to provide customized exception handling
+        /// </summary>
+        /// <param name="suppressDefaultLogLocalVar"></param>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        /// <param name="checkId"></param>
+        partial void OnErrorDeleteSpamCheck(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string checkId);
+
+        /// <summary>
+        /// Delete spam check Delete a spam check result.
+        /// </summary>
+        /// <param name="checkId">Spam check ID</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IDeleteSpamCheckApiResponse"/>&gt;</returns>
+        public async Task<IDeleteSpamCheckApiResponse?> DeleteSpamCheckOrDefaultAsync(string checkId, System.Threading.CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                return await DeleteSpamCheckAsync(checkId, cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Delete spam check Delete a spam check result.
+        /// </summary>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="checkId">Spam check ID</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IDeleteSpamCheckApiResponse"/>&gt;</returns>
+        public async Task<IDeleteSpamCheckApiResponse> DeleteSpamCheckAsync(string checkId, System.Threading.CancellationToken cancellationToken = default)
+        {
+            UriBuilder uriBuilderLocalVar = new UriBuilder();
+
+            try
+            {
+                ValidateDeleteSpamCheck(checkId);
+
+                FormatDeleteSpamCheck(ref checkId);
+
+                using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
+                {
+                    uriBuilderLocalVar.Host = HttpClient.BaseAddress!.Host;
+                    uriBuilderLocalVar.Port = HttpClient.BaseAddress.Port;
+                    uriBuilderLocalVar.Scheme = HttpClient.BaseAddress.Scheme;
+                    uriBuilderLocalVar.Path = HttpClient.BaseAddress.AbsolutePath == "/"
+                        ? "/v1/spam-checks/{check_id}"
+                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/v1/spam-checks/{check_id}");
+                    uriBuilderLocalVar.Path = uriBuilderLocalVar.Path.Replace("%7Bcheck_id%7D", Uri.EscapeDataString(checkId.ToString()));
+
+                    List<TokenBase> tokenBaseLocalVars = new List<TokenBase>();
+                    httpRequestMessageLocalVar.RequestUri = uriBuilderLocalVar.Uri;
+
+                    BearerToken bearerTokenLocalVar1 = (BearerToken) await BearerTokenProvider.GetAsync(cancellation: cancellationToken).ConfigureAwait(false);
+
+                    tokenBaseLocalVars.Add(bearerTokenLocalVar1);
+
+                    bearerTokenLocalVar1.UseInHeader(httpRequestMessageLocalVar, "");
+
+                    string[] acceptLocalVars = new string[] {
+                        "application/json"
+                    };
+
+                    string? acceptLocalVar = ClientUtils.SelectHeaderAccept(acceptLocalVars);
+
+                    if (acceptLocalVar != null)
+                        httpRequestMessageLocalVar.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(acceptLocalVar));
+
+                    httpRequestMessageLocalVar.Method = HttpMethod.Delete;
+
+                    DateTime requestedAtLocalVar = DateTime.UtcNow;
+
+                    using (HttpResponseMessage httpResponseMessageLocalVar = await HttpClient.SendAsync(httpRequestMessageLocalVar, cancellationToken).ConfigureAwait(false))
+                    {
+                        ILogger<DeleteSpamCheckApiResponse> apiResponseLoggerLocalVar = LoggerFactory.CreateLogger<DeleteSpamCheckApiResponse>();
+                        DeleteSpamCheckApiResponse apiResponseLocalVar;
+
+                        switch ((int)httpResponseMessageLocalVar.StatusCode) {
+                            default: {
+                                string responseContentLocalVar = await httpResponseMessageLocalVar.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/v1/spam-checks/{check_id}", requestedAtLocalVar, _jsonSerializerOptions);
+
+                                break;
+                            }
+                        }
+
+                        AfterDeleteSpamCheckDefaultImplementation(apiResponseLocalVar, checkId);
+
+                        Events.ExecuteOnDeleteSpamCheck(apiResponseLocalVar);
+
+                        if (apiResponseLocalVar.StatusCode == (HttpStatusCode) 429)
+                            foreach(TokenBase tokenBaseLocalVar in tokenBaseLocalVars)
+                                tokenBaseLocalVar.BeginRateLimit();
+
+                        return apiResponseLocalVar;
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                OnErrorDeleteSpamCheckDefaultImplementation(e, "/v1/spam-checks/{check_id}", uriBuilderLocalVar.Path, checkId);
+                Events.ExecuteOnErrorDeleteSpamCheck(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// The <see cref="DeleteSpamCheckApiResponse"/>
+        /// </summary>
+        public partial class DeleteSpamCheckApiResponse : MailOdds.Client.ApiResponse, IDeleteSpamCheckApiResponse
+        {
+            /// <summary>
+            /// The logger
+            /// </summary>
+            public ILogger<DeleteSpamCheckApiResponse> Logger { get; }
+
+            /// <summary>
+            /// The <see cref="DeleteSpamCheckApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="rawContent"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public DeleteSpamCheckApiResponse(ILogger<DeleteSpamCheckApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, string rawContent, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, rawContent, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            /// <summary>
+            /// The <see cref="DeleteSpamCheckApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="contentStream"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public DeleteSpamCheckApiResponse(ILogger<DeleteSpamCheckApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, System.IO.Stream contentStream, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, contentStream, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            partial void OnCreated(global::System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage);
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public bool IsOk => 200 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.DeletePolicyRule200Response? Ok()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsOk
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.DeletePolicyRule200Response>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryOk([NotNullWhen(true)]out MailOdds.Model.DeletePolicyRule200Response? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Ok();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)200);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public bool IsUnauthorized => 401 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.ErrorResponse? Unauthorized()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsUnauthorized
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryUnauthorized([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Unauthorized();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)401);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 404 NotFound
+            /// </summary>
+            /// <returns></returns>
+            public bool IsNotFound => 404 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 404 NotFound
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.ErrorResponse? NotFound()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsNotFound
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 404 NotFound and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryNotFound([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = NotFound();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)404);
+                }
+
+                return result != null;
+            }
+
+            private void OnDeserializationErrorDefaultImplementation(Exception exception, HttpStatusCode httpStatusCode)
+            {
+                bool suppressDefaultLog = false;
+                OnDeserializationError(ref suppressDefaultLog, exception, httpStatusCode);
+                if (!suppressDefaultLog)
+                    Logger.LogError(exception, "An error occurred while deserializing the {code} response.", httpStatusCode);
+            }
+
+            partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
+        }
+
         partial void FormatGetSpamCheck(ref string checkId);
 
         /// <summary>
@@ -365,7 +743,7 @@ namespace MailOdds.Api
         partial void OnErrorGetSpamCheck(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string checkId);
 
         /// <summary>
-        /// Get spam check Get the detailed result of a specific spam check. Currently available to beta accounts only.
+        /// Get spam check Get the detailed result of a specific spam check.
         /// </summary>
         /// <param name="checkId">Spam check UUID</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
@@ -383,7 +761,7 @@ namespace MailOdds.Api
         }
 
         /// <summary>
-        /// Get spam check Get the detailed result of a specific spam check. Currently available to beta accounts only.
+        /// Get spam check Get the detailed result of a specific spam check.
         /// </summary>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="checkId">Spam check UUID</param>
@@ -586,12 +964,6 @@ namespace MailOdds.Api
             }
 
             /// <summary>
-            /// Returns true if the response is 403 Forbidden
-            /// </summary>
-            /// <returns></returns>
-            public bool IsForbidden => 403 == (int)StatusCode;
-
-            /// <summary>
             /// Returns true if the response is 404 NotFound
             /// </summary>
             /// <returns></returns>
@@ -693,7 +1065,7 @@ namespace MailOdds.Api
         partial void OnErrorListSpamChecks(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, Option<int> page, Option<int> perPage);
 
         /// <summary>
-        /// List spam checks List past spam check results with pagination. Currently available to beta accounts only.
+        /// List spam checks List past spam check results with pagination.
         /// </summary>
         /// <param name="page"> (optional, default to 1)</param>
         /// <param name="perPage"> (optional, default to 20)</param>
@@ -712,7 +1084,7 @@ namespace MailOdds.Api
         }
 
         /// <summary>
-        /// List spam checks List past spam check results with pagination. Currently available to beta accounts only.
+        /// List spam checks List past spam check results with pagination.
         /// </summary>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="page"> (optional, default to 1)</param>
@@ -922,12 +1294,6 @@ namespace MailOdds.Api
                 return result != null;
             }
 
-            /// <summary>
-            /// Returns true if the response is 403 Forbidden
-            /// </summary>
-            /// <returns></returns>
-            public bool IsForbidden => 403 == (int)StatusCode;
-
             private void OnDeserializationErrorDefaultImplementation(Exception exception, HttpStatusCode httpStatusCode)
             {
                 bool suppressDefaultLog = false;
@@ -999,7 +1365,7 @@ namespace MailOdds.Api
         partial void OnErrorRunSpamCheck(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, RunSpamCheckRequest runSpamCheckRequest);
 
         /// <summary>
-        /// Run spam check Run backend spam checks on email sending parameters. Checks domain reputation, link safety, and subject line quality. Currently available to beta accounts only.
+        /// Run spam check Run backend spam checks on email sending parameters. Checks domain reputation, link safety, and subject line quality.
         /// </summary>
         /// <param name="runSpamCheckRequest"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
@@ -1017,7 +1383,7 @@ namespace MailOdds.Api
         }
 
         /// <summary>
-        /// Run spam check Run backend spam checks on email sending parameters. Checks domain reputation, link safety, and subject line quality. Currently available to beta accounts only.
+        /// Run spam check Run backend spam checks on email sending parameters. Checks domain reputation, link safety, and subject line quality.
         /// </summary>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="runSpamCheckRequest"></param>
@@ -1268,12 +1634,6 @@ namespace MailOdds.Api
 
                 return result != null;
             }
-
-            /// <summary>
-            /// Returns true if the response is 403 Forbidden
-            /// </summary>
-            /// <returns></returns>
-            public bool IsForbidden => 403 == (int)StatusCode;
 
             private void OnDeserializationErrorDefaultImplementation(Exception exception, HttpStatusCode httpStatusCode)
             {

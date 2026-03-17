@@ -37,6 +37,31 @@ namespace MailOdds.Api
         ContactListsApiEvents Events { get; }
 
         /// <summary>
+        /// Add contact to list
+        /// </summary>
+        /// <remarks>
+        /// Add a single contact to a contact list.
+        /// </remarks>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="listId">Contact list ID</param>
+        /// <param name="addContactRequest"></param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IAddContactApiResponse"/>&gt;</returns>
+        Task<IAddContactApiResponse> AddContactAsync(string listId, AddContactRequest addContactRequest, System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Add contact to list
+        /// </summary>
+        /// <remarks>
+        /// Add a single contact to a contact list.
+        /// </remarks>
+        /// <param name="listId">Contact list ID</param>
+        /// <param name="addContactRequest"></param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IAddContactApiResponse"/>?&gt;</returns>
+        Task<IAddContactApiResponse?> AddContactOrDefaultAsync(string listId, AddContactRequest addContactRequest, System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Append to contact list
         /// </summary>
         /// <remarks>
@@ -85,6 +110,77 @@ namespace MailOdds.Api
         Task<ICreateContactListApiResponse?> CreateContactListOrDefaultAsync(CreateContactListRequest createContactListRequest, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Delete contact
+        /// </summary>
+        /// <remarks>
+        /// Remove a single contact from a contact list.
+        /// </remarks>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="listId">Contact list ID</param>
+        /// <param name="contactId">Contact ID</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IDeleteContactApiResponse"/>&gt;</returns>
+        Task<IDeleteContactApiResponse> DeleteContactAsync(string listId, string contactId, System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Delete contact
+        /// </summary>
+        /// <remarks>
+        /// Remove a single contact from a contact list.
+        /// </remarks>
+        /// <param name="listId">Contact list ID</param>
+        /// <param name="contactId">Contact ID</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IDeleteContactApiResponse"/>?&gt;</returns>
+        Task<IDeleteContactApiResponse?> DeleteContactOrDefaultAsync(string listId, string contactId, System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Delete a contact list
+        /// </summary>
+        /// <remarks>
+        /// Permanently delete a contact list and all its entries.
+        /// </remarks>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="listId">Contact list UUID</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IDeleteContactListApiResponse"/>&gt;</returns>
+        Task<IDeleteContactListApiResponse> DeleteContactListAsync(string listId, System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Delete a contact list
+        /// </summary>
+        /// <remarks>
+        /// Permanently delete a contact list and all its entries.
+        /// </remarks>
+        /// <param name="listId">Contact list UUID</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IDeleteContactListApiResponse"/>?&gt;</returns>
+        Task<IDeleteContactListApiResponse?> DeleteContactListOrDefaultAsync(string listId, System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Export contact list
+        /// </summary>
+        /// <remarks>
+        /// Export a contact list as CSV.
+        /// </remarks>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="listId">Contact list ID</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IExportContactListApiResponse"/>&gt;</returns>
+        Task<IExportContactListApiResponse> ExportContactListAsync(string listId, System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Export contact list
+        /// </summary>
+        /// <remarks>
+        /// Export a contact list as CSV.
+        /// </remarks>
+        /// <param name="listId">Contact list ID</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IExportContactListApiResponse"/>?&gt;</returns>
+        Task<IExportContactListApiResponse?> ExportContactListOrDefaultAsync(string listId, System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Get inactive contacts report
         /// </summary>
         /// <remarks>
@@ -106,6 +202,37 @@ namespace MailOdds.Api
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetInactiveContactsReportApiResponse"/>?&gt;</returns>
         Task<IGetInactiveContactsReportApiResponse?> GetInactiveContactsReportOrDefaultAsync(Option<int> days = default, System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Import contacts from CSV
+        /// </summary>
+        /// <remarks>
+        /// Import contacts into a list from a CSV file (max 10MB).
+        /// </remarks>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="listId">Contact list ID</param>
+        /// <param name="file">CSV file (max 10MB)</param>
+        /// <param name="columnMapping">JSON mapping of CSV columns to contact fields (optional)</param>
+        /// <param name="consentSource">Source of consent for imported contacts (optional)</param>
+        /// <param name="tags">JSON array of tags to apply (optional)</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IImportContactListApiResponse"/>&gt;</returns>
+        Task<IImportContactListApiResponse> ImportContactListAsync(string listId, System.IO.Stream file, Option<string> columnMapping = default, Option<string> consentSource = default, Option<string> tags = default, System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Import contacts from CSV
+        /// </summary>
+        /// <remarks>
+        /// Import contacts into a list from a CSV file (max 10MB).
+        /// </remarks>
+        /// <param name="listId">Contact list ID</param>
+        /// <param name="file">CSV file (max 10MB)</param>
+        /// <param name="columnMapping">JSON mapping of CSV columns to contact fields (optional)</param>
+        /// <param name="consentSource">Source of consent for imported contacts (optional)</param>
+        /// <param name="tags">JSON array of tags to apply (optional)</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IImportContactListApiResponse"/>?&gt;</returns>
+        Task<IImportContactListApiResponse?> ImportContactListOrDefaultAsync(string listId, System.IO.Stream file, Option<string> columnMapping = default, Option<string> consentSource = default, Option<string> tags = default, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// List contact lists
@@ -156,6 +283,63 @@ namespace MailOdds.Api
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IQueryContactListApiResponse"/>?&gt;</returns>
         Task<IQueryContactListApiResponse?> QueryContactListOrDefaultAsync(string listId, QueryContactListRequest queryContactListRequest, System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Update contact
+        /// </summary>
+        /// <remarks>
+        /// Update a single contact in a contact list.
+        /// </remarks>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="listId">Contact list ID</param>
+        /// <param name="contactId">Contact ID</param>
+        /// <param name="updateContactRequest"></param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IUpdateContactApiResponse"/>&gt;</returns>
+        Task<IUpdateContactApiResponse> UpdateContactAsync(string listId, string contactId, UpdateContactRequest updateContactRequest, System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Update contact
+        /// </summary>
+        /// <remarks>
+        /// Update a single contact in a contact list.
+        /// </remarks>
+        /// <param name="listId">Contact list ID</param>
+        /// <param name="contactId">Contact ID</param>
+        /// <param name="updateContactRequest"></param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IUpdateContactApiResponse"/>?&gt;</returns>
+        Task<IUpdateContactApiResponse?> UpdateContactOrDefaultAsync(string listId, string contactId, UpdateContactRequest updateContactRequest, System.Threading.CancellationToken cancellationToken = default);
+    }
+
+    /// <summary>
+    /// The <see cref="IAddContactApiResponse"/>
+    /// </summary>
+    public interface IAddContactApiResponse : MailOdds.Client.IApiResponse, ICreated<MailOdds.Model.AddContact201Response?>, IBadRequest<MailOdds.Model.ErrorResponse?>, IUnauthorized<MailOdds.Model.ErrorResponse?>, INotFound<MailOdds.Model.ErrorResponse?>
+    {
+        /// <summary>
+        /// Returns true if the response is 201 Created
+        /// </summary>
+        /// <returns></returns>
+        bool IsCreated { get; }
+
+        /// <summary>
+        /// Returns true if the response is 400 BadRequest
+        /// </summary>
+        /// <returns></returns>
+        bool IsBadRequest { get; }
+
+        /// <summary>
+        /// Returns true if the response is 401 Unauthorized
+        /// </summary>
+        /// <returns></returns>
+        bool IsUnauthorized { get; }
+
+        /// <summary>
+        /// Returns true if the response is 404 NotFound
+        /// </summary>
+        /// <returns></returns>
+        bool IsNotFound { get; }
     }
 
     /// <summary>
@@ -219,6 +403,78 @@ namespace MailOdds.Api
     }
 
     /// <summary>
+    /// The <see cref="IDeleteContactApiResponse"/>
+    /// </summary>
+    public interface IDeleteContactApiResponse : MailOdds.Client.IApiResponse, IOk<MailOdds.Model.DeletePolicyRule200Response?>, IUnauthorized<MailOdds.Model.ErrorResponse?>, INotFound<MailOdds.Model.ErrorResponse?>
+    {
+        /// <summary>
+        /// Returns true if the response is 200 Ok
+        /// </summary>
+        /// <returns></returns>
+        bool IsOk { get; }
+
+        /// <summary>
+        /// Returns true if the response is 401 Unauthorized
+        /// </summary>
+        /// <returns></returns>
+        bool IsUnauthorized { get; }
+
+        /// <summary>
+        /// Returns true if the response is 404 NotFound
+        /// </summary>
+        /// <returns></returns>
+        bool IsNotFound { get; }
+    }
+
+    /// <summary>
+    /// The <see cref="IDeleteContactListApiResponse"/>
+    /// </summary>
+    public interface IDeleteContactListApiResponse : MailOdds.Client.IApiResponse, IOk<MailOdds.Model.DeletePolicyRule200Response?>, IUnauthorized<MailOdds.Model.ErrorResponse?>, INotFound<MailOdds.Model.ErrorResponse?>
+    {
+        /// <summary>
+        /// Returns true if the response is 200 Ok
+        /// </summary>
+        /// <returns></returns>
+        bool IsOk { get; }
+
+        /// <summary>
+        /// Returns true if the response is 401 Unauthorized
+        /// </summary>
+        /// <returns></returns>
+        bool IsUnauthorized { get; }
+
+        /// <summary>
+        /// Returns true if the response is 404 NotFound
+        /// </summary>
+        /// <returns></returns>
+        bool IsNotFound { get; }
+    }
+
+    /// <summary>
+    /// The <see cref="IExportContactListApiResponse"/>
+    /// </summary>
+    public interface IExportContactListApiResponse : MailOdds.Client.IApiResponse, IOk<string?>, IUnauthorized<MailOdds.Model.ErrorResponse?>, INotFound<MailOdds.Model.ErrorResponse?>
+    {
+        /// <summary>
+        /// Returns true if the response is 200 Ok
+        /// </summary>
+        /// <returns></returns>
+        bool IsOk { get; }
+
+        /// <summary>
+        /// Returns true if the response is 401 Unauthorized
+        /// </summary>
+        /// <returns></returns>
+        bool IsUnauthorized { get; }
+
+        /// <summary>
+        /// Returns true if the response is 404 NotFound
+        /// </summary>
+        /// <returns></returns>
+        bool IsNotFound { get; }
+    }
+
+    /// <summary>
     /// The <see cref="IGetInactiveContactsReportApiResponse"/>
     /// </summary>
     public interface IGetInactiveContactsReportApiResponse : MailOdds.Client.IApiResponse, IOk<MailOdds.Model.GetInactiveContactsReport200Response?>, IUnauthorized<MailOdds.Model.ErrorResponse?>, IForbidden<MailOdds.Model.ErrorResponse?>
@@ -240,6 +496,36 @@ namespace MailOdds.Api
         /// </summary>
         /// <returns></returns>
         bool IsForbidden { get; }
+    }
+
+    /// <summary>
+    /// The <see cref="IImportContactListApiResponse"/>
+    /// </summary>
+    public interface IImportContactListApiResponse : MailOdds.Client.IApiResponse, IOk<MailOdds.Model.ImportContactList200Response?>, IBadRequest<MailOdds.Model.ErrorResponse?>, IUnauthorized<MailOdds.Model.ErrorResponse?>, INotFound<MailOdds.Model.ErrorResponse?>
+    {
+        /// <summary>
+        /// Returns true if the response is 200 Ok
+        /// </summary>
+        /// <returns></returns>
+        bool IsOk { get; }
+
+        /// <summary>
+        /// Returns true if the response is 400 BadRequest
+        /// </summary>
+        /// <returns></returns>
+        bool IsBadRequest { get; }
+
+        /// <summary>
+        /// Returns true if the response is 401 Unauthorized
+        /// </summary>
+        /// <returns></returns>
+        bool IsUnauthorized { get; }
+
+        /// <summary>
+        /// Returns true if the response is 404 NotFound
+        /// </summary>
+        /// <returns></returns>
+        bool IsNotFound { get; }
     }
 
     /// <summary>
@@ -297,10 +583,60 @@ namespace MailOdds.Api
     }
 
     /// <summary>
+    /// The <see cref="IUpdateContactApiResponse"/>
+    /// </summary>
+    public interface IUpdateContactApiResponse : MailOdds.Client.IApiResponse, IOk<MailOdds.Model.AddContact201Response?>, IBadRequest<MailOdds.Model.ErrorResponse?>, IUnauthorized<MailOdds.Model.ErrorResponse?>, INotFound<MailOdds.Model.ErrorResponse?>
+    {
+        /// <summary>
+        /// Returns true if the response is 200 Ok
+        /// </summary>
+        /// <returns></returns>
+        bool IsOk { get; }
+
+        /// <summary>
+        /// Returns true if the response is 400 BadRequest
+        /// </summary>
+        /// <returns></returns>
+        bool IsBadRequest { get; }
+
+        /// <summary>
+        /// Returns true if the response is 401 Unauthorized
+        /// </summary>
+        /// <returns></returns>
+        bool IsUnauthorized { get; }
+
+        /// <summary>
+        /// Returns true if the response is 404 NotFound
+        /// </summary>
+        /// <returns></returns>
+        bool IsNotFound { get; }
+    }
+
+    /// <summary>
     /// Represents a collection of functions to interact with the API endpoints
     /// </summary>
     public class ContactListsApiEvents
     {
+        /// <summary>
+        /// The event raised after the server response
+        /// </summary>
+        public event EventHandler<ApiResponseEventArgs>? OnAddContact;
+
+        /// <summary>
+        /// The event raised after an error querying the server
+        /// </summary>
+        public event EventHandler<ExceptionEventArgs>? OnErrorAddContact;
+
+        internal void ExecuteOnAddContact(ContactListsApi.AddContactApiResponse apiResponse)
+        {
+            OnAddContact?.Invoke(this, new ApiResponseEventArgs(apiResponse));
+        }
+
+        internal void ExecuteOnErrorAddContact(Exception exception)
+        {
+            OnErrorAddContact?.Invoke(this, new ExceptionEventArgs(exception));
+        }
+
         /// <summary>
         /// The event raised after the server response
         /// </summary>
@@ -344,6 +680,66 @@ namespace MailOdds.Api
         /// <summary>
         /// The event raised after the server response
         /// </summary>
+        public event EventHandler<ApiResponseEventArgs>? OnDeleteContact;
+
+        /// <summary>
+        /// The event raised after an error querying the server
+        /// </summary>
+        public event EventHandler<ExceptionEventArgs>? OnErrorDeleteContact;
+
+        internal void ExecuteOnDeleteContact(ContactListsApi.DeleteContactApiResponse apiResponse)
+        {
+            OnDeleteContact?.Invoke(this, new ApiResponseEventArgs(apiResponse));
+        }
+
+        internal void ExecuteOnErrorDeleteContact(Exception exception)
+        {
+            OnErrorDeleteContact?.Invoke(this, new ExceptionEventArgs(exception));
+        }
+
+        /// <summary>
+        /// The event raised after the server response
+        /// </summary>
+        public event EventHandler<ApiResponseEventArgs>? OnDeleteContactList;
+
+        /// <summary>
+        /// The event raised after an error querying the server
+        /// </summary>
+        public event EventHandler<ExceptionEventArgs>? OnErrorDeleteContactList;
+
+        internal void ExecuteOnDeleteContactList(ContactListsApi.DeleteContactListApiResponse apiResponse)
+        {
+            OnDeleteContactList?.Invoke(this, new ApiResponseEventArgs(apiResponse));
+        }
+
+        internal void ExecuteOnErrorDeleteContactList(Exception exception)
+        {
+            OnErrorDeleteContactList?.Invoke(this, new ExceptionEventArgs(exception));
+        }
+
+        /// <summary>
+        /// The event raised after the server response
+        /// </summary>
+        public event EventHandler<ApiResponseEventArgs>? OnExportContactList;
+
+        /// <summary>
+        /// The event raised after an error querying the server
+        /// </summary>
+        public event EventHandler<ExceptionEventArgs>? OnErrorExportContactList;
+
+        internal void ExecuteOnExportContactList(ContactListsApi.ExportContactListApiResponse apiResponse)
+        {
+            OnExportContactList?.Invoke(this, new ApiResponseEventArgs(apiResponse));
+        }
+
+        internal void ExecuteOnErrorExportContactList(Exception exception)
+        {
+            OnErrorExportContactList?.Invoke(this, new ExceptionEventArgs(exception));
+        }
+
+        /// <summary>
+        /// The event raised after the server response
+        /// </summary>
         public event EventHandler<ApiResponseEventArgs>? OnGetInactiveContactsReport;
 
         /// <summary>
@@ -359,6 +755,26 @@ namespace MailOdds.Api
         internal void ExecuteOnErrorGetInactiveContactsReport(Exception exception)
         {
             OnErrorGetInactiveContactsReport?.Invoke(this, new ExceptionEventArgs(exception));
+        }
+
+        /// <summary>
+        /// The event raised after the server response
+        /// </summary>
+        public event EventHandler<ApiResponseEventArgs>? OnImportContactList;
+
+        /// <summary>
+        /// The event raised after an error querying the server
+        /// </summary>
+        public event EventHandler<ExceptionEventArgs>? OnErrorImportContactList;
+
+        internal void ExecuteOnImportContactList(ContactListsApi.ImportContactListApiResponse apiResponse)
+        {
+            OnImportContactList?.Invoke(this, new ApiResponseEventArgs(apiResponse));
+        }
+
+        internal void ExecuteOnErrorImportContactList(Exception exception)
+        {
+            OnErrorImportContactList?.Invoke(this, new ExceptionEventArgs(exception));
         }
 
         /// <summary>
@@ -399,6 +815,26 @@ namespace MailOdds.Api
         internal void ExecuteOnErrorQueryContactList(Exception exception)
         {
             OnErrorQueryContactList?.Invoke(this, new ExceptionEventArgs(exception));
+        }
+
+        /// <summary>
+        /// The event raised after the server response
+        /// </summary>
+        public event EventHandler<ApiResponseEventArgs>? OnUpdateContact;
+
+        /// <summary>
+        /// The event raised after an error querying the server
+        /// </summary>
+        public event EventHandler<ExceptionEventArgs>? OnErrorUpdateContact;
+
+        internal void ExecuteOnUpdateContact(ContactListsApi.UpdateContactApiResponse apiResponse)
+        {
+            OnUpdateContact?.Invoke(this, new ApiResponseEventArgs(apiResponse));
+        }
+
+        internal void ExecuteOnErrorUpdateContact(Exception exception)
+        {
+            OnErrorUpdateContact?.Invoke(this, new ExceptionEventArgs(exception));
         }
     }
 
@@ -447,6 +883,396 @@ namespace MailOdds.Api
             HttpClient = httpClient;
             Events = contactListsApiEvents;
             BearerTokenProvider = bearerTokenProvider;
+        }
+
+        partial void FormatAddContact(ref string listId, AddContactRequest addContactRequest);
+
+        /// <summary>
+        /// Validates the request parameters
+        /// </summary>
+        /// <param name="listId"></param>
+        /// <param name="addContactRequest"></param>
+        /// <returns></returns>
+        private void ValidateAddContact(string listId, AddContactRequest addContactRequest)
+        {
+            if (listId == null)
+                throw new ArgumentNullException(nameof(listId));
+
+            if (addContactRequest == null)
+                throw new ArgumentNullException(nameof(addContactRequest));
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="apiResponseLocalVar"></param>
+        /// <param name="listId"></param>
+        /// <param name="addContactRequest"></param>
+        private void AfterAddContactDefaultImplementation(IAddContactApiResponse apiResponseLocalVar, string listId, AddContactRequest addContactRequest)
+        {
+            bool suppressDefaultLog = false;
+            AfterAddContact(ref suppressDefaultLog, apiResponseLocalVar, listId, addContactRequest);
+            if (!suppressDefaultLog)
+                Logger.LogInformation("{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="suppressDefaultLog"></param>
+        /// <param name="apiResponseLocalVar"></param>
+        /// <param name="listId"></param>
+        /// <param name="addContactRequest"></param>
+        partial void AfterAddContact(ref bool suppressDefaultLog, IAddContactApiResponse apiResponseLocalVar, string listId, AddContactRequest addContactRequest);
+
+        /// <summary>
+        /// Logs exceptions that occur while retrieving the server response
+        /// </summary>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        /// <param name="listId"></param>
+        /// <param name="addContactRequest"></param>
+        private void OnErrorAddContactDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string listId, AddContactRequest addContactRequest)
+        {
+            bool suppressDefaultLogLocalVar = false;
+            OnErrorAddContact(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, listId, addContactRequest);
+            if (!suppressDefaultLogLocalVar)
+                Logger.LogError(exceptionLocalVar, "An error occurred while sending the request to the server.");
+        }
+
+        /// <summary>
+        /// A partial method that gives developers a way to provide customized exception handling
+        /// </summary>
+        /// <param name="suppressDefaultLogLocalVar"></param>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        /// <param name="listId"></param>
+        /// <param name="addContactRequest"></param>
+        partial void OnErrorAddContact(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string listId, AddContactRequest addContactRequest);
+
+        /// <summary>
+        /// Add contact to list Add a single contact to a contact list.
+        /// </summary>
+        /// <param name="listId">Contact list ID</param>
+        /// <param name="addContactRequest"></param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IAddContactApiResponse"/>&gt;</returns>
+        public async Task<IAddContactApiResponse?> AddContactOrDefaultAsync(string listId, AddContactRequest addContactRequest, System.Threading.CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                return await AddContactAsync(listId, addContactRequest, cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Add contact to list Add a single contact to a contact list.
+        /// </summary>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="listId">Contact list ID</param>
+        /// <param name="addContactRequest"></param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IAddContactApiResponse"/>&gt;</returns>
+        public async Task<IAddContactApiResponse> AddContactAsync(string listId, AddContactRequest addContactRequest, System.Threading.CancellationToken cancellationToken = default)
+        {
+            UriBuilder uriBuilderLocalVar = new UriBuilder();
+
+            try
+            {
+                ValidateAddContact(listId, addContactRequest);
+
+                FormatAddContact(ref listId, addContactRequest);
+
+                using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
+                {
+                    uriBuilderLocalVar.Host = HttpClient.BaseAddress!.Host;
+                    uriBuilderLocalVar.Port = HttpClient.BaseAddress.Port;
+                    uriBuilderLocalVar.Scheme = HttpClient.BaseAddress.Scheme;
+                    uriBuilderLocalVar.Path = HttpClient.BaseAddress.AbsolutePath == "/"
+                        ? "/v1/contact-lists/{list_id}/contacts"
+                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/v1/contact-lists/{list_id}/contacts");
+                    uriBuilderLocalVar.Path = uriBuilderLocalVar.Path.Replace("%7Blist_id%7D", Uri.EscapeDataString(listId.ToString()));
+
+                    httpRequestMessageLocalVar.Content = (addContactRequest as object) is System.IO.Stream stream
+                        ? httpRequestMessageLocalVar.Content = new StreamContent(stream)
+                        : httpRequestMessageLocalVar.Content = new StringContent(JsonSerializer.Serialize(addContactRequest, _jsonSerializerOptions));
+
+                    List<TokenBase> tokenBaseLocalVars = new List<TokenBase>();
+                    httpRequestMessageLocalVar.RequestUri = uriBuilderLocalVar.Uri;
+
+                    BearerToken bearerTokenLocalVar1 = (BearerToken) await BearerTokenProvider.GetAsync(cancellation: cancellationToken).ConfigureAwait(false);
+
+                    tokenBaseLocalVars.Add(bearerTokenLocalVar1);
+
+                    bearerTokenLocalVar1.UseInHeader(httpRequestMessageLocalVar, "");
+
+                    string[] contentTypes = new string[] {
+                        "application/json"
+                    };
+
+                    string? contentTypeLocalVar = ClientUtils.SelectHeaderContentType(contentTypes);
+
+                    if (contentTypeLocalVar != null && httpRequestMessageLocalVar.Content != null)
+                        httpRequestMessageLocalVar.Content.Headers.ContentType = new MediaTypeHeaderValue(contentTypeLocalVar);
+
+                    string[] acceptLocalVars = new string[] {
+                        "application/json"
+                    };
+
+                    string? acceptLocalVar = ClientUtils.SelectHeaderAccept(acceptLocalVars);
+
+                    if (acceptLocalVar != null)
+                        httpRequestMessageLocalVar.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(acceptLocalVar));
+
+                    httpRequestMessageLocalVar.Method = HttpMethod.Post;
+
+                    DateTime requestedAtLocalVar = DateTime.UtcNow;
+
+                    using (HttpResponseMessage httpResponseMessageLocalVar = await HttpClient.SendAsync(httpRequestMessageLocalVar, cancellationToken).ConfigureAwait(false))
+                    {
+                        ILogger<AddContactApiResponse> apiResponseLoggerLocalVar = LoggerFactory.CreateLogger<AddContactApiResponse>();
+                        AddContactApiResponse apiResponseLocalVar;
+
+                        switch ((int)httpResponseMessageLocalVar.StatusCode) {
+                            default: {
+                                string responseContentLocalVar = await httpResponseMessageLocalVar.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/v1/contact-lists/{list_id}/contacts", requestedAtLocalVar, _jsonSerializerOptions);
+
+                                break;
+                            }
+                        }
+
+                        AfterAddContactDefaultImplementation(apiResponseLocalVar, listId, addContactRequest);
+
+                        Events.ExecuteOnAddContact(apiResponseLocalVar);
+
+                        if (apiResponseLocalVar.StatusCode == (HttpStatusCode) 429)
+                            foreach(TokenBase tokenBaseLocalVar in tokenBaseLocalVars)
+                                tokenBaseLocalVar.BeginRateLimit();
+
+                        return apiResponseLocalVar;
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                OnErrorAddContactDefaultImplementation(e, "/v1/contact-lists/{list_id}/contacts", uriBuilderLocalVar.Path, listId, addContactRequest);
+                Events.ExecuteOnErrorAddContact(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// The <see cref="AddContactApiResponse"/>
+        /// </summary>
+        public partial class AddContactApiResponse : MailOdds.Client.ApiResponse, IAddContactApiResponse
+        {
+            /// <summary>
+            /// The logger
+            /// </summary>
+            public ILogger<AddContactApiResponse> Logger { get; }
+
+            /// <summary>
+            /// The <see cref="AddContactApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="rawContent"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public AddContactApiResponse(ILogger<AddContactApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, string rawContent, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, rawContent, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            /// <summary>
+            /// The <see cref="AddContactApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="contentStream"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public AddContactApiResponse(ILogger<AddContactApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, System.IO.Stream contentStream, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, contentStream, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            partial void OnCreated(global::System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage);
+
+            /// <summary>
+            /// Returns true if the response is 201 Created
+            /// </summary>
+            /// <returns></returns>
+            public bool IsCreated => 201 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 201 Created
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.AddContact201Response? Created()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsCreated
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.AddContact201Response>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 201 Created and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryCreated([NotNullWhen(true)]out MailOdds.Model.AddContact201Response? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Created();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)201);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 400 BadRequest
+            /// </summary>
+            /// <returns></returns>
+            public bool IsBadRequest => 400 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 400 BadRequest
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.ErrorResponse? BadRequest()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsBadRequest
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 400 BadRequest and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryBadRequest([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = BadRequest();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)400);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public bool IsUnauthorized => 401 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.ErrorResponse? Unauthorized()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsUnauthorized
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryUnauthorized([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Unauthorized();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)401);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 404 NotFound
+            /// </summary>
+            /// <returns></returns>
+            public bool IsNotFound => 404 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 404 NotFound
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.ErrorResponse? NotFound()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsNotFound
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 404 NotFound and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryNotFound([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = NotFound();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)404);
+                }
+
+                return result != null;
+            }
+
+            private void OnDeserializationErrorDefaultImplementation(Exception exception, HttpStatusCode httpStatusCode)
+            {
+                bool suppressDefaultLog = false;
+                OnDeserializationError(ref suppressDefaultLog, exception, httpStatusCode);
+                if (!suppressDefaultLog)
+                    Logger.LogError(exception, "An error occurred while deserializing the {code} response.", httpStatusCode);
+            }
+
+            partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
         }
 
         partial void FormatAppendToContactList(ref string listId, AppendToContactListRequest appendToContactListRequest);
@@ -1218,6 +2044,1005 @@ namespace MailOdds.Api
             partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
         }
 
+        partial void FormatDeleteContact(ref string listId, ref string contactId);
+
+        /// <summary>
+        /// Validates the request parameters
+        /// </summary>
+        /// <param name="listId"></param>
+        /// <param name="contactId"></param>
+        /// <returns></returns>
+        private void ValidateDeleteContact(string listId, string contactId)
+        {
+            if (listId == null)
+                throw new ArgumentNullException(nameof(listId));
+
+            if (contactId == null)
+                throw new ArgumentNullException(nameof(contactId));
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="apiResponseLocalVar"></param>
+        /// <param name="listId"></param>
+        /// <param name="contactId"></param>
+        private void AfterDeleteContactDefaultImplementation(IDeleteContactApiResponse apiResponseLocalVar, string listId, string contactId)
+        {
+            bool suppressDefaultLog = false;
+            AfterDeleteContact(ref suppressDefaultLog, apiResponseLocalVar, listId, contactId);
+            if (!suppressDefaultLog)
+                Logger.LogInformation("{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="suppressDefaultLog"></param>
+        /// <param name="apiResponseLocalVar"></param>
+        /// <param name="listId"></param>
+        /// <param name="contactId"></param>
+        partial void AfterDeleteContact(ref bool suppressDefaultLog, IDeleteContactApiResponse apiResponseLocalVar, string listId, string contactId);
+
+        /// <summary>
+        /// Logs exceptions that occur while retrieving the server response
+        /// </summary>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        /// <param name="listId"></param>
+        /// <param name="contactId"></param>
+        private void OnErrorDeleteContactDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string listId, string contactId)
+        {
+            bool suppressDefaultLogLocalVar = false;
+            OnErrorDeleteContact(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, listId, contactId);
+            if (!suppressDefaultLogLocalVar)
+                Logger.LogError(exceptionLocalVar, "An error occurred while sending the request to the server.");
+        }
+
+        /// <summary>
+        /// A partial method that gives developers a way to provide customized exception handling
+        /// </summary>
+        /// <param name="suppressDefaultLogLocalVar"></param>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        /// <param name="listId"></param>
+        /// <param name="contactId"></param>
+        partial void OnErrorDeleteContact(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string listId, string contactId);
+
+        /// <summary>
+        /// Delete contact Remove a single contact from a contact list.
+        /// </summary>
+        /// <param name="listId">Contact list ID</param>
+        /// <param name="contactId">Contact ID</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IDeleteContactApiResponse"/>&gt;</returns>
+        public async Task<IDeleteContactApiResponse?> DeleteContactOrDefaultAsync(string listId, string contactId, System.Threading.CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                return await DeleteContactAsync(listId, contactId, cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Delete contact Remove a single contact from a contact list.
+        /// </summary>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="listId">Contact list ID</param>
+        /// <param name="contactId">Contact ID</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IDeleteContactApiResponse"/>&gt;</returns>
+        public async Task<IDeleteContactApiResponse> DeleteContactAsync(string listId, string contactId, System.Threading.CancellationToken cancellationToken = default)
+        {
+            UriBuilder uriBuilderLocalVar = new UriBuilder();
+
+            try
+            {
+                ValidateDeleteContact(listId, contactId);
+
+                FormatDeleteContact(ref listId, ref contactId);
+
+                using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
+                {
+                    uriBuilderLocalVar.Host = HttpClient.BaseAddress!.Host;
+                    uriBuilderLocalVar.Port = HttpClient.BaseAddress.Port;
+                    uriBuilderLocalVar.Scheme = HttpClient.BaseAddress.Scheme;
+                    uriBuilderLocalVar.Path = HttpClient.BaseAddress.AbsolutePath == "/"
+                        ? "/v1/contact-lists/{list_id}/contacts/{contact_id}"
+                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/v1/contact-lists/{list_id}/contacts/{contact_id}");
+                    uriBuilderLocalVar.Path = uriBuilderLocalVar.Path.Replace("%7Blist_id%7D", Uri.EscapeDataString(listId.ToString()));
+                    uriBuilderLocalVar.Path = uriBuilderLocalVar.Path.Replace("%7Bcontact_id%7D", Uri.EscapeDataString(contactId.ToString()));
+
+                    List<TokenBase> tokenBaseLocalVars = new List<TokenBase>();
+                    httpRequestMessageLocalVar.RequestUri = uriBuilderLocalVar.Uri;
+
+                    BearerToken bearerTokenLocalVar1 = (BearerToken) await BearerTokenProvider.GetAsync(cancellation: cancellationToken).ConfigureAwait(false);
+
+                    tokenBaseLocalVars.Add(bearerTokenLocalVar1);
+
+                    bearerTokenLocalVar1.UseInHeader(httpRequestMessageLocalVar, "");
+
+                    string[] acceptLocalVars = new string[] {
+                        "application/json"
+                    };
+
+                    string? acceptLocalVar = ClientUtils.SelectHeaderAccept(acceptLocalVars);
+
+                    if (acceptLocalVar != null)
+                        httpRequestMessageLocalVar.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(acceptLocalVar));
+
+                    httpRequestMessageLocalVar.Method = HttpMethod.Delete;
+
+                    DateTime requestedAtLocalVar = DateTime.UtcNow;
+
+                    using (HttpResponseMessage httpResponseMessageLocalVar = await HttpClient.SendAsync(httpRequestMessageLocalVar, cancellationToken).ConfigureAwait(false))
+                    {
+                        ILogger<DeleteContactApiResponse> apiResponseLoggerLocalVar = LoggerFactory.CreateLogger<DeleteContactApiResponse>();
+                        DeleteContactApiResponse apiResponseLocalVar;
+
+                        switch ((int)httpResponseMessageLocalVar.StatusCode) {
+                            default: {
+                                string responseContentLocalVar = await httpResponseMessageLocalVar.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/v1/contact-lists/{list_id}/contacts/{contact_id}", requestedAtLocalVar, _jsonSerializerOptions);
+
+                                break;
+                            }
+                        }
+
+                        AfterDeleteContactDefaultImplementation(apiResponseLocalVar, listId, contactId);
+
+                        Events.ExecuteOnDeleteContact(apiResponseLocalVar);
+
+                        if (apiResponseLocalVar.StatusCode == (HttpStatusCode) 429)
+                            foreach(TokenBase tokenBaseLocalVar in tokenBaseLocalVars)
+                                tokenBaseLocalVar.BeginRateLimit();
+
+                        return apiResponseLocalVar;
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                OnErrorDeleteContactDefaultImplementation(e, "/v1/contact-lists/{list_id}/contacts/{contact_id}", uriBuilderLocalVar.Path, listId, contactId);
+                Events.ExecuteOnErrorDeleteContact(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// The <see cref="DeleteContactApiResponse"/>
+        /// </summary>
+        public partial class DeleteContactApiResponse : MailOdds.Client.ApiResponse, IDeleteContactApiResponse
+        {
+            /// <summary>
+            /// The logger
+            /// </summary>
+            public ILogger<DeleteContactApiResponse> Logger { get; }
+
+            /// <summary>
+            /// The <see cref="DeleteContactApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="rawContent"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public DeleteContactApiResponse(ILogger<DeleteContactApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, string rawContent, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, rawContent, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            /// <summary>
+            /// The <see cref="DeleteContactApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="contentStream"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public DeleteContactApiResponse(ILogger<DeleteContactApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, System.IO.Stream contentStream, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, contentStream, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            partial void OnCreated(global::System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage);
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public bool IsOk => 200 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.DeletePolicyRule200Response? Ok()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsOk
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.DeletePolicyRule200Response>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryOk([NotNullWhen(true)]out MailOdds.Model.DeletePolicyRule200Response? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Ok();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)200);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public bool IsUnauthorized => 401 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.ErrorResponse? Unauthorized()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsUnauthorized
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryUnauthorized([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Unauthorized();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)401);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 404 NotFound
+            /// </summary>
+            /// <returns></returns>
+            public bool IsNotFound => 404 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 404 NotFound
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.ErrorResponse? NotFound()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsNotFound
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 404 NotFound and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryNotFound([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = NotFound();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)404);
+                }
+
+                return result != null;
+            }
+
+            private void OnDeserializationErrorDefaultImplementation(Exception exception, HttpStatusCode httpStatusCode)
+            {
+                bool suppressDefaultLog = false;
+                OnDeserializationError(ref suppressDefaultLog, exception, httpStatusCode);
+                if (!suppressDefaultLog)
+                    Logger.LogError(exception, "An error occurred while deserializing the {code} response.", httpStatusCode);
+            }
+
+            partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
+        }
+
+        partial void FormatDeleteContactList(ref string listId);
+
+        /// <summary>
+        /// Validates the request parameters
+        /// </summary>
+        /// <param name="listId"></param>
+        /// <returns></returns>
+        private void ValidateDeleteContactList(string listId)
+        {
+            if (listId == null)
+                throw new ArgumentNullException(nameof(listId));
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="apiResponseLocalVar"></param>
+        /// <param name="listId"></param>
+        private void AfterDeleteContactListDefaultImplementation(IDeleteContactListApiResponse apiResponseLocalVar, string listId)
+        {
+            bool suppressDefaultLog = false;
+            AfterDeleteContactList(ref suppressDefaultLog, apiResponseLocalVar, listId);
+            if (!suppressDefaultLog)
+                Logger.LogInformation("{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="suppressDefaultLog"></param>
+        /// <param name="apiResponseLocalVar"></param>
+        /// <param name="listId"></param>
+        partial void AfterDeleteContactList(ref bool suppressDefaultLog, IDeleteContactListApiResponse apiResponseLocalVar, string listId);
+
+        /// <summary>
+        /// Logs exceptions that occur while retrieving the server response
+        /// </summary>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        /// <param name="listId"></param>
+        private void OnErrorDeleteContactListDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string listId)
+        {
+            bool suppressDefaultLogLocalVar = false;
+            OnErrorDeleteContactList(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, listId);
+            if (!suppressDefaultLogLocalVar)
+                Logger.LogError(exceptionLocalVar, "An error occurred while sending the request to the server.");
+        }
+
+        /// <summary>
+        /// A partial method that gives developers a way to provide customized exception handling
+        /// </summary>
+        /// <param name="suppressDefaultLogLocalVar"></param>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        /// <param name="listId"></param>
+        partial void OnErrorDeleteContactList(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string listId);
+
+        /// <summary>
+        /// Delete a contact list Permanently delete a contact list and all its entries.
+        /// </summary>
+        /// <param name="listId">Contact list UUID</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IDeleteContactListApiResponse"/>&gt;</returns>
+        public async Task<IDeleteContactListApiResponse?> DeleteContactListOrDefaultAsync(string listId, System.Threading.CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                return await DeleteContactListAsync(listId, cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Delete a contact list Permanently delete a contact list and all its entries.
+        /// </summary>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="listId">Contact list UUID</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IDeleteContactListApiResponse"/>&gt;</returns>
+        public async Task<IDeleteContactListApiResponse> DeleteContactListAsync(string listId, System.Threading.CancellationToken cancellationToken = default)
+        {
+            UriBuilder uriBuilderLocalVar = new UriBuilder();
+
+            try
+            {
+                ValidateDeleteContactList(listId);
+
+                FormatDeleteContactList(ref listId);
+
+                using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
+                {
+                    uriBuilderLocalVar.Host = HttpClient.BaseAddress!.Host;
+                    uriBuilderLocalVar.Port = HttpClient.BaseAddress.Port;
+                    uriBuilderLocalVar.Scheme = HttpClient.BaseAddress.Scheme;
+                    uriBuilderLocalVar.Path = HttpClient.BaseAddress.AbsolutePath == "/"
+                        ? "/v1/contact-lists/{list_id}"
+                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/v1/contact-lists/{list_id}");
+                    uriBuilderLocalVar.Path = uriBuilderLocalVar.Path.Replace("%7Blist_id%7D", Uri.EscapeDataString(listId.ToString()));
+
+                    List<TokenBase> tokenBaseLocalVars = new List<TokenBase>();
+                    httpRequestMessageLocalVar.RequestUri = uriBuilderLocalVar.Uri;
+
+                    BearerToken bearerTokenLocalVar1 = (BearerToken) await BearerTokenProvider.GetAsync(cancellation: cancellationToken).ConfigureAwait(false);
+
+                    tokenBaseLocalVars.Add(bearerTokenLocalVar1);
+
+                    bearerTokenLocalVar1.UseInHeader(httpRequestMessageLocalVar, "");
+
+                    string[] acceptLocalVars = new string[] {
+                        "application/json"
+                    };
+
+                    string? acceptLocalVar = ClientUtils.SelectHeaderAccept(acceptLocalVars);
+
+                    if (acceptLocalVar != null)
+                        httpRequestMessageLocalVar.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(acceptLocalVar));
+
+                    httpRequestMessageLocalVar.Method = HttpMethod.Delete;
+
+                    DateTime requestedAtLocalVar = DateTime.UtcNow;
+
+                    using (HttpResponseMessage httpResponseMessageLocalVar = await HttpClient.SendAsync(httpRequestMessageLocalVar, cancellationToken).ConfigureAwait(false))
+                    {
+                        ILogger<DeleteContactListApiResponse> apiResponseLoggerLocalVar = LoggerFactory.CreateLogger<DeleteContactListApiResponse>();
+                        DeleteContactListApiResponse apiResponseLocalVar;
+
+                        switch ((int)httpResponseMessageLocalVar.StatusCode) {
+                            default: {
+                                string responseContentLocalVar = await httpResponseMessageLocalVar.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/v1/contact-lists/{list_id}", requestedAtLocalVar, _jsonSerializerOptions);
+
+                                break;
+                            }
+                        }
+
+                        AfterDeleteContactListDefaultImplementation(apiResponseLocalVar, listId);
+
+                        Events.ExecuteOnDeleteContactList(apiResponseLocalVar);
+
+                        if (apiResponseLocalVar.StatusCode == (HttpStatusCode) 429)
+                            foreach(TokenBase tokenBaseLocalVar in tokenBaseLocalVars)
+                                tokenBaseLocalVar.BeginRateLimit();
+
+                        return apiResponseLocalVar;
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                OnErrorDeleteContactListDefaultImplementation(e, "/v1/contact-lists/{list_id}", uriBuilderLocalVar.Path, listId);
+                Events.ExecuteOnErrorDeleteContactList(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// The <see cref="DeleteContactListApiResponse"/>
+        /// </summary>
+        public partial class DeleteContactListApiResponse : MailOdds.Client.ApiResponse, IDeleteContactListApiResponse
+        {
+            /// <summary>
+            /// The logger
+            /// </summary>
+            public ILogger<DeleteContactListApiResponse> Logger { get; }
+
+            /// <summary>
+            /// The <see cref="DeleteContactListApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="rawContent"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public DeleteContactListApiResponse(ILogger<DeleteContactListApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, string rawContent, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, rawContent, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            /// <summary>
+            /// The <see cref="DeleteContactListApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="contentStream"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public DeleteContactListApiResponse(ILogger<DeleteContactListApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, System.IO.Stream contentStream, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, contentStream, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            partial void OnCreated(global::System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage);
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public bool IsOk => 200 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.DeletePolicyRule200Response? Ok()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsOk
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.DeletePolicyRule200Response>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryOk([NotNullWhen(true)]out MailOdds.Model.DeletePolicyRule200Response? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Ok();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)200);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public bool IsUnauthorized => 401 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.ErrorResponse? Unauthorized()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsUnauthorized
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryUnauthorized([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Unauthorized();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)401);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 404 NotFound
+            /// </summary>
+            /// <returns></returns>
+            public bool IsNotFound => 404 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 404 NotFound
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.ErrorResponse? NotFound()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsNotFound
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 404 NotFound and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryNotFound([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = NotFound();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)404);
+                }
+
+                return result != null;
+            }
+
+            private void OnDeserializationErrorDefaultImplementation(Exception exception, HttpStatusCode httpStatusCode)
+            {
+                bool suppressDefaultLog = false;
+                OnDeserializationError(ref suppressDefaultLog, exception, httpStatusCode);
+                if (!suppressDefaultLog)
+                    Logger.LogError(exception, "An error occurred while deserializing the {code} response.", httpStatusCode);
+            }
+
+            partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
+        }
+
+        partial void FormatExportContactList(ref string listId);
+
+        /// <summary>
+        /// Validates the request parameters
+        /// </summary>
+        /// <param name="listId"></param>
+        /// <returns></returns>
+        private void ValidateExportContactList(string listId)
+        {
+            if (listId == null)
+                throw new ArgumentNullException(nameof(listId));
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="apiResponseLocalVar"></param>
+        /// <param name="listId"></param>
+        private void AfterExportContactListDefaultImplementation(IExportContactListApiResponse apiResponseLocalVar, string listId)
+        {
+            bool suppressDefaultLog = false;
+            AfterExportContactList(ref suppressDefaultLog, apiResponseLocalVar, listId);
+            if (!suppressDefaultLog)
+                Logger.LogInformation("{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="suppressDefaultLog"></param>
+        /// <param name="apiResponseLocalVar"></param>
+        /// <param name="listId"></param>
+        partial void AfterExportContactList(ref bool suppressDefaultLog, IExportContactListApiResponse apiResponseLocalVar, string listId);
+
+        /// <summary>
+        /// Logs exceptions that occur while retrieving the server response
+        /// </summary>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        /// <param name="listId"></param>
+        private void OnErrorExportContactListDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string listId)
+        {
+            bool suppressDefaultLogLocalVar = false;
+            OnErrorExportContactList(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, listId);
+            if (!suppressDefaultLogLocalVar)
+                Logger.LogError(exceptionLocalVar, "An error occurred while sending the request to the server.");
+        }
+
+        /// <summary>
+        /// A partial method that gives developers a way to provide customized exception handling
+        /// </summary>
+        /// <param name="suppressDefaultLogLocalVar"></param>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        /// <param name="listId"></param>
+        partial void OnErrorExportContactList(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string listId);
+
+        /// <summary>
+        /// Export contact list Export a contact list as CSV.
+        /// </summary>
+        /// <param name="listId">Contact list ID</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IExportContactListApiResponse"/>&gt;</returns>
+        public async Task<IExportContactListApiResponse?> ExportContactListOrDefaultAsync(string listId, System.Threading.CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                return await ExportContactListAsync(listId, cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Export contact list Export a contact list as CSV.
+        /// </summary>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="listId">Contact list ID</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IExportContactListApiResponse"/>&gt;</returns>
+        public async Task<IExportContactListApiResponse> ExportContactListAsync(string listId, System.Threading.CancellationToken cancellationToken = default)
+        {
+            UriBuilder uriBuilderLocalVar = new UriBuilder();
+
+            try
+            {
+                ValidateExportContactList(listId);
+
+                FormatExportContactList(ref listId);
+
+                using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
+                {
+                    uriBuilderLocalVar.Host = HttpClient.BaseAddress!.Host;
+                    uriBuilderLocalVar.Port = HttpClient.BaseAddress.Port;
+                    uriBuilderLocalVar.Scheme = HttpClient.BaseAddress.Scheme;
+                    uriBuilderLocalVar.Path = HttpClient.BaseAddress.AbsolutePath == "/"
+                        ? "/v1/contact-lists/{list_id}/export"
+                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/v1/contact-lists/{list_id}/export");
+                    uriBuilderLocalVar.Path = uriBuilderLocalVar.Path.Replace("%7Blist_id%7D", Uri.EscapeDataString(listId.ToString()));
+
+                    List<TokenBase> tokenBaseLocalVars = new List<TokenBase>();
+                    httpRequestMessageLocalVar.RequestUri = uriBuilderLocalVar.Uri;
+
+                    BearerToken bearerTokenLocalVar1 = (BearerToken) await BearerTokenProvider.GetAsync(cancellation: cancellationToken).ConfigureAwait(false);
+
+                    tokenBaseLocalVars.Add(bearerTokenLocalVar1);
+
+                    bearerTokenLocalVar1.UseInHeader(httpRequestMessageLocalVar, "");
+
+                    string[] acceptLocalVars = new string[] {
+                        "text/csv",
+                        "application/json"
+                    };
+
+                    string? acceptLocalVar = ClientUtils.SelectHeaderAccept(acceptLocalVars);
+
+                    if (acceptLocalVar != null)
+                        httpRequestMessageLocalVar.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(acceptLocalVar));
+
+                    httpRequestMessageLocalVar.Method = HttpMethod.Get;
+
+                    DateTime requestedAtLocalVar = DateTime.UtcNow;
+
+                    using (HttpResponseMessage httpResponseMessageLocalVar = await HttpClient.SendAsync(httpRequestMessageLocalVar, cancellationToken).ConfigureAwait(false))
+                    {
+                        ILogger<ExportContactListApiResponse> apiResponseLoggerLocalVar = LoggerFactory.CreateLogger<ExportContactListApiResponse>();
+                        ExportContactListApiResponse apiResponseLocalVar;
+
+                        switch ((int)httpResponseMessageLocalVar.StatusCode) {
+                            default: {
+                                string responseContentLocalVar = await httpResponseMessageLocalVar.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/v1/contact-lists/{list_id}/export", requestedAtLocalVar, _jsonSerializerOptions);
+
+                                break;
+                            }
+                        }
+
+                        AfterExportContactListDefaultImplementation(apiResponseLocalVar, listId);
+
+                        Events.ExecuteOnExportContactList(apiResponseLocalVar);
+
+                        if (apiResponseLocalVar.StatusCode == (HttpStatusCode) 429)
+                            foreach(TokenBase tokenBaseLocalVar in tokenBaseLocalVars)
+                                tokenBaseLocalVar.BeginRateLimit();
+
+                        return apiResponseLocalVar;
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                OnErrorExportContactListDefaultImplementation(e, "/v1/contact-lists/{list_id}/export", uriBuilderLocalVar.Path, listId);
+                Events.ExecuteOnErrorExportContactList(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// The <see cref="ExportContactListApiResponse"/>
+        /// </summary>
+        public partial class ExportContactListApiResponse : MailOdds.Client.ApiResponse, IExportContactListApiResponse
+        {
+            /// <summary>
+            /// The logger
+            /// </summary>
+            public ILogger<ExportContactListApiResponse> Logger { get; }
+
+            /// <summary>
+            /// The <see cref="ExportContactListApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="rawContent"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public ExportContactListApiResponse(ILogger<ExportContactListApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, string rawContent, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, rawContent, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            /// <summary>
+            /// The <see cref="ExportContactListApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="contentStream"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public ExportContactListApiResponse(ILogger<ExportContactListApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, System.IO.Stream contentStream, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, contentStream, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            partial void OnCreated(global::System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage);
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public bool IsOk => 200 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public string? Ok()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsOk
+                    ? System.Text.Json.JsonSerializer.Deserialize<string>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryOk([NotNullWhen(true)]out string? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Ok();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)200);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public bool IsUnauthorized => 401 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.ErrorResponse? Unauthorized()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsUnauthorized
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryUnauthorized([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Unauthorized();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)401);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 404 NotFound
+            /// </summary>
+            /// <returns></returns>
+            public bool IsNotFound => 404 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 404 NotFound
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.ErrorResponse? NotFound()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsNotFound
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 404 NotFound and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryNotFound([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = NotFound();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)404);
+                }
+
+                return result != null;
+            }
+
+            private void OnDeserializationErrorDefaultImplementation(Exception exception, HttpStatusCode httpStatusCode)
+            {
+                bool suppressDefaultLog = false;
+                OnDeserializationError(ref suppressDefaultLog, exception, httpStatusCode);
+                if (!suppressDefaultLog)
+                    Logger.LogError(exception, "An error occurred while deserializing the {code} response.", httpStatusCode);
+            }
+
+            partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
+        }
+
         partial void FormatGetInactiveContactsReport(ref Option<int> days);
 
         /// <summary>
@@ -1524,6 +3349,439 @@ namespace MailOdds.Api
                 } catch (Exception e)
                 {
                     OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)403);
+                }
+
+                return result != null;
+            }
+
+            private void OnDeserializationErrorDefaultImplementation(Exception exception, HttpStatusCode httpStatusCode)
+            {
+                bool suppressDefaultLog = false;
+                OnDeserializationError(ref suppressDefaultLog, exception, httpStatusCode);
+                if (!suppressDefaultLog)
+                    Logger.LogError(exception, "An error occurred while deserializing the {code} response.", httpStatusCode);
+            }
+
+            partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
+        }
+
+        partial void FormatImportContactList(ref string listId, ref System.IO.Stream file, ref Option<string> columnMapping, ref Option<string> consentSource, ref Option<string> tags);
+
+        /// <summary>
+        /// Validates the request parameters
+        /// </summary>
+        /// <param name="listId"></param>
+        /// <param name="file"></param>
+        /// <param name="columnMapping"></param>
+        /// <param name="consentSource"></param>
+        /// <param name="tags"></param>
+        /// <returns></returns>
+        private void ValidateImportContactList(string listId, System.IO.Stream file, Option<string> columnMapping, Option<string> consentSource, Option<string> tags)
+        {
+            if (listId == null)
+                throw new ArgumentNullException(nameof(listId));
+
+            if (file == null)
+                throw new ArgumentNullException(nameof(file));
+
+            if (columnMapping.IsSet && columnMapping.Value == null)
+                throw new ArgumentNullException(nameof(columnMapping));
+
+            if (consentSource.IsSet && consentSource.Value == null)
+                throw new ArgumentNullException(nameof(consentSource));
+
+            if (tags.IsSet && tags.Value == null)
+                throw new ArgumentNullException(nameof(tags));
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="apiResponseLocalVar"></param>
+        /// <param name="listId"></param>
+        /// <param name="file"></param>
+        /// <param name="columnMapping"></param>
+        /// <param name="consentSource"></param>
+        /// <param name="tags"></param>
+        private void AfterImportContactListDefaultImplementation(IImportContactListApiResponse apiResponseLocalVar, string listId, System.IO.Stream file, Option<string> columnMapping, Option<string> consentSource, Option<string> tags)
+        {
+            bool suppressDefaultLog = false;
+            AfterImportContactList(ref suppressDefaultLog, apiResponseLocalVar, listId, file, columnMapping, consentSource, tags);
+            if (!suppressDefaultLog)
+                Logger.LogInformation("{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="suppressDefaultLog"></param>
+        /// <param name="apiResponseLocalVar"></param>
+        /// <param name="listId"></param>
+        /// <param name="file"></param>
+        /// <param name="columnMapping"></param>
+        /// <param name="consentSource"></param>
+        /// <param name="tags"></param>
+        partial void AfterImportContactList(ref bool suppressDefaultLog, IImportContactListApiResponse apiResponseLocalVar, string listId, System.IO.Stream file, Option<string> columnMapping, Option<string> consentSource, Option<string> tags);
+
+        /// <summary>
+        /// Logs exceptions that occur while retrieving the server response
+        /// </summary>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        /// <param name="listId"></param>
+        /// <param name="file"></param>
+        /// <param name="columnMapping"></param>
+        /// <param name="consentSource"></param>
+        /// <param name="tags"></param>
+        private void OnErrorImportContactListDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string listId, System.IO.Stream file, Option<string> columnMapping, Option<string> consentSource, Option<string> tags)
+        {
+            bool suppressDefaultLogLocalVar = false;
+            OnErrorImportContactList(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, listId, file, columnMapping, consentSource, tags);
+            if (!suppressDefaultLogLocalVar)
+                Logger.LogError(exceptionLocalVar, "An error occurred while sending the request to the server.");
+        }
+
+        /// <summary>
+        /// A partial method that gives developers a way to provide customized exception handling
+        /// </summary>
+        /// <param name="suppressDefaultLogLocalVar"></param>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        /// <param name="listId"></param>
+        /// <param name="file"></param>
+        /// <param name="columnMapping"></param>
+        /// <param name="consentSource"></param>
+        /// <param name="tags"></param>
+        partial void OnErrorImportContactList(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string listId, System.IO.Stream file, Option<string> columnMapping, Option<string> consentSource, Option<string> tags);
+
+        /// <summary>
+        /// Import contacts from CSV Import contacts into a list from a CSV file (max 10MB).
+        /// </summary>
+        /// <param name="listId">Contact list ID</param>
+        /// <param name="file">CSV file (max 10MB)</param>
+        /// <param name="columnMapping">JSON mapping of CSV columns to contact fields (optional)</param>
+        /// <param name="consentSource">Source of consent for imported contacts (optional)</param>
+        /// <param name="tags">JSON array of tags to apply (optional)</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IImportContactListApiResponse"/>&gt;</returns>
+        public async Task<IImportContactListApiResponse?> ImportContactListOrDefaultAsync(string listId, System.IO.Stream file, Option<string> columnMapping = default, Option<string> consentSource = default, Option<string> tags = default, System.Threading.CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                return await ImportContactListAsync(listId, file, columnMapping, consentSource, tags, cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Import contacts from CSV Import contacts into a list from a CSV file (max 10MB).
+        /// </summary>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="listId">Contact list ID</param>
+        /// <param name="file">CSV file (max 10MB)</param>
+        /// <param name="columnMapping">JSON mapping of CSV columns to contact fields (optional)</param>
+        /// <param name="consentSource">Source of consent for imported contacts (optional)</param>
+        /// <param name="tags">JSON array of tags to apply (optional)</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IImportContactListApiResponse"/>&gt;</returns>
+        public async Task<IImportContactListApiResponse> ImportContactListAsync(string listId, System.IO.Stream file, Option<string> columnMapping = default, Option<string> consentSource = default, Option<string> tags = default, System.Threading.CancellationToken cancellationToken = default)
+        {
+            UriBuilder uriBuilderLocalVar = new UriBuilder();
+
+            try
+            {
+                ValidateImportContactList(listId, file, columnMapping, consentSource, tags);
+
+                FormatImportContactList(ref listId, ref file, ref columnMapping, ref consentSource, ref tags);
+
+                using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
+                {
+                    uriBuilderLocalVar.Host = HttpClient.BaseAddress!.Host;
+                    uriBuilderLocalVar.Port = HttpClient.BaseAddress.Port;
+                    uriBuilderLocalVar.Scheme = HttpClient.BaseAddress.Scheme;
+                    uriBuilderLocalVar.Path = HttpClient.BaseAddress.AbsolutePath == "/"
+                        ? "/v1/contact-lists/{list_id}/import"
+                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/v1/contact-lists/{list_id}/import");
+                    uriBuilderLocalVar.Path = uriBuilderLocalVar.Path.Replace("%7Blist_id%7D", Uri.EscapeDataString(listId.ToString()));
+
+                    MultipartContent multipartContentLocalVar = new MultipartContent();
+
+                    httpRequestMessageLocalVar.Content = multipartContentLocalVar;
+
+                    List<KeyValuePair<string?, string?>> formParameterLocalVars = new List<KeyValuePair<string?, string?>>();
+
+                    multipartContentLocalVar.Add(new FormUrlEncodedContent(formParameterLocalVars));                    multipartContentLocalVar.Add(new StreamContent(file));
+
+                    if (columnMapping.IsSet)
+                        formParameterLocalVars.Add(new KeyValuePair<string?, string?>("column_mapping", ClientUtils.ParameterToString(columnMapping.Value)));
+
+                    if (consentSource.IsSet)
+                        formParameterLocalVars.Add(new KeyValuePair<string?, string?>("consent_source", ClientUtils.ParameterToString(consentSource.Value)));
+
+                    if (tags.IsSet)
+                        formParameterLocalVars.Add(new KeyValuePair<string?, string?>("tags", ClientUtils.ParameterToString(tags.Value)));
+
+                    List<TokenBase> tokenBaseLocalVars = new List<TokenBase>();
+                    httpRequestMessageLocalVar.RequestUri = uriBuilderLocalVar.Uri;
+
+                    BearerToken bearerTokenLocalVar1 = (BearerToken) await BearerTokenProvider.GetAsync(cancellation: cancellationToken).ConfigureAwait(false);
+
+                    tokenBaseLocalVars.Add(bearerTokenLocalVar1);
+
+                    bearerTokenLocalVar1.UseInHeader(httpRequestMessageLocalVar, "");
+
+                    string[] contentTypes = new string[] {
+                        "multipart/form-data"
+                    };
+
+                    string? contentTypeLocalVar = ClientUtils.SelectHeaderContentType(contentTypes);
+
+                    if (contentTypeLocalVar != null && httpRequestMessageLocalVar.Content != null)
+                        httpRequestMessageLocalVar.Content.Headers.ContentType = new MediaTypeHeaderValue(contentTypeLocalVar);
+
+                    string[] acceptLocalVars = new string[] {
+                        "application/json"
+                    };
+
+                    string? acceptLocalVar = ClientUtils.SelectHeaderAccept(acceptLocalVars);
+
+                    if (acceptLocalVar != null)
+                        httpRequestMessageLocalVar.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(acceptLocalVar));
+
+                    httpRequestMessageLocalVar.Method = HttpMethod.Post;
+
+                    DateTime requestedAtLocalVar = DateTime.UtcNow;
+
+                    using (HttpResponseMessage httpResponseMessageLocalVar = await HttpClient.SendAsync(httpRequestMessageLocalVar, cancellationToken).ConfigureAwait(false))
+                    {
+                        ILogger<ImportContactListApiResponse> apiResponseLoggerLocalVar = LoggerFactory.CreateLogger<ImportContactListApiResponse>();
+                        ImportContactListApiResponse apiResponseLocalVar;
+
+                        switch ((int)httpResponseMessageLocalVar.StatusCode) {
+                            default: {
+                                string responseContentLocalVar = await httpResponseMessageLocalVar.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/v1/contact-lists/{list_id}/import", requestedAtLocalVar, _jsonSerializerOptions);
+
+                                break;
+                            }
+                        }
+
+                        AfterImportContactListDefaultImplementation(apiResponseLocalVar, listId, file, columnMapping, consentSource, tags);
+
+                        Events.ExecuteOnImportContactList(apiResponseLocalVar);
+
+                        if (apiResponseLocalVar.StatusCode == (HttpStatusCode) 429)
+                            foreach(TokenBase tokenBaseLocalVar in tokenBaseLocalVars)
+                                tokenBaseLocalVar.BeginRateLimit();
+
+                        return apiResponseLocalVar;
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                OnErrorImportContactListDefaultImplementation(e, "/v1/contact-lists/{list_id}/import", uriBuilderLocalVar.Path, listId, file, columnMapping, consentSource, tags);
+                Events.ExecuteOnErrorImportContactList(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// The <see cref="ImportContactListApiResponse"/>
+        /// </summary>
+        public partial class ImportContactListApiResponse : MailOdds.Client.ApiResponse, IImportContactListApiResponse
+        {
+            /// <summary>
+            /// The logger
+            /// </summary>
+            public ILogger<ImportContactListApiResponse> Logger { get; }
+
+            /// <summary>
+            /// The <see cref="ImportContactListApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="rawContent"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public ImportContactListApiResponse(ILogger<ImportContactListApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, string rawContent, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, rawContent, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            /// <summary>
+            /// The <see cref="ImportContactListApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="contentStream"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public ImportContactListApiResponse(ILogger<ImportContactListApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, System.IO.Stream contentStream, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, contentStream, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            partial void OnCreated(global::System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage);
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public bool IsOk => 200 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.ImportContactList200Response? Ok()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsOk
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ImportContactList200Response>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryOk([NotNullWhen(true)]out MailOdds.Model.ImportContactList200Response? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Ok();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)200);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 400 BadRequest
+            /// </summary>
+            /// <returns></returns>
+            public bool IsBadRequest => 400 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 400 BadRequest
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.ErrorResponse? BadRequest()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsBadRequest
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 400 BadRequest and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryBadRequest([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = BadRequest();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)400);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public bool IsUnauthorized => 401 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.ErrorResponse? Unauthorized()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsUnauthorized
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryUnauthorized([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Unauthorized();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)401);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 404 NotFound
+            /// </summary>
+            /// <returns></returns>
+            public bool IsNotFound => 404 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 404 NotFound
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.ErrorResponse? NotFound()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsNotFound
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 404 NotFound and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryNotFound([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = NotFound();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)404);
                 }
 
                 return result != null;
@@ -2122,6 +4380,407 @@ namespace MailOdds.Api
             /// <param name="result"></param>
             /// <returns></returns>
             public bool TryOk([NotNullWhen(true)]out MailOdds.Model.QueryContactList200Response? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Ok();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)200);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 400 BadRequest
+            /// </summary>
+            /// <returns></returns>
+            public bool IsBadRequest => 400 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 400 BadRequest
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.ErrorResponse? BadRequest()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsBadRequest
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 400 BadRequest and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryBadRequest([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = BadRequest();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)400);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public bool IsUnauthorized => 401 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.ErrorResponse? Unauthorized()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsUnauthorized
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryUnauthorized([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Unauthorized();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)401);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 404 NotFound
+            /// </summary>
+            /// <returns></returns>
+            public bool IsNotFound => 404 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 404 NotFound
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.ErrorResponse? NotFound()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsNotFound
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 404 NotFound and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryNotFound([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = NotFound();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)404);
+                }
+
+                return result != null;
+            }
+
+            private void OnDeserializationErrorDefaultImplementation(Exception exception, HttpStatusCode httpStatusCode)
+            {
+                bool suppressDefaultLog = false;
+                OnDeserializationError(ref suppressDefaultLog, exception, httpStatusCode);
+                if (!suppressDefaultLog)
+                    Logger.LogError(exception, "An error occurred while deserializing the {code} response.", httpStatusCode);
+            }
+
+            partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
+        }
+
+        partial void FormatUpdateContact(ref string listId, ref string contactId, UpdateContactRequest updateContactRequest);
+
+        /// <summary>
+        /// Validates the request parameters
+        /// </summary>
+        /// <param name="listId"></param>
+        /// <param name="contactId"></param>
+        /// <param name="updateContactRequest"></param>
+        /// <returns></returns>
+        private void ValidateUpdateContact(string listId, string contactId, UpdateContactRequest updateContactRequest)
+        {
+            if (listId == null)
+                throw new ArgumentNullException(nameof(listId));
+
+            if (contactId == null)
+                throw new ArgumentNullException(nameof(contactId));
+
+            if (updateContactRequest == null)
+                throw new ArgumentNullException(nameof(updateContactRequest));
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="apiResponseLocalVar"></param>
+        /// <param name="listId"></param>
+        /// <param name="contactId"></param>
+        /// <param name="updateContactRequest"></param>
+        private void AfterUpdateContactDefaultImplementation(IUpdateContactApiResponse apiResponseLocalVar, string listId, string contactId, UpdateContactRequest updateContactRequest)
+        {
+            bool suppressDefaultLog = false;
+            AfterUpdateContact(ref suppressDefaultLog, apiResponseLocalVar, listId, contactId, updateContactRequest);
+            if (!suppressDefaultLog)
+                Logger.LogInformation("{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="suppressDefaultLog"></param>
+        /// <param name="apiResponseLocalVar"></param>
+        /// <param name="listId"></param>
+        /// <param name="contactId"></param>
+        /// <param name="updateContactRequest"></param>
+        partial void AfterUpdateContact(ref bool suppressDefaultLog, IUpdateContactApiResponse apiResponseLocalVar, string listId, string contactId, UpdateContactRequest updateContactRequest);
+
+        /// <summary>
+        /// Logs exceptions that occur while retrieving the server response
+        /// </summary>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        /// <param name="listId"></param>
+        /// <param name="contactId"></param>
+        /// <param name="updateContactRequest"></param>
+        private void OnErrorUpdateContactDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string listId, string contactId, UpdateContactRequest updateContactRequest)
+        {
+            bool suppressDefaultLogLocalVar = false;
+            OnErrorUpdateContact(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, listId, contactId, updateContactRequest);
+            if (!suppressDefaultLogLocalVar)
+                Logger.LogError(exceptionLocalVar, "An error occurred while sending the request to the server.");
+        }
+
+        /// <summary>
+        /// A partial method that gives developers a way to provide customized exception handling
+        /// </summary>
+        /// <param name="suppressDefaultLogLocalVar"></param>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        /// <param name="listId"></param>
+        /// <param name="contactId"></param>
+        /// <param name="updateContactRequest"></param>
+        partial void OnErrorUpdateContact(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string listId, string contactId, UpdateContactRequest updateContactRequest);
+
+        /// <summary>
+        /// Update contact Update a single contact in a contact list.
+        /// </summary>
+        /// <param name="listId">Contact list ID</param>
+        /// <param name="contactId">Contact ID</param>
+        /// <param name="updateContactRequest"></param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IUpdateContactApiResponse"/>&gt;</returns>
+        public async Task<IUpdateContactApiResponse?> UpdateContactOrDefaultAsync(string listId, string contactId, UpdateContactRequest updateContactRequest, System.Threading.CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                return await UpdateContactAsync(listId, contactId, updateContactRequest, cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Update contact Update a single contact in a contact list.
+        /// </summary>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="listId">Contact list ID</param>
+        /// <param name="contactId">Contact ID</param>
+        /// <param name="updateContactRequest"></param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IUpdateContactApiResponse"/>&gt;</returns>
+        public async Task<IUpdateContactApiResponse> UpdateContactAsync(string listId, string contactId, UpdateContactRequest updateContactRequest, System.Threading.CancellationToken cancellationToken = default)
+        {
+            UriBuilder uriBuilderLocalVar = new UriBuilder();
+
+            try
+            {
+                ValidateUpdateContact(listId, contactId, updateContactRequest);
+
+                FormatUpdateContact(ref listId, ref contactId, updateContactRequest);
+
+                using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
+                {
+                    uriBuilderLocalVar.Host = HttpClient.BaseAddress!.Host;
+                    uriBuilderLocalVar.Port = HttpClient.BaseAddress.Port;
+                    uriBuilderLocalVar.Scheme = HttpClient.BaseAddress.Scheme;
+                    uriBuilderLocalVar.Path = HttpClient.BaseAddress.AbsolutePath == "/"
+                        ? "/v1/contact-lists/{list_id}/contacts/{contact_id}"
+                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/v1/contact-lists/{list_id}/contacts/{contact_id}");
+                    uriBuilderLocalVar.Path = uriBuilderLocalVar.Path.Replace("%7Blist_id%7D", Uri.EscapeDataString(listId.ToString()));
+                    uriBuilderLocalVar.Path = uriBuilderLocalVar.Path.Replace("%7Bcontact_id%7D", Uri.EscapeDataString(contactId.ToString()));
+
+                    httpRequestMessageLocalVar.Content = (updateContactRequest as object) is System.IO.Stream stream
+                        ? httpRequestMessageLocalVar.Content = new StreamContent(stream)
+                        : httpRequestMessageLocalVar.Content = new StringContent(JsonSerializer.Serialize(updateContactRequest, _jsonSerializerOptions));
+
+                    List<TokenBase> tokenBaseLocalVars = new List<TokenBase>();
+                    httpRequestMessageLocalVar.RequestUri = uriBuilderLocalVar.Uri;
+
+                    BearerToken bearerTokenLocalVar1 = (BearerToken) await BearerTokenProvider.GetAsync(cancellation: cancellationToken).ConfigureAwait(false);
+
+                    tokenBaseLocalVars.Add(bearerTokenLocalVar1);
+
+                    bearerTokenLocalVar1.UseInHeader(httpRequestMessageLocalVar, "");
+
+                    string[] contentTypes = new string[] {
+                        "application/json"
+                    };
+
+                    string? contentTypeLocalVar = ClientUtils.SelectHeaderContentType(contentTypes);
+
+                    if (contentTypeLocalVar != null && httpRequestMessageLocalVar.Content != null)
+                        httpRequestMessageLocalVar.Content.Headers.ContentType = new MediaTypeHeaderValue(contentTypeLocalVar);
+
+                    string[] acceptLocalVars = new string[] {
+                        "application/json"
+                    };
+
+                    string? acceptLocalVar = ClientUtils.SelectHeaderAccept(acceptLocalVars);
+
+                    if (acceptLocalVar != null)
+                        httpRequestMessageLocalVar.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(acceptLocalVar));
+
+                    httpRequestMessageLocalVar.Method = HttpMethod.Patch;
+
+                    DateTime requestedAtLocalVar = DateTime.UtcNow;
+
+                    using (HttpResponseMessage httpResponseMessageLocalVar = await HttpClient.SendAsync(httpRequestMessageLocalVar, cancellationToken).ConfigureAwait(false))
+                    {
+                        ILogger<UpdateContactApiResponse> apiResponseLoggerLocalVar = LoggerFactory.CreateLogger<UpdateContactApiResponse>();
+                        UpdateContactApiResponse apiResponseLocalVar;
+
+                        switch ((int)httpResponseMessageLocalVar.StatusCode) {
+                            default: {
+                                string responseContentLocalVar = await httpResponseMessageLocalVar.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/v1/contact-lists/{list_id}/contacts/{contact_id}", requestedAtLocalVar, _jsonSerializerOptions);
+
+                                break;
+                            }
+                        }
+
+                        AfterUpdateContactDefaultImplementation(apiResponseLocalVar, listId, contactId, updateContactRequest);
+
+                        Events.ExecuteOnUpdateContact(apiResponseLocalVar);
+
+                        if (apiResponseLocalVar.StatusCode == (HttpStatusCode) 429)
+                            foreach(TokenBase tokenBaseLocalVar in tokenBaseLocalVars)
+                                tokenBaseLocalVar.BeginRateLimit();
+
+                        return apiResponseLocalVar;
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                OnErrorUpdateContactDefaultImplementation(e, "/v1/contact-lists/{list_id}/contacts/{contact_id}", uriBuilderLocalVar.Path, listId, contactId, updateContactRequest);
+                Events.ExecuteOnErrorUpdateContact(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// The <see cref="UpdateContactApiResponse"/>
+        /// </summary>
+        public partial class UpdateContactApiResponse : MailOdds.Client.ApiResponse, IUpdateContactApiResponse
+        {
+            /// <summary>
+            /// The logger
+            /// </summary>
+            public ILogger<UpdateContactApiResponse> Logger { get; }
+
+            /// <summary>
+            /// The <see cref="UpdateContactApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="rawContent"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public UpdateContactApiResponse(ILogger<UpdateContactApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, string rawContent, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, rawContent, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            /// <summary>
+            /// The <see cref="UpdateContactApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="contentStream"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public UpdateContactApiResponse(ILogger<UpdateContactApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, System.IO.Stream contentStream, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, contentStream, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            partial void OnCreated(global::System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage);
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public bool IsOk => 200 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.AddContact201Response? Ok()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsOk
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.AddContact201Response>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryOk([NotNullWhen(true)]out MailOdds.Model.AddContact201Response? result)
             {
                 result = null;
 

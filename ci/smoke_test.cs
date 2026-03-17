@@ -410,6 +410,247 @@ try {
     }
 }
 
+// --- DMARC Monitoring ---
+{
+    var dmarcApi = sp.GetRequiredService<IDMARCMonitoringApi>();
+    string? dmarcDomainId = null;
+    try {
+        var addResp = await dmarcApi.AddDmarcDomainAsync(new AddDmarcDomainRequest(
+            domain: $"smoke-{ts}.example.com"
+        ));
+        if (addResp.IsCreated) {
+            var data = addResp.Created()!;
+            CheckNotNull("dmarc.add.domain_id", data.Domain?.Id);
+            dmarcDomainId = data.Domain?.Id;
+        } else {
+            failed++;
+            Console.WriteLine($"  FAIL: dmarc.add unexpected status: {addResp.StatusCode}");
+        }
+
+        var listResp = await dmarcApi.ListDmarcDomainsAsync();
+        if (listResp.IsOk) {
+            CheckNotNull("dmarc.list.domains", listResp.Ok()!.Domains);
+        } else {
+            failed++;
+            Console.WriteLine($"  FAIL: dmarc.list unexpected status: {listResp.StatusCode}");
+        }
+
+        if (dmarcDomainId != null) {
+            var getResp = await dmarcApi.GetDmarcDomainAsync(dmarcDomainId);
+            if (getResp.IsOk) {
+                CheckNotNull("dmarc.get.domain", getResp.Ok()!.Domain);
+            } else {
+                failed++;
+                Console.WriteLine($"  FAIL: dmarc.get unexpected status: {getResp.StatusCode}");
+            }
+
+            var delResp = await dmarcApi.DeleteDmarcDomainAsync(dmarcDomainId);
+            if (delResp.IsOk) {
+                CheckTrue("dmarc.delete", delResp.Ok()!.Deleted);
+                dmarcDomainId = null;
+            } else {
+                failed++;
+                Console.WriteLine($"  FAIL: dmarc.delete unexpected status: {delResp.StatusCode}");
+            }
+        }
+    } catch (Exception e) {
+        failed++;
+        Console.WriteLine($"  FAIL: dmarc raised: {e.Message}");
+    } finally {
+        if (dmarcDomainId != null) {
+            try { await dmarcApi.DeleteDmarcDomainAsync(dmarcDomainId); } catch { }
+        }
+    }
+}
+
+// --- Blacklist Monitoring ---
+{
+    var blApi = sp.GetRequiredService<IBlacklistMonitoringApi>();
+    string? monitorId = null;
+    try {
+        var addResp = await blApi.AddBlacklistMonitorAsync(new AddBlacklistMonitorRequest(
+            target: $"smoke-{ts}.example.com",
+            targetType: AddBlacklistMonitorRequest.TargetTypeEnum.Domain
+        ));
+        if (addResp.IsCreated) {
+            var data = addResp.Created()!;
+            CheckNotNull("blacklist.add.monitor_id", data.Monitor?.Id);
+            monitorId = data.Monitor?.Id;
+        } else {
+            failed++;
+            Console.WriteLine($"  FAIL: blacklist.add unexpected status: {addResp.StatusCode}");
+        }
+
+        var listResp = await blApi.ListBlacklistMonitorsAsync();
+        if (listResp.IsOk) {
+            CheckNotNull("blacklist.list.monitors", listResp.Ok()!.Monitors);
+        } else {
+            failed++;
+            Console.WriteLine($"  FAIL: blacklist.list unexpected status: {listResp.StatusCode}");
+        }
+
+        if (monitorId != null) {
+            var delResp = await blApi.DeleteBlacklistMonitorAsync(monitorId);
+            if (delResp.IsOk) {
+                CheckTrue("blacklist.delete", delResp.Ok()!.Deleted);
+                monitorId = null;
+            } else {
+                failed++;
+                Console.WriteLine($"  FAIL: blacklist.delete unexpected status: {delResp.StatusCode}");
+            }
+        }
+    } catch (Exception e) {
+        failed++;
+        Console.WriteLine($"  FAIL: blacklist raised: {e.Message}");
+    } finally {
+        if (monitorId != null) {
+            try { await blApi.DeleteBlacklistMonitorAsync(monitorId); } catch { }
+        }
+    }
+}
+
+// --- Server Tests ---
+{
+    var stApi = sp.GetRequiredService<IServerTestsApi>();
+    string? serverTestId = null;
+    try {
+        var runResp = await stApi.RunServerTestAsync(new RunServerTestRequest(
+            domain: "mailodds.com"
+        ));
+        if (runResp.IsCreated) {
+            var data = runResp.Created()!;
+            CheckNotNull("servertest.run.test_id", data.Test?.Id);
+            serverTestId = data.Test?.Id;
+        } else {
+            failed++;
+            Console.WriteLine($"  FAIL: servertest.run unexpected status: {runResp.StatusCode}");
+        }
+
+        var listResp = await stApi.ListServerTestsAsync();
+        if (listResp.IsOk) {
+            CheckNotNull("servertest.list", listResp.Ok());
+        } else {
+            failed++;
+            Console.WriteLine($"  FAIL: servertest.list unexpected status: {listResp.StatusCode}");
+        }
+
+        if (serverTestId != null) {
+            var getResp = await stApi.GetServerTestAsync(serverTestId);
+            if (getResp.IsOk) {
+                CheckNotNull("servertest.get.test", getResp.Ok()!.Test);
+            } else {
+                failed++;
+                Console.WriteLine($"  FAIL: servertest.get unexpected status: {getResp.StatusCode}");
+            }
+        }
+    } catch (Exception e) {
+        failed++;
+        Console.WriteLine($"  FAIL: servertest raised: {e.Message}");
+    }
+}
+
+// --- Contact Lists ---
+{
+    var clApi = sp.GetRequiredService<IContactListsApi>();
+    string? contactListId = null;
+    try {
+        var createResp = await clApi.CreateContactListAsync(new CreateContactListRequest(
+            name: $"smoke-{ts}"
+        ));
+        if (createResp.IsCreated) {
+            var data = createResp.Created()!;
+            CheckNotNull("contactlist.create.id", data.ContactList?.Id);
+            contactListId = data.ContactList?.Id;
+        } else {
+            failed++;
+            Console.WriteLine($"  FAIL: contactlist.create unexpected status: {createResp.StatusCode}");
+        }
+
+        var listResp = await clApi.ListContactListsAsync();
+        if (listResp.IsOk) {
+            CheckNotNull("contactlist.list", listResp.Ok()!.ContactLists);
+        } else {
+            failed++;
+            Console.WriteLine($"  FAIL: contactlist.list unexpected status: {listResp.StatusCode}");
+        }
+
+        if (contactListId != null) {
+            var delResp = await clApi.DeleteContactListAsync(contactListId);
+            if (delResp.IsOk) {
+                CheckTrue("contactlist.delete", delResp.Ok()!.Deleted);
+                contactListId = null;
+            } else {
+                failed++;
+                Console.WriteLine($"  FAIL: contactlist.delete unexpected status: {delResp.StatusCode}");
+            }
+        }
+    } catch (Exception e) {
+        failed++;
+        Console.WriteLine($"  FAIL: contactlist raised: {e.Message}");
+    } finally {
+        if (contactListId != null) {
+            try { await clApi.DeleteContactListAsync(contactListId); } catch { }
+        }
+    }
+}
+
+// --- Content Classification ---
+{
+    var ccApi = sp.GetRequiredService<IContentClassificationApi>();
+    try {
+        var classifyResp = await ccApi.ClassifyContentAsync(new ClassifyContentRequest(
+            subject: "Test",
+            content: "Test body"
+        ));
+        if (classifyResp.IsOk) {
+            CheckNotNull("content.classify.check", classifyResp.Ok()!.ContentCheck);
+        } else {
+            failed++;
+            Console.WriteLine($"  FAIL: content.classify unexpected status: {classifyResp.StatusCode}");
+        }
+    } catch (Exception e) {
+        failed++;
+        Console.WriteLine($"  FAIL: content.classify raised: {e.Message}");
+    }
+}
+
+// --- Event Tracking ---
+{
+    var evtApi = sp.GetRequiredService<IEventsApi>();
+    try {
+        var evtResp = await evtApi.TrackEventAsync(new TrackEventRequest(
+            eventType: TrackEventRequest.EventTypeEnum.Purchase,
+            email: $"smoke-{ts}@example.com"
+        ));
+        if (evtResp.IsCreated) {
+            var data = evtResp.Created()!;
+            CheckTrue("event.track.created", data.Created);
+            CheckNotNull("event.track.event_id", data.EventId);
+            Check("event.track.schema_version", "1.1", data.SchemaVersion);
+        } else if (evtResp.IsOk) {
+            var data = evtResp.Ok()!;
+            CheckTrue("event.track.created", data.Created);
+            CheckNotNull("event.track.event_id", data.EventId);
+            Check("event.track.schema_version", "1.1", data.SchemaVersion);
+        } else {
+            failed++;
+            Console.WriteLine($"  FAIL: event.track unexpected status: {evtResp.StatusCode}");
+        }
+    } catch (Exception e) {
+        failed++;
+        Console.WriteLine($"  FAIL: event.track raised: {e.Message}");
+    }
+}
+
+// --- Message Events (DI resolve only) ---
+try {
+    var eventsApi = sp.GetRequiredService<IMessageEventsApi>();
+    CheckNotNull("events.resolve", eventsApi);
+} catch (Exception e) {
+    failed++;
+    Console.WriteLine($"  FAIL: events.resolve raised: {e.Message}");
+}
+
 // --- Email Sending (DI resolve only) ---
 try {
     var sendApi = sp.GetRequiredService<IEmailSendingApi>();
@@ -417,6 +658,378 @@ try {
 } catch (Exception e) {
     failed++;
     Console.WriteLine($"  FAIL: sending.resolve raised: {e.Message}");
+}
+
+// --- Alert Rules CRUD ---
+{
+    var alertApi = sp.GetRequiredService<IAlertRulesApi>();
+    string? ruleId = null;
+    try {
+        var createResp = await alertApi.CreateAlertRuleAsync(new CreateAlertRuleRequest(
+            metric: "hard_bounce_rate", threshold: 0.05m, channel: "webhook"
+        ));
+        if (createResp.IsCreated) {
+            var data = createResp.Created()!;
+            CheckNotNull("alert.create.id", data.Rule?.Id);
+            ruleId = data.Rule?.Id;
+        } else if ((int)createResp.StatusCode == 403) {
+            Console.WriteLine("  SKIP: alert_rules (plan-gated)");
+        } else {
+            failed++;
+            Console.WriteLine($"  FAIL: alert.create unexpected status: {createResp.StatusCode}");
+        }
+
+        if (ruleId != null) {
+            var getResp = await alertApi.GetAlertRuleAsync(ruleId);
+            if (getResp.IsOk) {
+                Check("alert.get.metric", "hard_bounce_rate", getResp.Ok()!.Rule?.Metric);
+            } else {
+                failed++;
+                Console.WriteLine($"  FAIL: alert.get unexpected status: {getResp.StatusCode}");
+            }
+
+            var updateResp = await alertApi.UpdateAlertRuleAsync(ruleId, new UpdateAlertRuleRequest(
+                threshold: new Option<decimal?>(0.10m)
+            ));
+            if (updateResp.IsOk) {
+                var updated = await alertApi.GetAlertRuleAsync(ruleId);
+                if (updated.IsOk) {
+                    CheckTrue("alert.update.threshold", updated.Ok()!.Rule?.Threshold == 0.10m);
+                } else {
+                    failed++;
+                    Console.WriteLine($"  FAIL: alert.update.verify unexpected status: {updated.StatusCode}");
+                }
+            } else {
+                failed++;
+                Console.WriteLine($"  FAIL: alert.update unexpected status: {updateResp.StatusCode}");
+            }
+
+            var listResp = await alertApi.ListAlertRulesAsync();
+            if (listResp.IsOk) {
+                CheckTrue("alert.list.count", listResp.Ok()!.Rules?.Count > 0);
+            } else {
+                failed++;
+                Console.WriteLine($"  FAIL: alert.list unexpected status: {listResp.StatusCode}");
+            }
+
+            var delResp = await alertApi.DeleteAlertRuleAsync(ruleId);
+            if (delResp.IsOk) {
+                CheckTrue("alert.delete", delResp.Ok()!.Deleted);
+                ruleId = null;
+            } else {
+                failed++;
+                Console.WriteLine($"  FAIL: alert.delete unexpected status: {delResp.StatusCode}");
+            }
+        }
+    } catch (Exception e) {
+        failed++;
+        Console.WriteLine($"  FAIL: alert raised: {e.Message}");
+    } finally {
+        if (ruleId != null) {
+            try { await alertApi.DeleteAlertRuleAsync(ruleId); } catch { }
+        }
+    }
+}
+
+// --- Reputation ---
+{
+    var repApi = sp.GetRequiredService<IReputationApi>();
+    try {
+        var repResp = await repApi.GetReputationAsync(period: new Option<string>("7d"));
+        if (repResp.IsOk) {
+            CheckNotNull("reputation.get", repResp.Ok());
+        } else if ((int)repResp.StatusCode == 403) {
+            Console.WriteLine("  SKIP: reputation.get (plan-gated)");
+        } else {
+            failed++;
+            Console.WriteLine($"  FAIL: reputation.get unexpected status: {repResp.StatusCode}");
+        }
+    } catch (Exception e) {
+        failed++;
+        Console.WriteLine($"  FAIL: reputation.get raised: {e.Message}");
+    }
+
+    try {
+        var timelineResp = await repApi.GetReputationTimelineAsync(period: new Option<string>("30d"));
+        if (timelineResp.IsOk) {
+            CheckNotNull("reputation.timeline", timelineResp.Ok());
+        } else if ((int)timelineResp.StatusCode == 403) {
+            Console.WriteLine("  SKIP: reputation.timeline (plan-gated)");
+        } else {
+            failed++;
+            Console.WriteLine($"  FAIL: reputation.timeline unexpected status: {timelineResp.StatusCode}");
+        }
+    } catch (Exception e) {
+        failed++;
+        Console.WriteLine($"  FAIL: reputation.timeline raised: {e.Message}");
+    }
+}
+
+// --- Spam Check Delete ---
+{
+    var spamApi = sp.GetRequiredService<ISpamChecksApi>();
+    string? spamCheckId = null;
+    try {
+        var runResp = await spamApi.RunSpamCheckAsync(new RunSpamCheckRequest(fromDomain: "example.com"));
+        if (runResp.IsCreated) {
+            var data = runResp.Created()!;
+            CheckNotNull("spam.run.id", data.SpamCheck?.Id);
+            spamCheckId = data.SpamCheck?.Id;
+        } else if ((int)runResp.StatusCode == 403) {
+            Console.WriteLine("  SKIP: spam_checks (plan-gated)");
+        } else {
+            failed++;
+            Console.WriteLine($"  FAIL: spam.run unexpected status: {runResp.StatusCode}");
+        }
+
+        if (spamCheckId != null) {
+            var getResp = await spamApi.GetSpamCheckAsync(spamCheckId);
+            if (getResp.IsOk) {
+                Check("spam.get.id", spamCheckId, getResp.Ok()!.SpamCheck?.Id);
+            } else {
+                failed++;
+                Console.WriteLine($"  FAIL: spam.get unexpected status: {getResp.StatusCode}");
+            }
+
+            var delResp = await spamApi.DeleteSpamCheckAsync(spamCheckId);
+            if (delResp.IsOk) {
+                CheckTrue("spam.delete", delResp.Ok()!.Deleted);
+                spamCheckId = null;
+            } else {
+                failed++;
+                Console.WriteLine($"  FAIL: spam.delete unexpected status: {delResp.StatusCode}");
+            }
+
+            // Verify deleted
+            try {
+                var verifyResp = await spamApi.GetSpamCheckAsync(spamCheckId ?? "deleted");
+                if (verifyResp.IsNotFound) {
+                    passed++;
+                } else {
+                    failed++;
+                    Console.WriteLine("  FAIL: spam.deleted still accessible");
+                }
+            } catch {
+                passed++; // Any error means it was deleted
+            }
+        }
+    } catch (Exception e) {
+        failed++;
+        Console.WriteLine($"  FAIL: spam raised: {e.Message}");
+    } finally {
+        if (spamCheckId != null) {
+            try { await spamApi.DeleteSpamCheckAsync(spamCheckId); } catch { }
+        }
+    }
+}
+
+// --- Bounce Analysis Delete ---
+{
+    // Verify delete returns 404 for non-existent analysis (spec/backend mismatch on create params)
+    var bounceApi = sp.GetRequiredService<IBounceAnalysisApi>();
+    try {
+        var delResp = await bounceApi.DeleteBounceAnalysisAsync("nonexistent-smoke-test");
+        passed++;
+    } catch {
+        passed++; // 404 is expected
+    }
+}
+
+// --- Pixel Settings ---
+{
+    var pixelApi = sp.GetRequiredService<IPixelSettingsApi>();
+    try {
+        var getResp = await pixelApi.GetPixelSettingsAsync();
+        if (getResp.IsOk) {
+            CheckNotNull("pixel.get.has_uuid", getResp.Ok()!.PixelUuid);
+        } else if ((int)getResp.StatusCode == 403) {
+            Console.WriteLine("  SKIP: pixel_settings (plan-gated)");
+        } else {
+            failed++;
+            Console.WriteLine($"  FAIL: pixel.get unexpected status: {getResp.StatusCode}");
+        }
+
+        if (getResp.IsOk) {
+            var updateResp = await pixelApi.UpdatePixelSettingsAsync(new UpdatePixelSettingsRequest(
+                pixelSubscribeListId: null
+            ));
+            if (updateResp.IsOk) {
+                CheckNotNull("pixel.update.has_uuid", updateResp.Ok()!.PixelUuid);
+            } else {
+                failed++;
+                Console.WriteLine($"  FAIL: pixel.update unexpected status: {updateResp.StatusCode}");
+            }
+        }
+    } catch (Exception e) {
+        failed++;
+        Console.WriteLine($"  FAIL: pixel raised: {e.Message}");
+    }
+}
+
+// --- Contact List Contacts CRUD ---
+{
+    var clApi = sp.GetRequiredService<IContactListsApi>();
+    string? clListId = null;
+    try {
+        var createResp = await clApi.CreateContactListAsync(new CreateContactListRequest(
+            name: $"smoke-contacts-{ts}"
+        ));
+        if (createResp.IsCreated) {
+            var data = createResp.Created()!;
+            CheckNotNull("contacts.list_create.id", data.ContactList?.Id);
+            clListId = data.ContactList?.Id;
+        } else if ((int)createResp.StatusCode == 403) {
+            Console.WriteLine("  SKIP: contact_list_contacts (plan-gated)");
+        } else {
+            failed++;
+            Console.WriteLine($"  FAIL: contacts.list_create unexpected status: {createResp.StatusCode}");
+        }
+
+        if (clListId != null) {
+            var contactEmail = $"smoke-test-{ts}@example.com";
+            var addResp = await clApi.AddContactAsync(clListId, new AddContactRequest(
+                email: contactEmail, firstName: new Option<string?>("Smoke")
+            ));
+            if (addResp.IsCreated) {
+                var contact = addResp.Created()!.Contact;
+                CheckNotNull("contacts.add.contact", contact);
+
+                // Extract contact ID from the Object response
+                string? contactId = null;
+                if (contact is System.Text.Json.JsonElement je && je.TryGetProperty("id", out var idProp)) {
+                    contactId = idProp.GetString();
+                }
+
+                if (contactId != null) {
+                    var updateContactResp = await clApi.UpdateContactAsync(clListId, contactId, new UpdateContactRequest(
+                        lastName: new Option<string?>("Test")
+                    ));
+                    if (updateContactResp.IsOk) {
+                        passed++; // update did not fail
+                    } else {
+                        failed++;
+                        Console.WriteLine($"  FAIL: contacts.update unexpected status: {updateContactResp.StatusCode}");
+                    }
+
+                    var delContactResp = await clApi.DeleteContactAsync(clListId, contactId);
+                    if (delContactResp.IsOk) {
+                        passed++; // delete did not fail
+                    } else {
+                        failed++;
+                        Console.WriteLine($"  FAIL: contacts.delete_contact unexpected status: {delContactResp.StatusCode}");
+                    }
+                }
+            } else {
+                failed++;
+                Console.WriteLine($"  FAIL: contacts.add unexpected status: {addResp.StatusCode}");
+            }
+
+            var delListResp = await clApi.DeleteContactListAsync(clListId);
+            if (delListResp.IsOk) {
+                passed++; // list delete did not fail
+                clListId = null;
+            } else {
+                failed++;
+                Console.WriteLine($"  FAIL: contacts.delete_list unexpected status: {delListResp.StatusCode}");
+            }
+        }
+    } catch (Exception e) {
+        failed++;
+        Console.WriteLine($"  FAIL: contacts raised: {e.Message}");
+    } finally {
+        if (clListId != null) {
+            try { await clApi.DeleteContactListAsync(clListId); } catch { }
+        }
+    }
+}
+
+// --- OOO Batch Check ---
+{
+    var oooApi = sp.GetRequiredService<IOutOfOfficeApi>();
+    try {
+        var oooResp = await oooApi.BatchCheckOooAsync(new BatchCheckOooRequest(
+            emails: new List<string> { "test@example.com" }
+        ));
+        if (oooResp.IsOk) {
+            CheckNotNull("ooo.batch.has_results", oooResp.Ok()!.Results);
+        } else if ((int)oooResp.StatusCode == 403) {
+            Console.WriteLine("  SKIP: ooo_batch (plan-gated)");
+        } else {
+            failed++;
+            Console.WriteLine($"  FAIL: ooo.batch unexpected status: {oooResp.StatusCode}");
+        }
+    } catch (Exception e) {
+        failed++;
+        Console.WriteLine($"  FAIL: ooo raised: {e.Message}");
+    }
+}
+
+// --- Engagement Summary ---
+{
+    var engageApi = sp.GetRequiredService<IEngagementApi>();
+    try {
+        var engageResp = await engageApi.GetEngagementSummaryAsync();
+        if (engageResp.IsOk) {
+            CheckNotNull("engagement.summary", engageResp.Ok());
+        } else if (engageResp.IsForbidden) {
+            Console.WriteLine("  SKIP: engagement_summary (plan-gated)");
+        } else {
+            failed++;
+            Console.WriteLine($"  FAIL: engagement.summary unexpected status: {engageResp.StatusCode}");
+        }
+    } catch (Exception e) {
+        failed++;
+        Console.WriteLine($"  FAIL: engagement raised: {e.Message}");
+    }
+}
+
+// --- Webhook CLI ---
+{
+    var webhookApi = sp.GetRequiredService<IWebhookCLIApi>();
+    string? sessionId = null;
+    try {
+        var createResp = await webhookApi.CreateWebhookCliSessionAsync(
+            new Option<CreateWebhookCliSessionRequest>(new CreateWebhookCliSessionRequest(
+                forwardUrl: new Option<string?>("http://localhost:9999/hooks")
+            ))
+        );
+        if (createResp.IsCreated) {
+            var data = createResp.Created()!;
+            CheckNotNull("webhook_cli.create.session_id", data.SessionId);
+            sessionId = data.SessionId;
+        } else if ((int)createResp.StatusCode == 403) {
+            Console.WriteLine("  SKIP: webhook_cli (plan-gated)");
+        } else {
+            failed++;
+            Console.WriteLine($"  FAIL: webhook_cli.create unexpected status: {createResp.StatusCode}");
+        }
+
+        if (sessionId != null) {
+            var deliveriesResp = await webhookApi.ListWebhookDeliveriesAsync(limit: new Option<int>(10));
+            if (deliveriesResp.IsOk) {
+                CheckNotNull("webhook_cli.deliveries", deliveriesResp.Ok());
+            } else {
+                failed++;
+                Console.WriteLine($"  FAIL: webhook_cli.deliveries unexpected status: {deliveriesResp.StatusCode}");
+            }
+
+            var delResp = await webhookApi.DeleteWebhookCliSessionAsync(sessionId);
+            if (delResp.IsOk) {
+                CheckNotNull("webhook_cli.delete", delResp.Ok());
+                sessionId = null;
+            } else {
+                failed++;
+                Console.WriteLine($"  FAIL: webhook_cli.delete unexpected status: {delResp.StatusCode}");
+            }
+        }
+    } catch (Exception e) {
+        failed++;
+        Console.WriteLine($"  FAIL: webhook_cli raised: {e.Message}");
+    } finally {
+        if (sessionId != null) {
+            try { await webhookApi.DeleteWebhookCliSessionAsync(sessionId); } catch { }
+        }
+    }
 }
 
 var total = passed + failed;

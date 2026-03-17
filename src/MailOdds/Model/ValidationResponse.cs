@@ -1109,10 +1109,10 @@ namespace MailOdds.Model
                             dnsblListed = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
                             break;
                         case "suppression_match":
-                            suppressionMatch = new Option<ValidationResponseSuppressionMatch?>(JsonSerializer.Deserialize<ValidationResponseSuppressionMatch>(ref utf8JsonReader, jsonSerializerOptions)!);
+                            suppressionMatch = new Option<ValidationResponseSuppressionMatch?>(JsonSerializer.Deserialize<ValidationResponseSuppressionMatch>(ref utf8JsonReader, jsonSerializerOptions));
                             break;
                         case "policy_applied":
-                            policyApplied = new Option<ValidationResponsePolicyApplied?>(JsonSerializer.Deserialize<ValidationResponsePolicyApplied>(ref utf8JsonReader, jsonSerializerOptions)!);
+                            policyApplied = new Option<ValidationResponsePolicyApplied?>(JsonSerializer.Deserialize<ValidationResponsePolicyApplied>(ref utf8JsonReader, jsonSerializerOptions));
                             break;
                         default:
                             break;
@@ -1219,12 +1219,6 @@ namespace MailOdds.Model
             if (dnsblListed.IsSet && dnsblListed.Value == null)
                 throw new ArgumentNullException(nameof(dnsblListed), "Property is not nullable for class ValidationResponse.");
 
-            if (suppressionMatch.IsSet && suppressionMatch.Value == null)
-                throw new ArgumentNullException(nameof(suppressionMatch), "Property is not nullable for class ValidationResponse.");
-
-            if (policyApplied.IsSet && policyApplied.Value == null)
-                throw new ArgumentNullException(nameof(policyApplied), "Property is not nullable for class ValidationResponse.");
-
             return new ValidationResponse(schemaVersion.Value!, email.Value!, status.Value!.Value!, action.Value!.Value!, domain.Value!, mxFound.Value!.Value!, disposable.Value!.Value!, roleAccount.Value!.Value!, freeProvider.Value!.Value!, depth.Value!.Value!, processedAt.Value!.Value!, requestId, subStatus, mxHost, smtpCheck, catchAll, suggestedEmail, retryAfterMs, hasSpf, hasDmarc, dmarcPolicy, dnsblListed, suppressionMatch, policyApplied);
         }
 
@@ -1269,12 +1263,6 @@ namespace MailOdds.Model
 
             if (validationResponse.SuggestedEmailOption.IsSet && validationResponse.SuggestedEmail == null)
                 throw new ArgumentNullException(nameof(validationResponse.SuggestedEmail), "Property is required for class ValidationResponse.");
-
-            if (validationResponse.SuppressionMatchOption.IsSet && validationResponse.SuppressionMatch == null)
-                throw new ArgumentNullException(nameof(validationResponse.SuppressionMatch), "Property is required for class ValidationResponse.");
-
-            if (validationResponse.PolicyAppliedOption.IsSet && validationResponse.PolicyApplied == null)
-                throw new ArgumentNullException(nameof(validationResponse.PolicyApplied), "Property is required for class ValidationResponse.");
 
             writer.WriteString("schema_version", validationResponse.SchemaVersion);
 
@@ -1330,15 +1318,21 @@ namespace MailOdds.Model
                 writer.WriteBoolean("dnsbl_listed", validationResponse.DnsblListedOption.Value!.Value);
 
             if (validationResponse.SuppressionMatchOption.IsSet)
-            {
-                writer.WritePropertyName("suppression_match");
-                JsonSerializer.Serialize(writer, validationResponse.SuppressionMatch, jsonSerializerOptions);
-            }
+                if (validationResponse.SuppressionMatchOption.Value != null)
+                {
+                    writer.WritePropertyName("suppression_match");
+                    JsonSerializer.Serialize(writer, validationResponse.SuppressionMatch, jsonSerializerOptions);
+                }
+                else
+                    writer.WriteNull("suppression_match");
             if (validationResponse.PolicyAppliedOption.IsSet)
-            {
-                writer.WritePropertyName("policy_applied");
-                JsonSerializer.Serialize(writer, validationResponse.PolicyApplied, jsonSerializerOptions);
-            }
+                if (validationResponse.PolicyAppliedOption.Value != null)
+                {
+                    writer.WritePropertyName("policy_applied");
+                    JsonSerializer.Serialize(writer, validationResponse.PolicyApplied, jsonSerializerOptions);
+                }
+                else
+                    writer.WriteNull("policy_applied");
         }
     }
 }

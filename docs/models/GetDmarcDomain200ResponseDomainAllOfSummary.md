@@ -4,12 +4,13 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**TotalReports** | **int** |  | [optional] 
-**TotalRecords** | **int** |  | [optional] 
+**Days** | **int** |  | [optional] 
+**ReportCount** | **int** |  | [optional] 
+**SourceCount** | **int** |  | [optional] 
+**TotalMessages** | **int** |  | [optional] 
+**TotalPass** | **int** |  | [optional] 
+**TotalFail** | **int** |  | [optional] 
 **PassRate** | **decimal** |  | [optional] 
-**FailRate** | **decimal** |  | [optional] 
-**DkimAligned** | **decimal** |  | [optional] 
-**SpfAligned** | **decimal** |  | [optional] 
 
 [[Back to Model list]](../../README.md#documentation-for-models) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to README]](../../README.md)
 

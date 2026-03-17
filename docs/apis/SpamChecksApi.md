@@ -4,9 +4,48 @@ All URIs are relative to *https://api.mailodds.com/v1*
 
 | Method | HTTP request | Description |
 |--------|--------------|-------------|
+| [**DeleteSpamCheck**](SpamChecksApi.md#deletespamcheck) | **DELETE** /v1/spam-checks/{check_id} | Delete spam check |
 | [**GetSpamCheck**](SpamChecksApi.md#getspamcheck) | **GET** /v1/spam-checks/{check_id} | Get spam check |
 | [**ListSpamChecks**](SpamChecksApi.md#listspamchecks) | **GET** /v1/spam-checks | List spam checks |
 | [**RunSpamCheck**](SpamChecksApi.md#runspamcheck) | **POST** /v1/spam-checks | Run spam check |
+
+<a id="deletespamcheck"></a>
+# **DeleteSpamCheck**
+> DeletePolicyRule200Response DeleteSpamCheck (string checkId)
+
+Delete spam check
+
+Delete a spam check result.
+
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **checkId** | **string** | Spam check ID |  |
+
+### Return type
+
+[**DeletePolicyRule200Response**](DeletePolicyRule200Response.md)
+
+### Authorization
+
+[BearerAuth](../README.md#BearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Spam check deleted |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
+| **404** | Resource not found |  -  |
+
+[[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
 <a id="getspamcheck"></a>
 # **GetSpamCheck**
@@ -14,7 +53,7 @@ All URIs are relative to *https://api.mailodds.com/v1*
 
 Get spam check
 
-Get the detailed result of a specific spam check. Currently available to beta accounts only.
+Get the detailed result of a specific spam check.
 
 
 ### Parameters
@@ -42,7 +81,6 @@ Get the detailed result of a specific spam check. Currently available to beta ac
 |-------------|-------------|------------------|
 | **200** | Spam check details |  -  |
 | **401** | Unauthorized - Invalid or missing API key |  -  |
-| **403** | Feature not available - beta access required |  -  |
 | **404** | Resource not found |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
@@ -53,7 +91,7 @@ Get the detailed result of a specific spam check. Currently available to beta ac
 
 List spam checks
 
-List past spam check results with pagination. Currently available to beta accounts only.
+List past spam check results with pagination.
 
 
 ### Parameters
@@ -82,7 +120,6 @@ List past spam check results with pagination. Currently available to beta accoun
 |-------------|-------------|------------------|
 | **200** | List of spam checks |  -  |
 | **401** | Unauthorized - Invalid or missing API key |  -  |
-| **403** | Feature not available - beta access required |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -92,7 +129,7 @@ List past spam check results with pagination. Currently available to beta accoun
 
 Run spam check
 
-Run backend spam checks on email sending parameters. Checks domain reputation, link safety, and subject line quality. Currently available to beta accounts only.
+Run backend spam checks on email sending parameters. Checks domain reputation, link safety, and subject line quality.
 
 
 ### Parameters
@@ -121,7 +158,6 @@ Run backend spam checks on email sending parameters. Checks domain reputation, l
 | **201** | Spam check result |  -  |
 | **400** | Bad request |  -  |
 | **401** | Unauthorized - Invalid or missing API key |  -  |
-| **403** | Feature not available - beta access required |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 

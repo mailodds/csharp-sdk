@@ -6,6 +6,7 @@ All URIs are relative to *https://api.mailodds.com/v1*
 |--------|--------------|-------------|
 | [**CreateBounceAnalysis**](BounceAnalysisApi.md#createbounceanalysis) | **POST** /v1/bounce-analyses | Analyze bounce logs |
 | [**CrossReferenceBounces**](BounceAnalysisApi.md#crossreferencebounces) | **GET** /v1/bounce-analyses/{analysis_id}/cross-reference | Cross-reference bounces with validation logs |
+| [**DeleteBounceAnalysis**](BounceAnalysisApi.md#deletebounceanalysis) | **DELETE** /v1/bounce-analyses/{analysis_id} | Delete bounce analysis |
 | [**GetBounceAnalysis**](BounceAnalysisApi.md#getbounceanalysis) | **GET** /v1/bounce-analyses/{analysis_id} | Get bounce analysis |
 | [**GetBounceRecords**](BounceAnalysisApi.md#getbouncerecords) | **GET** /v1/bounce-analyses/{analysis_id}/records | Get bounce records |
 
@@ -81,6 +82,44 @@ Match bounced emails against your validation history to identify emails that wer
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Cross-reference results |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
+| **404** | Resource not found |  -  |
+
+[[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
+
+<a id="deletebounceanalysis"></a>
+# **DeleteBounceAnalysis**
+> DeletePolicyRule200Response DeleteBounceAnalysis (string analysisId)
+
+Delete bounce analysis
+
+Delete a bounce analysis and all associated records.
+
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **analysisId** | **string** | Bounce analysis ID |  |
+
+### Return type
+
+[**DeletePolicyRule200Response**](DeletePolicyRule200Response.md)
+
+### Authorization
+
+[BearerAuth](../README.md#BearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Bounce analysis deleted |  -  |
 | **401** | Unauthorized - Invalid or missing API key |  -  |
 | **404** | Resource not found |  -  |
 

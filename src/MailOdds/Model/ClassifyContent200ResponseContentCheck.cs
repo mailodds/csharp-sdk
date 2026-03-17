@@ -34,27 +34,31 @@ namespace MailOdds.Model
         /// <summary>
         /// Initializes a new instance of the <see cref="ClassifyContent200ResponseContentCheck" /> class.
         /// </summary>
-        /// <param name="score">Overall content quality score (0-100)</param>
-        /// <param name="verdict">Overall verdict</param>
-        /// <param name="categories">categories</param>
+        /// <param name="status">Overall content status</param>
+        /// <param name="flag">Whether the content is flagged</param>
+        /// <param name="reason">Human-readable reason for the status</param>
+        /// <param name="priority">Priority level (1&#x3D;lowest, 5&#x3D;highest)</param>
         /// <param name="suggestions">Improvement suggestions</param>
+        /// <param name="durationMs">Classification duration in milliseconds</param>
         [JsonConstructor]
-        public ClassifyContent200ResponseContentCheck(Option<decimal?> score = default, Option<VerdictEnum?> verdict = default, Option<List<ClassifyContent200ResponseContentCheckCategoriesInner>?> categories = default, Option<List<string>?> suggestions = default)
+        public ClassifyContent200ResponseContentCheck(Option<StatusEnum?> status = default, Option<bool?> flag = default, Option<string?> reason = default, Option<int?> priority = default, Option<List<string>?> suggestions = default, Option<int?> durationMs = default)
         {
-            ScoreOption = score;
-            VerdictOption = verdict;
-            CategoriesOption = categories;
+            StatusOption = status;
+            FlagOption = flag;
+            ReasonOption = reason;
+            PriorityOption = priority;
             SuggestionsOption = suggestions;
+            DurationMsOption = durationMs;
             OnCreated();
         }
 
         partial void OnCreated();
 
         /// <summary>
-        /// Overall verdict
+        /// Overall content status
         /// </summary>
-        /// <value>Overall verdict</value>
-        public enum VerdictEnum
+        /// <value>Overall content status</value>
+        public enum StatusEnum
         {
             /// <summary>
             /// Enum Clean for value: clean
@@ -73,104 +77,119 @@ namespace MailOdds.Model
         }
 
         /// <summary>
-        /// Returns a <see cref="VerdictEnum"/>
+        /// Returns a <see cref="StatusEnum"/>
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public static VerdictEnum VerdictEnumFromString(string value)
+        public static StatusEnum StatusEnumFromString(string value)
         {
             if (value.Equals("clean"))
-                return VerdictEnum.Clean;
+                return StatusEnum.Clean;
 
             if (value.Equals("warning"))
-                return VerdictEnum.Warning;
+                return StatusEnum.Warning;
 
             if (value.Equals("risky"))
-                return VerdictEnum.Risky;
+                return StatusEnum.Risky;
 
-            throw new NotImplementedException($"Could not convert value to type VerdictEnum: '{value}'");
+            throw new NotImplementedException($"Could not convert value to type StatusEnum: '{value}'");
         }
 
         /// <summary>
-        /// Returns a <see cref="VerdictEnum"/>
+        /// Returns a <see cref="StatusEnum"/>
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static VerdictEnum? VerdictEnumFromStringOrDefault(string value)
+        public static StatusEnum? StatusEnumFromStringOrDefault(string value)
         {
             if (value.Equals("clean"))
-                return VerdictEnum.Clean;
+                return StatusEnum.Clean;
 
             if (value.Equals("warning"))
-                return VerdictEnum.Warning;
+                return StatusEnum.Warning;
 
             if (value.Equals("risky"))
-                return VerdictEnum.Risky;
+                return StatusEnum.Risky;
 
             return null;
         }
 
         /// <summary>
-        /// Converts the <see cref="VerdictEnum"/> to the json value
+        /// Converts the <see cref="StatusEnum"/> to the json value
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public static string VerdictEnumToJsonValue(VerdictEnum? value)
+        public static string StatusEnumToJsonValue(StatusEnum? value)
         {
-            if (value == VerdictEnum.Clean)
+            if (value == StatusEnum.Clean)
                 return "clean";
 
-            if (value == VerdictEnum.Warning)
+            if (value == StatusEnum.Warning)
                 return "warning";
 
-            if (value == VerdictEnum.Risky)
+            if (value == StatusEnum.Risky)
                 return "risky";
 
             throw new NotImplementedException($"Value could not be handled: '{value}'");
         }
 
         /// <summary>
-        /// Used to track the state of Verdict
+        /// Used to track the state of Status
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<VerdictEnum?> VerdictOption { get; private set; }
+        public Option<StatusEnum?> StatusOption { get; private set; }
 
         /// <summary>
-        /// Overall verdict
+        /// Overall content status
         /// </summary>
-        /// <value>Overall verdict</value>
-        [JsonPropertyName("verdict")]
-        public VerdictEnum? Verdict { get { return this.VerdictOption; } set { this.VerdictOption = new(value); } }
+        /// <value>Overall content status</value>
+        [JsonPropertyName("status")]
+        public StatusEnum? Status { get { return this.StatusOption; } set { this.StatusOption = new(value); } }
 
         /// <summary>
-        /// Used to track the state of Score
-        /// </summary>
-        [JsonIgnore]
-        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<decimal?> ScoreOption { get; private set; }
-
-        /// <summary>
-        /// Overall content quality score (0-100)
-        /// </summary>
-        /// <value>Overall content quality score (0-100)</value>
-        [JsonPropertyName("score")]
-        public decimal? Score { get { return this.ScoreOption; } set { this.ScoreOption = new(value); } }
-
-        /// <summary>
-        /// Used to track the state of Categories
+        /// Used to track the state of Flag
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<List<ClassifyContent200ResponseContentCheckCategoriesInner>?> CategoriesOption { get; private set; }
+        public Option<bool?> FlagOption { get; private set; }
 
         /// <summary>
-        /// Gets or Sets Categories
+        /// Whether the content is flagged
         /// </summary>
-        [JsonPropertyName("categories")]
-        public List<ClassifyContent200ResponseContentCheckCategoriesInner>? Categories { get { return this.CategoriesOption; } set { this.CategoriesOption = new(value); } }
+        /// <value>Whether the content is flagged</value>
+        [JsonPropertyName("flag")]
+        public bool? Flag { get { return this.FlagOption; } set { this.FlagOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of Reason
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> ReasonOption { get; private set; }
+
+        /// <summary>
+        /// Human-readable reason for the status
+        /// </summary>
+        /// <value>Human-readable reason for the status</value>
+        [JsonPropertyName("reason")]
+        public string? Reason { get { return this.ReasonOption; } set { this.ReasonOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of Priority
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<int?> PriorityOption { get; private set; }
+
+        /// <summary>
+        /// Priority level (1&#x3D;lowest, 5&#x3D;highest)
+        /// </summary>
+        /// <value>Priority level (1&#x3D;lowest, 5&#x3D;highest)</value>
+        [JsonPropertyName("priority")]
+        public int? Priority { get { return this.PriorityOption; } set { this.PriorityOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Suggestions
@@ -187,6 +206,20 @@ namespace MailOdds.Model
         public List<string>? Suggestions { get { return this.SuggestionsOption; } set { this.SuggestionsOption = new(value); } }
 
         /// <summary>
+        /// Used to track the state of DurationMs
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<int?> DurationMsOption { get; private set; }
+
+        /// <summary>
+        /// Classification duration in milliseconds
+        /// </summary>
+        /// <value>Classification duration in milliseconds</value>
+        [JsonPropertyName("duration_ms")]
+        public int? DurationMs { get { return this.DurationMsOption; } set { this.DurationMsOption = new(value); } }
+
+        /// <summary>
         /// Returns the string presentation of the object
         /// </summary>
         /// <returns>String presentation of the object</returns>
@@ -194,10 +227,12 @@ namespace MailOdds.Model
         {
             StringBuilder sb = new StringBuilder();
             sb.Append("class ClassifyContent200ResponseContentCheck {\n");
-            sb.Append("  Score: ").Append(Score).Append("\n");
-            sb.Append("  Verdict: ").Append(Verdict).Append("\n");
-            sb.Append("  Categories: ").Append(Categories).Append("\n");
+            sb.Append("  Status: ").Append(Status).Append("\n");
+            sb.Append("  Flag: ").Append(Flag).Append("\n");
+            sb.Append("  Reason: ").Append(Reason).Append("\n");
+            sb.Append("  Priority: ").Append(Priority).Append("\n");
             sb.Append("  Suggestions: ").Append(Suggestions).Append("\n");
+            sb.Append("  DurationMs: ").Append(DurationMs).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -235,10 +270,12 @@ namespace MailOdds.Model
 
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
-            Option<decimal?> score = default;
-            Option<ClassifyContent200ResponseContentCheck.VerdictEnum?> verdict = default;
-            Option<List<ClassifyContent200ResponseContentCheckCategoriesInner>?> categories = default;
+            Option<ClassifyContent200ResponseContentCheck.StatusEnum?> status = default;
+            Option<bool?> flag = default;
+            Option<string?> reason = default;
+            Option<int?> priority = default;
             Option<List<string>?> suggestions = default;
+            Option<int?> durationMs = default;
 
             while (utf8JsonReader.Read())
             {
@@ -255,19 +292,25 @@ namespace MailOdds.Model
 
                     switch (localVarJsonPropertyName)
                     {
-                        case "score":
-                            score = new Option<decimal?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (decimal?)null : utf8JsonReader.GetDecimal());
+                        case "status":
+                            string? statusRawValue = utf8JsonReader.GetString();
+                            if (statusRawValue != null)
+                                status = new Option<ClassifyContent200ResponseContentCheck.StatusEnum?>(ClassifyContent200ResponseContentCheck.StatusEnumFromStringOrDefault(statusRawValue));
                             break;
-                        case "verdict":
-                            string? verdictRawValue = utf8JsonReader.GetString();
-                            if (verdictRawValue != null)
-                                verdict = new Option<ClassifyContent200ResponseContentCheck.VerdictEnum?>(ClassifyContent200ResponseContentCheck.VerdictEnumFromStringOrDefault(verdictRawValue));
+                        case "flag":
+                            flag = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
                             break;
-                        case "categories":
-                            categories = new Option<List<ClassifyContent200ResponseContentCheckCategoriesInner>?>(JsonSerializer.Deserialize<List<ClassifyContent200ResponseContentCheckCategoriesInner>>(ref utf8JsonReader, jsonSerializerOptions)!);
+                        case "reason":
+                            reason = new Option<string?>(utf8JsonReader.GetString()!);
+                            break;
+                        case "priority":
+                            priority = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
                             break;
                         case "suggestions":
                             suggestions = new Option<List<string>?>(JsonSerializer.Deserialize<List<string>>(ref utf8JsonReader, jsonSerializerOptions)!);
+                            break;
+                        case "duration_ms":
+                            durationMs = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
                             break;
                         default:
                             break;
@@ -275,19 +318,25 @@ namespace MailOdds.Model
                 }
             }
 
-            if (score.IsSet && score.Value == null)
-                throw new ArgumentNullException(nameof(score), "Property is not nullable for class ClassifyContent200ResponseContentCheck.");
+            if (status.IsSet && status.Value == null)
+                throw new ArgumentNullException(nameof(status), "Property is not nullable for class ClassifyContent200ResponseContentCheck.");
 
-            if (verdict.IsSet && verdict.Value == null)
-                throw new ArgumentNullException(nameof(verdict), "Property is not nullable for class ClassifyContent200ResponseContentCheck.");
+            if (flag.IsSet && flag.Value == null)
+                throw new ArgumentNullException(nameof(flag), "Property is not nullable for class ClassifyContent200ResponseContentCheck.");
 
-            if (categories.IsSet && categories.Value == null)
-                throw new ArgumentNullException(nameof(categories), "Property is not nullable for class ClassifyContent200ResponseContentCheck.");
+            if (reason.IsSet && reason.Value == null)
+                throw new ArgumentNullException(nameof(reason), "Property is not nullable for class ClassifyContent200ResponseContentCheck.");
+
+            if (priority.IsSet && priority.Value == null)
+                throw new ArgumentNullException(nameof(priority), "Property is not nullable for class ClassifyContent200ResponseContentCheck.");
 
             if (suggestions.IsSet && suggestions.Value == null)
                 throw new ArgumentNullException(nameof(suggestions), "Property is not nullable for class ClassifyContent200ResponseContentCheck.");
 
-            return new ClassifyContent200ResponseContentCheck(score, verdict, categories, suggestions);
+            if (durationMs.IsSet && durationMs.Value == null)
+                throw new ArgumentNullException(nameof(durationMs), "Property is not nullable for class ClassifyContent200ResponseContentCheck.");
+
+            return new ClassifyContent200ResponseContentCheck(status, flag, reason, priority, suggestions, durationMs);
         }
 
         /// <summary>
@@ -314,27 +363,30 @@ namespace MailOdds.Model
         /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, ClassifyContent200ResponseContentCheck classifyContent200ResponseContentCheck, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (classifyContent200ResponseContentCheck.CategoriesOption.IsSet && classifyContent200ResponseContentCheck.Categories == null)
-                throw new ArgumentNullException(nameof(classifyContent200ResponseContentCheck.Categories), "Property is required for class ClassifyContent200ResponseContentCheck.");
+            if (classifyContent200ResponseContentCheck.ReasonOption.IsSet && classifyContent200ResponseContentCheck.Reason == null)
+                throw new ArgumentNullException(nameof(classifyContent200ResponseContentCheck.Reason), "Property is required for class ClassifyContent200ResponseContentCheck.");
 
             if (classifyContent200ResponseContentCheck.SuggestionsOption.IsSet && classifyContent200ResponseContentCheck.Suggestions == null)
                 throw new ArgumentNullException(nameof(classifyContent200ResponseContentCheck.Suggestions), "Property is required for class ClassifyContent200ResponseContentCheck.");
 
-            if (classifyContent200ResponseContentCheck.ScoreOption.IsSet)
-                writer.WriteNumber("score", classifyContent200ResponseContentCheck.ScoreOption.Value!.Value);
+            var statusRawValue = ClassifyContent200ResponseContentCheck.StatusEnumToJsonValue(classifyContent200ResponseContentCheck.StatusOption.Value!.Value);
+            writer.WriteString("status", statusRawValue);
+            if (classifyContent200ResponseContentCheck.FlagOption.IsSet)
+                writer.WriteBoolean("flag", classifyContent200ResponseContentCheck.FlagOption.Value!.Value);
 
-            var verdictRawValue = ClassifyContent200ResponseContentCheck.VerdictEnumToJsonValue(classifyContent200ResponseContentCheck.VerdictOption.Value!.Value);
-            writer.WriteString("verdict", verdictRawValue);
-            if (classifyContent200ResponseContentCheck.CategoriesOption.IsSet)
-            {
-                writer.WritePropertyName("categories");
-                JsonSerializer.Serialize(writer, classifyContent200ResponseContentCheck.Categories, jsonSerializerOptions);
-            }
+            if (classifyContent200ResponseContentCheck.ReasonOption.IsSet)
+                writer.WriteString("reason", classifyContent200ResponseContentCheck.Reason);
+
+            if (classifyContent200ResponseContentCheck.PriorityOption.IsSet)
+                writer.WriteNumber("priority", classifyContent200ResponseContentCheck.PriorityOption.Value!.Value);
+
             if (classifyContent200ResponseContentCheck.SuggestionsOption.IsSet)
             {
                 writer.WritePropertyName("suggestions");
                 JsonSerializer.Serialize(writer, classifyContent200ResponseContentCheck.Suggestions, jsonSerializerOptions);
             }
+            if (classifyContent200ResponseContentCheck.DurationMsOption.IsSet)
+                writer.WriteNumber("duration_ms", classifyContent200ResponseContentCheck.DurationMsOption.Value!.Value);
         }
     }
 }

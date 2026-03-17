@@ -60,6 +60,29 @@ namespace MailOdds.Api
         Task<IAddBlacklistMonitorApiResponse?> AddBlacklistMonitorOrDefaultAsync(AddBlacklistMonitorRequest addBlacklistMonitorRequest, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Delete a blacklist monitor
+        /// </summary>
+        /// <remarks>
+        /// Permanently remove a blacklist monitor and its check history.
+        /// </remarks>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="monitorId">Monitor UUID</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IDeleteBlacklistMonitorApiResponse"/>&gt;</returns>
+        Task<IDeleteBlacklistMonitorApiResponse> DeleteBlacklistMonitorAsync(string monitorId, System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Delete a blacklist monitor
+        /// </summary>
+        /// <remarks>
+        /// Permanently remove a blacklist monitor and its check history.
+        /// </remarks>
+        /// <param name="monitorId">Monitor UUID</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IDeleteBlacklistMonitorApiResponse"/>?&gt;</returns>
+        Task<IDeleteBlacklistMonitorApiResponse?> DeleteBlacklistMonitorOrDefaultAsync(string monitorId, System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Get blacklist check history
         /// </summary>
         /// <remarks>
@@ -156,6 +179,30 @@ namespace MailOdds.Api
     }
 
     /// <summary>
+    /// The <see cref="IDeleteBlacklistMonitorApiResponse"/>
+    /// </summary>
+    public interface IDeleteBlacklistMonitorApiResponse : MailOdds.Client.IApiResponse, IOk<MailOdds.Model.DeletePolicyRule200Response?>, IUnauthorized<MailOdds.Model.ErrorResponse?>, INotFound<MailOdds.Model.ErrorResponse?>
+    {
+        /// <summary>
+        /// Returns true if the response is 200 Ok
+        /// </summary>
+        /// <returns></returns>
+        bool IsOk { get; }
+
+        /// <summary>
+        /// Returns true if the response is 401 Unauthorized
+        /// </summary>
+        /// <returns></returns>
+        bool IsUnauthorized { get; }
+
+        /// <summary>
+        /// Returns true if the response is 404 NotFound
+        /// </summary>
+        /// <returns></returns>
+        bool IsNotFound { get; }
+    }
+
+    /// <summary>
     /// The <see cref="IGetBlacklistHistoryApiResponse"/>
     /// </summary>
     public interface IGetBlacklistHistoryApiResponse : MailOdds.Client.IApiResponse, IOk<MailOdds.Model.GetBlacklistHistory200Response?>, IUnauthorized<MailOdds.Model.ErrorResponse?>, INotFound<MailOdds.Model.ErrorResponse?>
@@ -244,6 +291,26 @@ namespace MailOdds.Api
         internal void ExecuteOnErrorAddBlacklistMonitor(Exception exception)
         {
             OnErrorAddBlacklistMonitor?.Invoke(this, new ExceptionEventArgs(exception));
+        }
+
+        /// <summary>
+        /// The event raised after the server response
+        /// </summary>
+        public event EventHandler<ApiResponseEventArgs>? OnDeleteBlacklistMonitor;
+
+        /// <summary>
+        /// The event raised after an error querying the server
+        /// </summary>
+        public event EventHandler<ExceptionEventArgs>? OnErrorDeleteBlacklistMonitor;
+
+        internal void ExecuteOnDeleteBlacklistMonitor(BlacklistMonitoringApi.DeleteBlacklistMonitorApiResponse apiResponse)
+        {
+            OnDeleteBlacklistMonitor?.Invoke(this, new ApiResponseEventArgs(apiResponse));
+        }
+
+        internal void ExecuteOnErrorDeleteBlacklistMonitor(Exception exception)
+        {
+            OnErrorDeleteBlacklistMonitor?.Invoke(this, new ExceptionEventArgs(exception));
         }
 
         /// <summary>
@@ -679,6 +746,335 @@ namespace MailOdds.Api
                 } catch (Exception e)
                 {
                     OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)401);
+                }
+
+                return result != null;
+            }
+
+            private void OnDeserializationErrorDefaultImplementation(Exception exception, HttpStatusCode httpStatusCode)
+            {
+                bool suppressDefaultLog = false;
+                OnDeserializationError(ref suppressDefaultLog, exception, httpStatusCode);
+                if (!suppressDefaultLog)
+                    Logger.LogError(exception, "An error occurred while deserializing the {code} response.", httpStatusCode);
+            }
+
+            partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
+        }
+
+        partial void FormatDeleteBlacklistMonitor(ref string monitorId);
+
+        /// <summary>
+        /// Validates the request parameters
+        /// </summary>
+        /// <param name="monitorId"></param>
+        /// <returns></returns>
+        private void ValidateDeleteBlacklistMonitor(string monitorId)
+        {
+            if (monitorId == null)
+                throw new ArgumentNullException(nameof(monitorId));
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="apiResponseLocalVar"></param>
+        /// <param name="monitorId"></param>
+        private void AfterDeleteBlacklistMonitorDefaultImplementation(IDeleteBlacklistMonitorApiResponse apiResponseLocalVar, string monitorId)
+        {
+            bool suppressDefaultLog = false;
+            AfterDeleteBlacklistMonitor(ref suppressDefaultLog, apiResponseLocalVar, monitorId);
+            if (!suppressDefaultLog)
+                Logger.LogInformation("{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="suppressDefaultLog"></param>
+        /// <param name="apiResponseLocalVar"></param>
+        /// <param name="monitorId"></param>
+        partial void AfterDeleteBlacklistMonitor(ref bool suppressDefaultLog, IDeleteBlacklistMonitorApiResponse apiResponseLocalVar, string monitorId);
+
+        /// <summary>
+        /// Logs exceptions that occur while retrieving the server response
+        /// </summary>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        /// <param name="monitorId"></param>
+        private void OnErrorDeleteBlacklistMonitorDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string monitorId)
+        {
+            bool suppressDefaultLogLocalVar = false;
+            OnErrorDeleteBlacklistMonitor(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, monitorId);
+            if (!suppressDefaultLogLocalVar)
+                Logger.LogError(exceptionLocalVar, "An error occurred while sending the request to the server.");
+        }
+
+        /// <summary>
+        /// A partial method that gives developers a way to provide customized exception handling
+        /// </summary>
+        /// <param name="suppressDefaultLogLocalVar"></param>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        /// <param name="monitorId"></param>
+        partial void OnErrorDeleteBlacklistMonitor(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string monitorId);
+
+        /// <summary>
+        /// Delete a blacklist monitor Permanently remove a blacklist monitor and its check history.
+        /// </summary>
+        /// <param name="monitorId">Monitor UUID</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IDeleteBlacklistMonitorApiResponse"/>&gt;</returns>
+        public async Task<IDeleteBlacklistMonitorApiResponse?> DeleteBlacklistMonitorOrDefaultAsync(string monitorId, System.Threading.CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                return await DeleteBlacklistMonitorAsync(monitorId, cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Delete a blacklist monitor Permanently remove a blacklist monitor and its check history.
+        /// </summary>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="monitorId">Monitor UUID</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IDeleteBlacklistMonitorApiResponse"/>&gt;</returns>
+        public async Task<IDeleteBlacklistMonitorApiResponse> DeleteBlacklistMonitorAsync(string monitorId, System.Threading.CancellationToken cancellationToken = default)
+        {
+            UriBuilder uriBuilderLocalVar = new UriBuilder();
+
+            try
+            {
+                ValidateDeleteBlacklistMonitor(monitorId);
+
+                FormatDeleteBlacklistMonitor(ref monitorId);
+
+                using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
+                {
+                    uriBuilderLocalVar.Host = HttpClient.BaseAddress!.Host;
+                    uriBuilderLocalVar.Port = HttpClient.BaseAddress.Port;
+                    uriBuilderLocalVar.Scheme = HttpClient.BaseAddress.Scheme;
+                    uriBuilderLocalVar.Path = HttpClient.BaseAddress.AbsolutePath == "/"
+                        ? "/v1/blacklist-monitors/{monitor_id}"
+                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/v1/blacklist-monitors/{monitor_id}");
+                    uriBuilderLocalVar.Path = uriBuilderLocalVar.Path.Replace("%7Bmonitor_id%7D", Uri.EscapeDataString(monitorId.ToString()));
+
+                    List<TokenBase> tokenBaseLocalVars = new List<TokenBase>();
+                    httpRequestMessageLocalVar.RequestUri = uriBuilderLocalVar.Uri;
+
+                    BearerToken bearerTokenLocalVar1 = (BearerToken) await BearerTokenProvider.GetAsync(cancellation: cancellationToken).ConfigureAwait(false);
+
+                    tokenBaseLocalVars.Add(bearerTokenLocalVar1);
+
+                    bearerTokenLocalVar1.UseInHeader(httpRequestMessageLocalVar, "");
+
+                    string[] acceptLocalVars = new string[] {
+                        "application/json"
+                    };
+
+                    string? acceptLocalVar = ClientUtils.SelectHeaderAccept(acceptLocalVars);
+
+                    if (acceptLocalVar != null)
+                        httpRequestMessageLocalVar.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(acceptLocalVar));
+
+                    httpRequestMessageLocalVar.Method = HttpMethod.Delete;
+
+                    DateTime requestedAtLocalVar = DateTime.UtcNow;
+
+                    using (HttpResponseMessage httpResponseMessageLocalVar = await HttpClient.SendAsync(httpRequestMessageLocalVar, cancellationToken).ConfigureAwait(false))
+                    {
+                        ILogger<DeleteBlacklistMonitorApiResponse> apiResponseLoggerLocalVar = LoggerFactory.CreateLogger<DeleteBlacklistMonitorApiResponse>();
+                        DeleteBlacklistMonitorApiResponse apiResponseLocalVar;
+
+                        switch ((int)httpResponseMessageLocalVar.StatusCode) {
+                            default: {
+                                string responseContentLocalVar = await httpResponseMessageLocalVar.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/v1/blacklist-monitors/{monitor_id}", requestedAtLocalVar, _jsonSerializerOptions);
+
+                                break;
+                            }
+                        }
+
+                        AfterDeleteBlacklistMonitorDefaultImplementation(apiResponseLocalVar, monitorId);
+
+                        Events.ExecuteOnDeleteBlacklistMonitor(apiResponseLocalVar);
+
+                        if (apiResponseLocalVar.StatusCode == (HttpStatusCode) 429)
+                            foreach(TokenBase tokenBaseLocalVar in tokenBaseLocalVars)
+                                tokenBaseLocalVar.BeginRateLimit();
+
+                        return apiResponseLocalVar;
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                OnErrorDeleteBlacklistMonitorDefaultImplementation(e, "/v1/blacklist-monitors/{monitor_id}", uriBuilderLocalVar.Path, monitorId);
+                Events.ExecuteOnErrorDeleteBlacklistMonitor(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// The <see cref="DeleteBlacklistMonitorApiResponse"/>
+        /// </summary>
+        public partial class DeleteBlacklistMonitorApiResponse : MailOdds.Client.ApiResponse, IDeleteBlacklistMonitorApiResponse
+        {
+            /// <summary>
+            /// The logger
+            /// </summary>
+            public ILogger<DeleteBlacklistMonitorApiResponse> Logger { get; }
+
+            /// <summary>
+            /// The <see cref="DeleteBlacklistMonitorApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="rawContent"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public DeleteBlacklistMonitorApiResponse(ILogger<DeleteBlacklistMonitorApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, string rawContent, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, rawContent, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            /// <summary>
+            /// The <see cref="DeleteBlacklistMonitorApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="contentStream"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public DeleteBlacklistMonitorApiResponse(ILogger<DeleteBlacklistMonitorApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, System.IO.Stream contentStream, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, contentStream, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            partial void OnCreated(global::System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage);
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public bool IsOk => 200 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.DeletePolicyRule200Response? Ok()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsOk
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.DeletePolicyRule200Response>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryOk([NotNullWhen(true)]out MailOdds.Model.DeletePolicyRule200Response? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Ok();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)200);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public bool IsUnauthorized => 401 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.ErrorResponse? Unauthorized()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsUnauthorized
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryUnauthorized([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Unauthorized();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)401);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 404 NotFound
+            /// </summary>
+            /// <returns></returns>
+            public bool IsNotFound => 404 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 404 NotFound
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.ErrorResponse? NotFound()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsNotFound
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 404 NotFound and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryNotFound([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = NotFound();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)404);
                 }
 
                 return result != null;

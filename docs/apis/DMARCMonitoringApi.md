@@ -5,6 +5,7 @@ All URIs are relative to *https://api.mailodds.com/v1*
 | Method | HTTP request | Description |
 |--------|--------------|-------------|
 | [**AddDmarcDomain**](DMARCMonitoringApi.md#adddmarcdomain) | **POST** /v1/dmarc-domains | Add DMARC domain |
+| [**DeleteDmarcDomain**](DMARCMonitoringApi.md#deletedmarcdomain) | **DELETE** /v1/dmarc-domains/{domain_id} | Delete a DMARC domain |
 | [**GetDmarcDomain**](DMARCMonitoringApi.md#getdmarcdomain) | **GET** /v1/dmarc-domains/{domain_id} | Get DMARC domain |
 | [**GetDmarcRecommendation**](DMARCMonitoringApi.md#getdmarcrecommendation) | **GET** /v1/dmarc-domains/{domain_id}/recommendation | Get DMARC policy recommendation |
 | [**GetDmarcSources**](DMARCMonitoringApi.md#getdmarcsources) | **GET** /v1/dmarc-domains/{domain_id}/sources | Get DMARC sending sources |
@@ -47,6 +48,44 @@ Add a domain for DMARC monitoring. A unique reporting address is generated for r
 | **201** | Domain added |  -  |
 | **400** | Bad request |  -  |
 | **401** | Unauthorized - Invalid or missing API key |  -  |
+
+[[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
+
+<a id="deletedmarcdomain"></a>
+# **DeleteDmarcDomain**
+> DeletePolicyRule200Response DeleteDmarcDomain (string domainId)
+
+Delete a DMARC domain
+
+Delete a DMARC domain and all its associated reports.
+
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **domainId** | **string** | DMARC domain UUID |  |
+
+### Return type
+
+[**DeletePolicyRule200Response**](DeletePolicyRule200Response.md)
+
+### Authorization
+
+[BearerAuth](../README.md#BearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Domain deleted |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
+| **404** | Resource not found |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 

@@ -36,14 +36,14 @@ namespace MailOdds.Model
         /// </summary>
         /// <param name="schemaVersion">schemaVersion</param>
         /// <param name="requestId">requestId</param>
-        /// <param name="tests">tests</param>
+        /// <param name="data">data</param>
         /// <param name="pagination">pagination</param>
         [JsonConstructor]
-        public ListServerTests200Response(Option<string?> schemaVersion = default, Option<string?> requestId = default, Option<List<ServerTest>?> tests = default, Option<Pagination?> pagination = default)
+        public ListServerTests200Response(Option<string?> schemaVersion = default, Option<string?> requestId = default, Option<List<ServerTest>?> data = default, Option<Pagination?> pagination = default)
         {
             SchemaVersionOption = schemaVersion;
             RequestIdOption = requestId;
-            TestsOption = tests;
+            DataOption = data;
             PaginationOption = pagination;
             OnCreated();
         }
@@ -77,17 +77,17 @@ namespace MailOdds.Model
         public string? RequestId { get { return this.RequestIdOption; } set { this.RequestIdOption = new(value); } }
 
         /// <summary>
-        /// Used to track the state of Tests
+        /// Used to track the state of Data
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<List<ServerTest>?> TestsOption { get; private set; }
+        public Option<List<ServerTest>?> DataOption { get; private set; }
 
         /// <summary>
-        /// Gets or Sets Tests
+        /// Gets or Sets Data
         /// </summary>
-        [JsonPropertyName("tests")]
-        public List<ServerTest>? Tests { get { return this.TestsOption; } set { this.TestsOption = new(value); } }
+        [JsonPropertyName("data")]
+        public List<ServerTest>? Data { get { return this.DataOption; } set { this.DataOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Pagination
@@ -112,7 +112,7 @@ namespace MailOdds.Model
             sb.Append("class ListServerTests200Response {\n");
             sb.Append("  SchemaVersion: ").Append(SchemaVersion).Append("\n");
             sb.Append("  RequestId: ").Append(RequestId).Append("\n");
-            sb.Append("  Tests: ").Append(Tests).Append("\n");
+            sb.Append("  Data: ").Append(Data).Append("\n");
             sb.Append("  Pagination: ").Append(Pagination).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
@@ -153,7 +153,7 @@ namespace MailOdds.Model
 
             Option<string?> schemaVersion = default;
             Option<string?> requestId = default;
-            Option<List<ServerTest>?> tests = default;
+            Option<List<ServerTest>?> data = default;
             Option<Pagination?> pagination = default;
 
             while (utf8JsonReader.Read())
@@ -177,8 +177,8 @@ namespace MailOdds.Model
                         case "request_id":
                             requestId = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
-                        case "tests":
-                            tests = new Option<List<ServerTest>?>(JsonSerializer.Deserialize<List<ServerTest>>(ref utf8JsonReader, jsonSerializerOptions)!);
+                        case "data":
+                            data = new Option<List<ServerTest>?>(JsonSerializer.Deserialize<List<ServerTest>>(ref utf8JsonReader, jsonSerializerOptions)!);
                             break;
                         case "pagination":
                             pagination = new Option<Pagination?>(JsonSerializer.Deserialize<Pagination>(ref utf8JsonReader, jsonSerializerOptions)!);
@@ -195,13 +195,13 @@ namespace MailOdds.Model
             if (requestId.IsSet && requestId.Value == null)
                 throw new ArgumentNullException(nameof(requestId), "Property is not nullable for class ListServerTests200Response.");
 
-            if (tests.IsSet && tests.Value == null)
-                throw new ArgumentNullException(nameof(tests), "Property is not nullable for class ListServerTests200Response.");
+            if (data.IsSet && data.Value == null)
+                throw new ArgumentNullException(nameof(data), "Property is not nullable for class ListServerTests200Response.");
 
             if (pagination.IsSet && pagination.Value == null)
                 throw new ArgumentNullException(nameof(pagination), "Property is not nullable for class ListServerTests200Response.");
 
-            return new ListServerTests200Response(schemaVersion, requestId, tests, pagination);
+            return new ListServerTests200Response(schemaVersion, requestId, data, pagination);
         }
 
         /// <summary>
@@ -234,8 +234,8 @@ namespace MailOdds.Model
             if (listServerTests200Response.RequestIdOption.IsSet && listServerTests200Response.RequestId == null)
                 throw new ArgumentNullException(nameof(listServerTests200Response.RequestId), "Property is required for class ListServerTests200Response.");
 
-            if (listServerTests200Response.TestsOption.IsSet && listServerTests200Response.Tests == null)
-                throw new ArgumentNullException(nameof(listServerTests200Response.Tests), "Property is required for class ListServerTests200Response.");
+            if (listServerTests200Response.DataOption.IsSet && listServerTests200Response.Data == null)
+                throw new ArgumentNullException(nameof(listServerTests200Response.Data), "Property is required for class ListServerTests200Response.");
 
             if (listServerTests200Response.PaginationOption.IsSet && listServerTests200Response.Pagination == null)
                 throw new ArgumentNullException(nameof(listServerTests200Response.Pagination), "Property is required for class ListServerTests200Response.");
@@ -246,10 +246,10 @@ namespace MailOdds.Model
             if (listServerTests200Response.RequestIdOption.IsSet)
                 writer.WriteString("request_id", listServerTests200Response.RequestId);
 
-            if (listServerTests200Response.TestsOption.IsSet)
+            if (listServerTests200Response.DataOption.IsSet)
             {
-                writer.WritePropertyName("tests");
-                JsonSerializer.Serialize(writer, listServerTests200Response.Tests, jsonSerializerOptions);
+                writer.WritePropertyName("data");
+                JsonSerializer.Serialize(writer, listServerTests200Response.Data, jsonSerializerOptions);
             }
             if (listServerTests200Response.PaginationOption.IsSet)
             {

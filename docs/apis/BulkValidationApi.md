@@ -13,6 +13,7 @@ All URIs are relative to *https://api.mailodds.com/v1*
 | [**GetJobResults**](BulkValidationApi.md#getjobresults) | **GET** /v1/jobs/{job_id}/results | Get job results |
 | [**GetPresignedUpload**](BulkValidationApi.md#getpresignedupload) | **POST** /v1/jobs/upload/presigned | Get S3 presigned upload URL |
 | [**ListJobs**](BulkValidationApi.md#listjobs) | **GET** /v1/jobs | List validation jobs |
+| [**RetryJob**](BulkValidationApi.md#retryjob) | **POST** /v1/jobs/{job_id}/retry | Retry failed job |
 
 <a id="canceljob"></a>
 # **CancelJob**
@@ -361,6 +362,45 @@ List all validation jobs for the authenticated account.
 |-------------|-------------|------------------|
 | **200** | List of jobs |  -  |
 | **401** | Unauthorized - Invalid or missing API key |  -  |
+
+[[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
+
+<a id="retryjob"></a>
+# **RetryJob**
+> RetryJob200Response RetryJob (string jobId)
+
+Retry failed job
+
+Retry processing for a failed or cancelled validation job. Re-queues unprocessed emails.
+
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **jobId** | **string** | Job ID |  |
+
+### Return type
+
+[**RetryJob200Response**](RetryJob200Response.md)
+
+### Authorization
+
+[BearerAuth](../README.md#BearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Job retry initiated |  -  |
+| **400** | Bad request |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
+| **404** | Resource not found |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 

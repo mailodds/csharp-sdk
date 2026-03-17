@@ -27,7 +27,7 @@ using MailOdds.Client;
 namespace MailOdds.Model
 {
     /// <summary>
-    /// Present only when email matched a suppression list entry.
+    /// Present only when email matched a suppression list entry. Null otherwise.
     /// </summary>
     public partial class ValidationResponseSuppressionMatch : IValidatableObject
     {

@@ -83,6 +83,29 @@ namespace MailOdds.Api
         Task<IDeleteSendingDomainApiResponse?> DeleteSendingDomainOrDefaultAsync(string domainId, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Get reply forwarding config
+        /// </summary>
+        /// <remarks>
+        /// Get the reply forwarding configuration for a sending domain. Requires Growth+ plan.
+        /// </remarks>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="domainId">Sending domain ID</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IGetReplyForwardingApiResponse"/>&gt;</returns>
+        Task<IGetReplyForwardingApiResponse> GetReplyForwardingAsync(string domainId, System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Get reply forwarding config
+        /// </summary>
+        /// <remarks>
+        /// Get the reply forwarding configuration for a sending domain. Requires Growth+ plan.
+        /// </remarks>
+        /// <param name="domainId">Sending domain ID</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IGetReplyForwardingApiResponse"/>?&gt;</returns>
+        Task<IGetReplyForwardingApiResponse?> GetReplyForwardingOrDefaultAsync(string domainId, System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Get a sending domain
         /// </summary>
         /// <remarks>
@@ -175,6 +198,31 @@ namespace MailOdds.Api
         Task<IListSendingDomainsApiResponse?> ListSendingDomainsOrDefaultAsync(System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Update reply forwarding config
+        /// </summary>
+        /// <remarks>
+        /// Configure reply forwarding for a sending domain. Set forward_replies_to to null to disable. Requires Growth+ plan.
+        /// </remarks>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="domainId">Sending domain ID</param>
+        /// <param name="updateReplyForwardingRequest"></param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IUpdateReplyForwardingApiResponse"/>&gt;</returns>
+        Task<IUpdateReplyForwardingApiResponse> UpdateReplyForwardingAsync(string domainId, UpdateReplyForwardingRequest updateReplyForwardingRequest, System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Update reply forwarding config
+        /// </summary>
+        /// <remarks>
+        /// Configure reply forwarding for a sending domain. Set forward_replies_to to null to disable. Requires Growth+ plan.
+        /// </remarks>
+        /// <param name="domainId">Sending domain ID</param>
+        /// <param name="updateReplyForwardingRequest"></param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IUpdateReplyForwardingApiResponse"/>?&gt;</returns>
+        Task<IUpdateReplyForwardingApiResponse?> UpdateReplyForwardingOrDefaultAsync(string domainId, UpdateReplyForwardingRequest updateReplyForwardingRequest, System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Verify domain DNS records
         /// </summary>
         /// <remarks>
@@ -244,6 +292,36 @@ namespace MailOdds.Api
         /// </summary>
         /// <returns></returns>
         bool IsUnauthorized { get; }
+
+        /// <summary>
+        /// Returns true if the response is 404 NotFound
+        /// </summary>
+        /// <returns></returns>
+        bool IsNotFound { get; }
+    }
+
+    /// <summary>
+    /// The <see cref="IGetReplyForwardingApiResponse"/>
+    /// </summary>
+    public interface IGetReplyForwardingApiResponse : MailOdds.Client.IApiResponse, IOk<MailOdds.Model.GetReplyForwarding200Response?>, IUnauthorized<MailOdds.Model.ErrorResponse?>, IForbidden<MailOdds.Model.ErrorResponse?>, INotFound<MailOdds.Model.ErrorResponse?>
+    {
+        /// <summary>
+        /// Returns true if the response is 200 Ok
+        /// </summary>
+        /// <returns></returns>
+        bool IsOk { get; }
+
+        /// <summary>
+        /// Returns true if the response is 401 Unauthorized
+        /// </summary>
+        /// <returns></returns>
+        bool IsUnauthorized { get; }
+
+        /// <summary>
+        /// Returns true if the response is 403 Forbidden
+        /// </summary>
+        /// <returns></returns>
+        bool IsForbidden { get; }
 
         /// <summary>
         /// Returns true if the response is 404 NotFound
@@ -349,6 +427,42 @@ namespace MailOdds.Api
     }
 
     /// <summary>
+    /// The <see cref="IUpdateReplyForwardingApiResponse"/>
+    /// </summary>
+    public interface IUpdateReplyForwardingApiResponse : MailOdds.Client.IApiResponse, IOk<MailOdds.Model.GetReplyForwarding200Response?>, IBadRequest<MailOdds.Model.ErrorResponse?>, IUnauthorized<MailOdds.Model.ErrorResponse?>, IForbidden<MailOdds.Model.ErrorResponse?>, INotFound<MailOdds.Model.ErrorResponse?>
+    {
+        /// <summary>
+        /// Returns true if the response is 200 Ok
+        /// </summary>
+        /// <returns></returns>
+        bool IsOk { get; }
+
+        /// <summary>
+        /// Returns true if the response is 400 BadRequest
+        /// </summary>
+        /// <returns></returns>
+        bool IsBadRequest { get; }
+
+        /// <summary>
+        /// Returns true if the response is 401 Unauthorized
+        /// </summary>
+        /// <returns></returns>
+        bool IsUnauthorized { get; }
+
+        /// <summary>
+        /// Returns true if the response is 403 Forbidden
+        /// </summary>
+        /// <returns></returns>
+        bool IsForbidden { get; }
+
+        /// <summary>
+        /// Returns true if the response is 404 NotFound
+        /// </summary>
+        /// <returns></returns>
+        bool IsNotFound { get; }
+    }
+
+    /// <summary>
     /// The <see cref="IVerifySendingDomainApiResponse"/>
     /// </summary>
     public interface IVerifySendingDomainApiResponse : MailOdds.Client.IApiResponse, IOk<MailOdds.Model.CreateSendingDomain201Response?>, IUnauthorized<MailOdds.Model.ErrorResponse?>, INotFound<MailOdds.Model.ErrorResponse?>
@@ -415,6 +529,26 @@ namespace MailOdds.Api
         internal void ExecuteOnErrorDeleteSendingDomain(Exception exception)
         {
             OnErrorDeleteSendingDomain?.Invoke(this, new ExceptionEventArgs(exception));
+        }
+
+        /// <summary>
+        /// The event raised after the server response
+        /// </summary>
+        public event EventHandler<ApiResponseEventArgs>? OnGetReplyForwarding;
+
+        /// <summary>
+        /// The event raised after an error querying the server
+        /// </summary>
+        public event EventHandler<ExceptionEventArgs>? OnErrorGetReplyForwarding;
+
+        internal void ExecuteOnGetReplyForwarding(SendingDomainsApi.GetReplyForwardingApiResponse apiResponse)
+        {
+            OnGetReplyForwarding?.Invoke(this, new ApiResponseEventArgs(apiResponse));
+        }
+
+        internal void ExecuteOnErrorGetReplyForwarding(Exception exception)
+        {
+            OnErrorGetReplyForwarding?.Invoke(this, new ExceptionEventArgs(exception));
         }
 
         /// <summary>
@@ -495,6 +629,26 @@ namespace MailOdds.Api
         internal void ExecuteOnErrorListSendingDomains(Exception exception)
         {
             OnErrorListSendingDomains?.Invoke(this, new ExceptionEventArgs(exception));
+        }
+
+        /// <summary>
+        /// The event raised after the server response
+        /// </summary>
+        public event EventHandler<ApiResponseEventArgs>? OnUpdateReplyForwarding;
+
+        /// <summary>
+        /// The event raised after an error querying the server
+        /// </summary>
+        public event EventHandler<ExceptionEventArgs>? OnErrorUpdateReplyForwarding;
+
+        internal void ExecuteOnUpdateReplyForwarding(SendingDomainsApi.UpdateReplyForwardingApiResponse apiResponse)
+        {
+            OnUpdateReplyForwarding?.Invoke(this, new ApiResponseEventArgs(apiResponse));
+        }
+
+        internal void ExecuteOnErrorUpdateReplyForwarding(Exception exception)
+        {
+            OnErrorUpdateReplyForwarding?.Invoke(this, new ExceptionEventArgs(exception));
         }
 
         /// <summary>
@@ -1219,6 +1373,373 @@ namespace MailOdds.Api
                 } catch (Exception e)
                 {
                     OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)401);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 404 NotFound
+            /// </summary>
+            /// <returns></returns>
+            public bool IsNotFound => 404 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 404 NotFound
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.ErrorResponse? NotFound()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsNotFound
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 404 NotFound and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryNotFound([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = NotFound();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)404);
+                }
+
+                return result != null;
+            }
+
+            private void OnDeserializationErrorDefaultImplementation(Exception exception, HttpStatusCode httpStatusCode)
+            {
+                bool suppressDefaultLog = false;
+                OnDeserializationError(ref suppressDefaultLog, exception, httpStatusCode);
+                if (!suppressDefaultLog)
+                    Logger.LogError(exception, "An error occurred while deserializing the {code} response.", httpStatusCode);
+            }
+
+            partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
+        }
+
+        partial void FormatGetReplyForwarding(ref string domainId);
+
+        /// <summary>
+        /// Validates the request parameters
+        /// </summary>
+        /// <param name="domainId"></param>
+        /// <returns></returns>
+        private void ValidateGetReplyForwarding(string domainId)
+        {
+            if (domainId == null)
+                throw new ArgumentNullException(nameof(domainId));
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="apiResponseLocalVar"></param>
+        /// <param name="domainId"></param>
+        private void AfterGetReplyForwardingDefaultImplementation(IGetReplyForwardingApiResponse apiResponseLocalVar, string domainId)
+        {
+            bool suppressDefaultLog = false;
+            AfterGetReplyForwarding(ref suppressDefaultLog, apiResponseLocalVar, domainId);
+            if (!suppressDefaultLog)
+                Logger.LogInformation("{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="suppressDefaultLog"></param>
+        /// <param name="apiResponseLocalVar"></param>
+        /// <param name="domainId"></param>
+        partial void AfterGetReplyForwarding(ref bool suppressDefaultLog, IGetReplyForwardingApiResponse apiResponseLocalVar, string domainId);
+
+        /// <summary>
+        /// Logs exceptions that occur while retrieving the server response
+        /// </summary>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        /// <param name="domainId"></param>
+        private void OnErrorGetReplyForwardingDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string domainId)
+        {
+            bool suppressDefaultLogLocalVar = false;
+            OnErrorGetReplyForwarding(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, domainId);
+            if (!suppressDefaultLogLocalVar)
+                Logger.LogError(exceptionLocalVar, "An error occurred while sending the request to the server.");
+        }
+
+        /// <summary>
+        /// A partial method that gives developers a way to provide customized exception handling
+        /// </summary>
+        /// <param name="suppressDefaultLogLocalVar"></param>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        /// <param name="domainId"></param>
+        partial void OnErrorGetReplyForwarding(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string domainId);
+
+        /// <summary>
+        /// Get reply forwarding config Get the reply forwarding configuration for a sending domain. Requires Growth+ plan.
+        /// </summary>
+        /// <param name="domainId">Sending domain ID</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IGetReplyForwardingApiResponse"/>&gt;</returns>
+        public async Task<IGetReplyForwardingApiResponse?> GetReplyForwardingOrDefaultAsync(string domainId, System.Threading.CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                return await GetReplyForwardingAsync(domainId, cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Get reply forwarding config Get the reply forwarding configuration for a sending domain. Requires Growth+ plan.
+        /// </summary>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="domainId">Sending domain ID</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IGetReplyForwardingApiResponse"/>&gt;</returns>
+        public async Task<IGetReplyForwardingApiResponse> GetReplyForwardingAsync(string domainId, System.Threading.CancellationToken cancellationToken = default)
+        {
+            UriBuilder uriBuilderLocalVar = new UriBuilder();
+
+            try
+            {
+                ValidateGetReplyForwarding(domainId);
+
+                FormatGetReplyForwarding(ref domainId);
+
+                using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
+                {
+                    uriBuilderLocalVar.Host = HttpClient.BaseAddress!.Host;
+                    uriBuilderLocalVar.Port = HttpClient.BaseAddress.Port;
+                    uriBuilderLocalVar.Scheme = HttpClient.BaseAddress.Scheme;
+                    uriBuilderLocalVar.Path = HttpClient.BaseAddress.AbsolutePath == "/"
+                        ? "/v1/sending-domains/{domain_id}/reply-forwarding"
+                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/v1/sending-domains/{domain_id}/reply-forwarding");
+                    uriBuilderLocalVar.Path = uriBuilderLocalVar.Path.Replace("%7Bdomain_id%7D", Uri.EscapeDataString(domainId.ToString()));
+
+                    List<TokenBase> tokenBaseLocalVars = new List<TokenBase>();
+                    httpRequestMessageLocalVar.RequestUri = uriBuilderLocalVar.Uri;
+
+                    BearerToken bearerTokenLocalVar1 = (BearerToken) await BearerTokenProvider.GetAsync(cancellation: cancellationToken).ConfigureAwait(false);
+
+                    tokenBaseLocalVars.Add(bearerTokenLocalVar1);
+
+                    bearerTokenLocalVar1.UseInHeader(httpRequestMessageLocalVar, "");
+
+                    string[] acceptLocalVars = new string[] {
+                        "application/json"
+                    };
+
+                    string? acceptLocalVar = ClientUtils.SelectHeaderAccept(acceptLocalVars);
+
+                    if (acceptLocalVar != null)
+                        httpRequestMessageLocalVar.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(acceptLocalVar));
+
+                    httpRequestMessageLocalVar.Method = HttpMethod.Get;
+
+                    DateTime requestedAtLocalVar = DateTime.UtcNow;
+
+                    using (HttpResponseMessage httpResponseMessageLocalVar = await HttpClient.SendAsync(httpRequestMessageLocalVar, cancellationToken).ConfigureAwait(false))
+                    {
+                        ILogger<GetReplyForwardingApiResponse> apiResponseLoggerLocalVar = LoggerFactory.CreateLogger<GetReplyForwardingApiResponse>();
+                        GetReplyForwardingApiResponse apiResponseLocalVar;
+
+                        switch ((int)httpResponseMessageLocalVar.StatusCode) {
+                            default: {
+                                string responseContentLocalVar = await httpResponseMessageLocalVar.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/v1/sending-domains/{domain_id}/reply-forwarding", requestedAtLocalVar, _jsonSerializerOptions);
+
+                                break;
+                            }
+                        }
+
+                        AfterGetReplyForwardingDefaultImplementation(apiResponseLocalVar, domainId);
+
+                        Events.ExecuteOnGetReplyForwarding(apiResponseLocalVar);
+
+                        if (apiResponseLocalVar.StatusCode == (HttpStatusCode) 429)
+                            foreach(TokenBase tokenBaseLocalVar in tokenBaseLocalVars)
+                                tokenBaseLocalVar.BeginRateLimit();
+
+                        return apiResponseLocalVar;
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                OnErrorGetReplyForwardingDefaultImplementation(e, "/v1/sending-domains/{domain_id}/reply-forwarding", uriBuilderLocalVar.Path, domainId);
+                Events.ExecuteOnErrorGetReplyForwarding(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// The <see cref="GetReplyForwardingApiResponse"/>
+        /// </summary>
+        public partial class GetReplyForwardingApiResponse : MailOdds.Client.ApiResponse, IGetReplyForwardingApiResponse
+        {
+            /// <summary>
+            /// The logger
+            /// </summary>
+            public ILogger<GetReplyForwardingApiResponse> Logger { get; }
+
+            /// <summary>
+            /// The <see cref="GetReplyForwardingApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="rawContent"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public GetReplyForwardingApiResponse(ILogger<GetReplyForwardingApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, string rawContent, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, rawContent, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            /// <summary>
+            /// The <see cref="GetReplyForwardingApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="contentStream"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public GetReplyForwardingApiResponse(ILogger<GetReplyForwardingApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, System.IO.Stream contentStream, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, contentStream, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            partial void OnCreated(global::System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage);
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public bool IsOk => 200 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.GetReplyForwarding200Response? Ok()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsOk
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.GetReplyForwarding200Response>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryOk([NotNullWhen(true)]out MailOdds.Model.GetReplyForwarding200Response? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Ok();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)200);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public bool IsUnauthorized => 401 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.ErrorResponse? Unauthorized()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsUnauthorized
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryUnauthorized([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Unauthorized();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)401);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 403 Forbidden
+            /// </summary>
+            /// <returns></returns>
+            public bool IsForbidden => 403 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 403 Forbidden
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.ErrorResponse? Forbidden()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsForbidden
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 403 Forbidden and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryForbidden([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Forbidden();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)403);
                 }
 
                 return result != null;
@@ -2568,6 +3089,434 @@ namespace MailOdds.Api
                 } catch (Exception e)
                 {
                     OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)403);
+                }
+
+                return result != null;
+            }
+
+            private void OnDeserializationErrorDefaultImplementation(Exception exception, HttpStatusCode httpStatusCode)
+            {
+                bool suppressDefaultLog = false;
+                OnDeserializationError(ref suppressDefaultLog, exception, httpStatusCode);
+                if (!suppressDefaultLog)
+                    Logger.LogError(exception, "An error occurred while deserializing the {code} response.", httpStatusCode);
+            }
+
+            partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
+        }
+
+        partial void FormatUpdateReplyForwarding(ref string domainId, UpdateReplyForwardingRequest updateReplyForwardingRequest);
+
+        /// <summary>
+        /// Validates the request parameters
+        /// </summary>
+        /// <param name="domainId"></param>
+        /// <param name="updateReplyForwardingRequest"></param>
+        /// <returns></returns>
+        private void ValidateUpdateReplyForwarding(string domainId, UpdateReplyForwardingRequest updateReplyForwardingRequest)
+        {
+            if (domainId == null)
+                throw new ArgumentNullException(nameof(domainId));
+
+            if (updateReplyForwardingRequest == null)
+                throw new ArgumentNullException(nameof(updateReplyForwardingRequest));
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="apiResponseLocalVar"></param>
+        /// <param name="domainId"></param>
+        /// <param name="updateReplyForwardingRequest"></param>
+        private void AfterUpdateReplyForwardingDefaultImplementation(IUpdateReplyForwardingApiResponse apiResponseLocalVar, string domainId, UpdateReplyForwardingRequest updateReplyForwardingRequest)
+        {
+            bool suppressDefaultLog = false;
+            AfterUpdateReplyForwarding(ref suppressDefaultLog, apiResponseLocalVar, domainId, updateReplyForwardingRequest);
+            if (!suppressDefaultLog)
+                Logger.LogInformation("{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="suppressDefaultLog"></param>
+        /// <param name="apiResponseLocalVar"></param>
+        /// <param name="domainId"></param>
+        /// <param name="updateReplyForwardingRequest"></param>
+        partial void AfterUpdateReplyForwarding(ref bool suppressDefaultLog, IUpdateReplyForwardingApiResponse apiResponseLocalVar, string domainId, UpdateReplyForwardingRequest updateReplyForwardingRequest);
+
+        /// <summary>
+        /// Logs exceptions that occur while retrieving the server response
+        /// </summary>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        /// <param name="domainId"></param>
+        /// <param name="updateReplyForwardingRequest"></param>
+        private void OnErrorUpdateReplyForwardingDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string domainId, UpdateReplyForwardingRequest updateReplyForwardingRequest)
+        {
+            bool suppressDefaultLogLocalVar = false;
+            OnErrorUpdateReplyForwarding(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, domainId, updateReplyForwardingRequest);
+            if (!suppressDefaultLogLocalVar)
+                Logger.LogError(exceptionLocalVar, "An error occurred while sending the request to the server.");
+        }
+
+        /// <summary>
+        /// A partial method that gives developers a way to provide customized exception handling
+        /// </summary>
+        /// <param name="suppressDefaultLogLocalVar"></param>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        /// <param name="domainId"></param>
+        /// <param name="updateReplyForwardingRequest"></param>
+        partial void OnErrorUpdateReplyForwarding(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string domainId, UpdateReplyForwardingRequest updateReplyForwardingRequest);
+
+        /// <summary>
+        /// Update reply forwarding config Configure reply forwarding for a sending domain. Set forward_replies_to to null to disable. Requires Growth+ plan.
+        /// </summary>
+        /// <param name="domainId">Sending domain ID</param>
+        /// <param name="updateReplyForwardingRequest"></param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IUpdateReplyForwardingApiResponse"/>&gt;</returns>
+        public async Task<IUpdateReplyForwardingApiResponse?> UpdateReplyForwardingOrDefaultAsync(string domainId, UpdateReplyForwardingRequest updateReplyForwardingRequest, System.Threading.CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                return await UpdateReplyForwardingAsync(domainId, updateReplyForwardingRequest, cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Update reply forwarding config Configure reply forwarding for a sending domain. Set forward_replies_to to null to disable. Requires Growth+ plan.
+        /// </summary>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="domainId">Sending domain ID</param>
+        /// <param name="updateReplyForwardingRequest"></param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IUpdateReplyForwardingApiResponse"/>&gt;</returns>
+        public async Task<IUpdateReplyForwardingApiResponse> UpdateReplyForwardingAsync(string domainId, UpdateReplyForwardingRequest updateReplyForwardingRequest, System.Threading.CancellationToken cancellationToken = default)
+        {
+            UriBuilder uriBuilderLocalVar = new UriBuilder();
+
+            try
+            {
+                ValidateUpdateReplyForwarding(domainId, updateReplyForwardingRequest);
+
+                FormatUpdateReplyForwarding(ref domainId, updateReplyForwardingRequest);
+
+                using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
+                {
+                    uriBuilderLocalVar.Host = HttpClient.BaseAddress!.Host;
+                    uriBuilderLocalVar.Port = HttpClient.BaseAddress.Port;
+                    uriBuilderLocalVar.Scheme = HttpClient.BaseAddress.Scheme;
+                    uriBuilderLocalVar.Path = HttpClient.BaseAddress.AbsolutePath == "/"
+                        ? "/v1/sending-domains/{domain_id}/reply-forwarding"
+                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/v1/sending-domains/{domain_id}/reply-forwarding");
+                    uriBuilderLocalVar.Path = uriBuilderLocalVar.Path.Replace("%7Bdomain_id%7D", Uri.EscapeDataString(domainId.ToString()));
+
+                    httpRequestMessageLocalVar.Content = (updateReplyForwardingRequest as object) is System.IO.Stream stream
+                        ? httpRequestMessageLocalVar.Content = new StreamContent(stream)
+                        : httpRequestMessageLocalVar.Content = new StringContent(JsonSerializer.Serialize(updateReplyForwardingRequest, _jsonSerializerOptions));
+
+                    List<TokenBase> tokenBaseLocalVars = new List<TokenBase>();
+                    httpRequestMessageLocalVar.RequestUri = uriBuilderLocalVar.Uri;
+
+                    BearerToken bearerTokenLocalVar1 = (BearerToken) await BearerTokenProvider.GetAsync(cancellation: cancellationToken).ConfigureAwait(false);
+
+                    tokenBaseLocalVars.Add(bearerTokenLocalVar1);
+
+                    bearerTokenLocalVar1.UseInHeader(httpRequestMessageLocalVar, "");
+
+                    string[] contentTypes = new string[] {
+                        "application/json"
+                    };
+
+                    string? contentTypeLocalVar = ClientUtils.SelectHeaderContentType(contentTypes);
+
+                    if (contentTypeLocalVar != null && httpRequestMessageLocalVar.Content != null)
+                        httpRequestMessageLocalVar.Content.Headers.ContentType = new MediaTypeHeaderValue(contentTypeLocalVar);
+
+                    string[] acceptLocalVars = new string[] {
+                        "application/json"
+                    };
+
+                    string? acceptLocalVar = ClientUtils.SelectHeaderAccept(acceptLocalVars);
+
+                    if (acceptLocalVar != null)
+                        httpRequestMessageLocalVar.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(acceptLocalVar));
+
+                    httpRequestMessageLocalVar.Method = HttpMethod.Patch;
+
+                    DateTime requestedAtLocalVar = DateTime.UtcNow;
+
+                    using (HttpResponseMessage httpResponseMessageLocalVar = await HttpClient.SendAsync(httpRequestMessageLocalVar, cancellationToken).ConfigureAwait(false))
+                    {
+                        ILogger<UpdateReplyForwardingApiResponse> apiResponseLoggerLocalVar = LoggerFactory.CreateLogger<UpdateReplyForwardingApiResponse>();
+                        UpdateReplyForwardingApiResponse apiResponseLocalVar;
+
+                        switch ((int)httpResponseMessageLocalVar.StatusCode) {
+                            default: {
+                                string responseContentLocalVar = await httpResponseMessageLocalVar.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/v1/sending-domains/{domain_id}/reply-forwarding", requestedAtLocalVar, _jsonSerializerOptions);
+
+                                break;
+                            }
+                        }
+
+                        AfterUpdateReplyForwardingDefaultImplementation(apiResponseLocalVar, domainId, updateReplyForwardingRequest);
+
+                        Events.ExecuteOnUpdateReplyForwarding(apiResponseLocalVar);
+
+                        if (apiResponseLocalVar.StatusCode == (HttpStatusCode) 429)
+                            foreach(TokenBase tokenBaseLocalVar in tokenBaseLocalVars)
+                                tokenBaseLocalVar.BeginRateLimit();
+
+                        return apiResponseLocalVar;
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                OnErrorUpdateReplyForwardingDefaultImplementation(e, "/v1/sending-domains/{domain_id}/reply-forwarding", uriBuilderLocalVar.Path, domainId, updateReplyForwardingRequest);
+                Events.ExecuteOnErrorUpdateReplyForwarding(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// The <see cref="UpdateReplyForwardingApiResponse"/>
+        /// </summary>
+        public partial class UpdateReplyForwardingApiResponse : MailOdds.Client.ApiResponse, IUpdateReplyForwardingApiResponse
+        {
+            /// <summary>
+            /// The logger
+            /// </summary>
+            public ILogger<UpdateReplyForwardingApiResponse> Logger { get; }
+
+            /// <summary>
+            /// The <see cref="UpdateReplyForwardingApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="rawContent"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public UpdateReplyForwardingApiResponse(ILogger<UpdateReplyForwardingApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, string rawContent, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, rawContent, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            /// <summary>
+            /// The <see cref="UpdateReplyForwardingApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="contentStream"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public UpdateReplyForwardingApiResponse(ILogger<UpdateReplyForwardingApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, System.IO.Stream contentStream, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, contentStream, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            partial void OnCreated(global::System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage);
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public bool IsOk => 200 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.GetReplyForwarding200Response? Ok()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsOk
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.GetReplyForwarding200Response>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryOk([NotNullWhen(true)]out MailOdds.Model.GetReplyForwarding200Response? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Ok();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)200);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 400 BadRequest
+            /// </summary>
+            /// <returns></returns>
+            public bool IsBadRequest => 400 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 400 BadRequest
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.ErrorResponse? BadRequest()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsBadRequest
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 400 BadRequest and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryBadRequest([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = BadRequest();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)400);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public bool IsUnauthorized => 401 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.ErrorResponse? Unauthorized()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsUnauthorized
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryUnauthorized([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Unauthorized();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)401);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 403 Forbidden
+            /// </summary>
+            /// <returns></returns>
+            public bool IsForbidden => 403 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 403 Forbidden
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.ErrorResponse? Forbidden()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsForbidden
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 403 Forbidden and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryForbidden([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Forbidden();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)403);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 404 NotFound
+            /// </summary>
+            /// <returns></returns>
+            public bool IsNotFound => 404 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 404 NotFound
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.ErrorResponse? NotFound()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsNotFound
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 404 NotFound and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryNotFound([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = NotFound();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)404);
                 }
 
                 return result != null;

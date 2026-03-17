@@ -118,24 +118,32 @@ namespace MailOdds.Client
                 return AddSuppressionRequestEntriesInner.TypeEnumToJsonValue(addSuppressionRequestEntriesInnerTypeEnum);
             if (obj is BatchDeliverResponse.StatusEnum batchDeliverResponseStatusEnum)
                 return BatchDeliverResponse.StatusEnumToJsonValue(batchDeliverResponseStatusEnum);
+            if (obj is BatchProductsRequestProductsInner.StockStatusEnum batchProductsRequestProductsInnerStockStatusEnum)
+                return BatchProductsRequestProductsInner.StockStatusEnumToJsonValue(batchProductsRequestProductsInnerStockStatusEnum);
             if (obj is BlacklistMonitor.TargetTypeEnum blacklistMonitorTargetTypeEnum)
                 return BlacklistMonitor.TargetTypeEnumToJsonValue(blacklistMonitorTargetTypeEnum);
             if (obj is BounceAnalysisResponseAnalysis.StatusEnum bounceAnalysisResponseAnalysisStatusEnum)
                 return BounceAnalysisResponseAnalysis.StatusEnumToJsonValue(bounceAnalysisResponseAnalysisStatusEnum);
             if (obj is Campaign.StatusEnum campaignStatusEnum)
                 return Campaign.StatusEnumToJsonValue(campaignStatusEnum);
-            if (obj is ClassifyContent200ResponseContentCheck.VerdictEnum classifyContent200ResponseContentCheckVerdictEnum)
-                return ClassifyContent200ResponseContentCheck.VerdictEnumToJsonValue(classifyContent200ResponseContentCheckVerdictEnum);
+            if (obj is ClassifyContent200ResponseContentCheck.StatusEnum classifyContent200ResponseContentCheckStatusEnum)
+                return ClassifyContent200ResponseContentCheck.StatusEnumToJsonValue(classifyContent200ResponseContentCheckStatusEnum);
             if (obj is CreateBounceAnalysisRequest.PeriodEnum createBounceAnalysisRequestPeriodEnum)
                 return CreateBounceAnalysisRequest.PeriodEnumToJsonValue(createBounceAnalysisRequestPeriodEnum);
             if (obj is CreatePolicyFromPresetRequest.PresetIdEnum createPolicyFromPresetRequestPresetIdEnum)
                 return CreatePolicyFromPresetRequest.PresetIdEnumToJsonValue(createPolicyFromPresetRequestPresetIdEnum);
+            if (obj is CreateStoreRequest.PlatformEnum createStoreRequestPlatformEnum)
+                return CreateStoreRequest.PlatformEnumToJsonValue(createStoreRequestPlatformEnum);
+            if (obj is CreateStoreRequest.AuthMethodEnum createStoreRequestAuthMethodEnum)
+                return CreateStoreRequest.AuthMethodEnumToJsonValue(createStoreRequestAuthMethodEnum);
             if (obj is DeliverRequest.CampaignTypeEnum deliverRequestCampaignTypeEnum)
                 return DeliverRequest.CampaignTypeEnumToJsonValue(deliverRequestCampaignTypeEnum);
             if (obj is DeliverResponse.StatusEnum deliverResponseStatusEnum)
                 return DeliverResponse.StatusEnumToJsonValue(deliverResponseStatusEnum);
             if (obj is GetBounceRecords200ResponseRecordsInner.BounceTypeEnum getBounceRecords200ResponseRecordsInnerBounceTypeEnum)
                 return GetBounceRecords200ResponseRecordsInner.BounceTypeEnumToJsonValue(getBounceRecords200ResponseRecordsInnerBounceTypeEnum);
+            if (obj is GetComplaintAssessment200Response.RiskLevelEnum getComplaintAssessment200ResponseRiskLevelEnum)
+                return GetComplaintAssessment200Response.RiskLevelEnumToJsonValue(getComplaintAssessment200ResponseRiskLevelEnum);
             if (obj is GetSenderHealth200Response.GradeEnum getSenderHealth200ResponseGradeEnum)
                 return GetSenderHealth200Response.GradeEnumToJsonValue(getSenderHealth200ResponseGradeEnum);
             if (obj is Job.StatusEnum jobStatusEnum)
@@ -152,6 +160,14 @@ namespace MailOdds.Client
                 return SendingDomainDnsRecordsNs.StatusEnumToJsonValue(sendingDomainDnsRecordsNsStatusEnum);
             if (obj is SendingDomainIdentityScore.GradeEnum sendingDomainIdentityScoreGradeEnum)
                 return SendingDomainIdentityScore.GradeEnumToJsonValue(sendingDomainIdentityScoreGradeEnum);
+            if (obj is StoreConnection.PlatformEnum storeConnectionPlatformEnum)
+                return StoreConnection.PlatformEnumToJsonValue(storeConnectionPlatformEnum);
+            if (obj is StoreConnection.StatusEnum storeConnectionStatusEnum)
+                return StoreConnection.StatusEnumToJsonValue(storeConnectionStatusEnum);
+            if (obj is StoreConnection.AuthMethodEnum storeConnectionAuthMethodEnum)
+                return StoreConnection.AuthMethodEnumToJsonValue(storeConnectionAuthMethodEnum);
+            if (obj is StoreProduct.StockStatusEnum storeProductStockStatusEnum)
+                return StoreProduct.StockStatusEnumToJsonValue(storeProductStockStatusEnum);
             if (obj is Subscriber.StatusEnum subscriberStatusEnum)
                 return Subscriber.StatusEnumToJsonValue(subscriberStatusEnum);
             if (obj is SuppressionCheckResponse.MatchTypeEnum suppressionCheckResponseMatchTypeEnum)
@@ -160,6 +176,8 @@ namespace MailOdds.Client
                 return SuppressionEntry.TypeEnumToJsonValue(suppressionEntryTypeEnum);
             if (obj is TelemetrySummary.WindowEnum telemetrySummaryWindowEnum)
                 return TelemetrySummary.WindowEnumToJsonValue(telemetrySummaryWindowEnum);
+            if (obj is TrackEventRequest.EventTypeEnum trackEventRequestEventTypeEnum)
+                return TrackEventRequest.EventTypeEnumToJsonValue(trackEventRequestEventTypeEnum);
             if (obj is ValidateBatchRequest.DepthEnum validateBatchRequestDepthEnum)
                 return ValidateBatchRequest.DepthEnumToJsonValue(validateBatchRequestDepthEnum);
             if (obj is ValidateRequest.DepthEnum validateRequestDepthEnum)

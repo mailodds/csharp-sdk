@@ -11,7 +11,7 @@ outputDir: out
 
 # https://openapi-generator.tech/docs/generators/csharp
 additionalProperties:
-  packageGuid: '{3F88C354-BE84-4F56-A579-A7A778AC4AC8}'
+  packageGuid: '{3CABBFAD-65E7-4C1A-A333-94833DFAFF13}'
 
 # https://openapi-generator.tech/docs/integrations/#github-integration
 # gitHost:
@@ -54,9 +54,9 @@ namespace YourProject
         public static async Task Main(string[] args)
         {
             var host = CreateHostBuilder(args).Build();
-            var api = host.Services.GetRequiredService<IBlacklistMonitoringApi>();
-            IAddBlacklistMonitorApiResponse apiResponse = await api.AddBlacklistMonitorAsync("todo");
-            AddBlacklistMonitor201Response? model = apiResponse.Ok();
+            var api = host.Services.GetRequiredService<IAgentControlPlaneApi>();
+            IGetMcpCapabilitiesApiResponse apiResponse = await api.GetMcpCapabilitiesAsync("todo");
+            McpCapabilities? model = apiResponse.Ok();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) => Host.CreateDefaultBuilder(args)
