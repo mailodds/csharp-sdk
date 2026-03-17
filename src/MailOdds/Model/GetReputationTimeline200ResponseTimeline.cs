@@ -27,21 +27,19 @@ using MailOdds.Client;
 namespace MailOdds.Model
 {
     /// <summary>
-    /// GetReputationTimeline200Response
+    /// GetReputationTimeline200ResponseTimeline
     /// </summary>
-    public partial class GetReputationTimeline200Response : IValidatableObject
+    public partial class GetReputationTimeline200ResponseTimeline : IValidatableObject
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GetReputationTimeline200Response" /> class.
+        /// Initializes a new instance of the <see cref="GetReputationTimeline200ResponseTimeline" /> class.
         /// </summary>
-        /// <param name="schemaVersion">schemaVersion</param>
-        /// <param name="requestId">requestId</param>
+        /// <param name="period">period</param>
         /// <param name="timeline">timeline</param>
         [JsonConstructor]
-        public GetReputationTimeline200Response(Option<string?> schemaVersion = default, Option<string?> requestId = default, Option<GetReputationTimeline200ResponseTimeline?> timeline = default)
+        public GetReputationTimeline200ResponseTimeline(Option<PeriodEnum?> period = default, Option<List<GetReputationTimeline200ResponseTimelineTimelineInner>?> timeline = default)
         {
-            SchemaVersionOption = schemaVersion;
-            RequestIdOption = requestId;
+            PeriodOption = period;
             TimelineOption = timeline;
             OnCreated();
         }
@@ -49,43 +47,110 @@ namespace MailOdds.Model
         partial void OnCreated();
 
         /// <summary>
-        /// Used to track the state of SchemaVersion
+        /// Defines Period
+        /// </summary>
+        public enum PeriodEnum
+        {
+            /// <summary>
+            /// Enum _24h for value: 24h
+            /// </summary>
+            _24h = 1,
+
+            /// <summary>
+            /// Enum _7d for value: 7d
+            /// </summary>
+            _7d = 2,
+
+            /// <summary>
+            /// Enum _30d for value: 30d
+            /// </summary>
+            _30d = 3
+        }
+
+        /// <summary>
+        /// Returns a <see cref="PeriodEnum"/>
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public static PeriodEnum PeriodEnumFromString(string value)
+        {
+            if (value.Equals("24h"))
+                return PeriodEnum._24h;
+
+            if (value.Equals("7d"))
+                return PeriodEnum._7d;
+
+            if (value.Equals("30d"))
+                return PeriodEnum._30d;
+
+            throw new NotImplementedException($"Could not convert value to type PeriodEnum: '{value}'");
+        }
+
+        /// <summary>
+        /// Returns a <see cref="PeriodEnum"/>
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static PeriodEnum? PeriodEnumFromStringOrDefault(string value)
+        {
+            if (value.Equals("24h"))
+                return PeriodEnum._24h;
+
+            if (value.Equals("7d"))
+                return PeriodEnum._7d;
+
+            if (value.Equals("30d"))
+                return PeriodEnum._30d;
+
+            return null;
+        }
+
+        /// <summary>
+        /// Converts the <see cref="PeriodEnum"/> to the json value
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public static string PeriodEnumToJsonValue(PeriodEnum? value)
+        {
+            if (value == PeriodEnum._24h)
+                return "24h";
+
+            if (value == PeriodEnum._7d)
+                return "7d";
+
+            if (value == PeriodEnum._30d)
+                return "30d";
+
+            throw new NotImplementedException($"Value could not be handled: '{value}'");
+        }
+
+        /// <summary>
+        /// Used to track the state of Period
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<string?> SchemaVersionOption { get; private set; }
+        public Option<PeriodEnum?> PeriodOption { get; private set; }
 
         /// <summary>
-        /// Gets or Sets SchemaVersion
+        /// Gets or Sets Period
         /// </summary>
-        [JsonPropertyName("schema_version")]
-        public string? SchemaVersion { get { return this.SchemaVersionOption; } set { this.SchemaVersionOption = new(value); } }
-
-        /// <summary>
-        /// Used to track the state of RequestId
-        /// </summary>
-        [JsonIgnore]
-        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<string?> RequestIdOption { get; private set; }
-
-        /// <summary>
-        /// Gets or Sets RequestId
-        /// </summary>
-        [JsonPropertyName("request_id")]
-        public string? RequestId { get { return this.RequestIdOption; } set { this.RequestIdOption = new(value); } }
+        [JsonPropertyName("period")]
+        public PeriodEnum? Period { get { return this.PeriodOption; } set { this.PeriodOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Timeline
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<GetReputationTimeline200ResponseTimeline?> TimelineOption { get; private set; }
+        public Option<List<GetReputationTimeline200ResponseTimelineTimelineInner>?> TimelineOption { get; private set; }
 
         /// <summary>
         /// Gets or Sets Timeline
         /// </summary>
         [JsonPropertyName("timeline")]
-        public GetReputationTimeline200ResponseTimeline? Timeline { get { return this.TimelineOption; } set { this.TimelineOption = new(value); } }
+        public List<GetReputationTimeline200ResponseTimelineTimelineInner>? Timeline { get { return this.TimelineOption; } set { this.TimelineOption = new(value); } }
 
         /// <summary>
         /// Returns the string presentation of the object
@@ -94,9 +159,8 @@ namespace MailOdds.Model
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append("class GetReputationTimeline200Response {\n");
-            sb.Append("  SchemaVersion: ").Append(SchemaVersion).Append("\n");
-            sb.Append("  RequestId: ").Append(RequestId).Append("\n");
+            sb.Append("class GetReputationTimeline200ResponseTimeline {\n");
+            sb.Append("  Period: ").Append(Period).Append("\n");
             sb.Append("  Timeline: ").Append(Timeline).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
@@ -114,19 +178,19 @@ namespace MailOdds.Model
     }
 
     /// <summary>
-    /// A Json converter for type <see cref="GetReputationTimeline200Response" />
+    /// A Json converter for type <see cref="GetReputationTimeline200ResponseTimeline" />
     /// </summary>
-    public class GetReputationTimeline200ResponseJsonConverter : JsonConverter<GetReputationTimeline200Response>
+    public class GetReputationTimeline200ResponseTimelineJsonConverter : JsonConverter<GetReputationTimeline200ResponseTimeline>
     {
         /// <summary>
-        /// Deserializes json to <see cref="GetReputationTimeline200Response" />
+        /// Deserializes json to <see cref="GetReputationTimeline200ResponseTimeline" />
         /// </summary>
         /// <param name="utf8JsonReader"></param>
         /// <param name="typeToConvert"></param>
         /// <param name="jsonSerializerOptions"></param>
         /// <returns></returns>
         /// <exception cref="JsonException"></exception>
-        public override GetReputationTimeline200Response Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
+        public override GetReputationTimeline200ResponseTimeline Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
         {
             int currentDepth = utf8JsonReader.CurrentDepth;
 
@@ -135,9 +199,8 @@ namespace MailOdds.Model
 
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
-            Option<string?> schemaVersion = default;
-            Option<string?> requestId = default;
-            Option<GetReputationTimeline200ResponseTimeline?> timeline = default;
+            Option<GetReputationTimeline200ResponseTimeline.PeriodEnum?> period = default;
+            Option<List<GetReputationTimeline200ResponseTimelineTimelineInner>?> timeline = default;
 
             while (utf8JsonReader.Read())
             {
@@ -154,14 +217,13 @@ namespace MailOdds.Model
 
                     switch (localVarJsonPropertyName)
                     {
-                        case "schema_version":
-                            schemaVersion = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "request_id":
-                            requestId = new Option<string?>(utf8JsonReader.GetString()!);
+                        case "period":
+                            string? periodRawValue = utf8JsonReader.GetString();
+                            if (periodRawValue != null)
+                                period = new Option<GetReputationTimeline200ResponseTimeline.PeriodEnum?>(GetReputationTimeline200ResponseTimeline.PeriodEnumFromStringOrDefault(periodRawValue));
                             break;
                         case "timeline":
-                            timeline = new Option<GetReputationTimeline200ResponseTimeline?>(JsonSerializer.Deserialize<GetReputationTimeline200ResponseTimeline>(ref utf8JsonReader, jsonSerializerOptions)!);
+                            timeline = new Option<List<GetReputationTimeline200ResponseTimelineTimelineInner>?>(JsonSerializer.Deserialize<List<GetReputationTimeline200ResponseTimelineTimelineInner>>(ref utf8JsonReader, jsonSerializerOptions)!);
                             break;
                         default:
                             break;
@@ -169,61 +231,48 @@ namespace MailOdds.Model
                 }
             }
 
-            if (schemaVersion.IsSet && schemaVersion.Value == null)
-                throw new ArgumentNullException(nameof(schemaVersion), "Property is not nullable for class GetReputationTimeline200Response.");
-
-            if (requestId.IsSet && requestId.Value == null)
-                throw new ArgumentNullException(nameof(requestId), "Property is not nullable for class GetReputationTimeline200Response.");
+            if (period.IsSet && period.Value == null)
+                throw new ArgumentNullException(nameof(period), "Property is not nullable for class GetReputationTimeline200ResponseTimeline.");
 
             if (timeline.IsSet && timeline.Value == null)
-                throw new ArgumentNullException(nameof(timeline), "Property is not nullable for class GetReputationTimeline200Response.");
+                throw new ArgumentNullException(nameof(timeline), "Property is not nullable for class GetReputationTimeline200ResponseTimeline.");
 
-            return new GetReputationTimeline200Response(schemaVersion, requestId, timeline);
+            return new GetReputationTimeline200ResponseTimeline(period, timeline);
         }
 
         /// <summary>
-        /// Serializes a <see cref="GetReputationTimeline200Response" />
+        /// Serializes a <see cref="GetReputationTimeline200ResponseTimeline" />
         /// </summary>
         /// <param name="writer"></param>
-        /// <param name="getReputationTimeline200Response"></param>
+        /// <param name="getReputationTimeline200ResponseTimeline"></param>
         /// <param name="jsonSerializerOptions"></param>
         /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, GetReputationTimeline200Response getReputationTimeline200Response, JsonSerializerOptions jsonSerializerOptions)
+        public override void Write(Utf8JsonWriter writer, GetReputationTimeline200ResponseTimeline getReputationTimeline200ResponseTimeline, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
 
-            WriteProperties(writer, getReputationTimeline200Response, jsonSerializerOptions);
+            WriteProperties(writer, getReputationTimeline200ResponseTimeline, jsonSerializerOptions);
             writer.WriteEndObject();
         }
 
         /// <summary>
-        /// Serializes the properties of <see cref="GetReputationTimeline200Response" />
+        /// Serializes the properties of <see cref="GetReputationTimeline200ResponseTimeline" />
         /// </summary>
         /// <param name="writer"></param>
-        /// <param name="getReputationTimeline200Response"></param>
+        /// <param name="getReputationTimeline200ResponseTimeline"></param>
         /// <param name="jsonSerializerOptions"></param>
         /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, GetReputationTimeline200Response getReputationTimeline200Response, JsonSerializerOptions jsonSerializerOptions)
+        public void WriteProperties(Utf8JsonWriter writer, GetReputationTimeline200ResponseTimeline getReputationTimeline200ResponseTimeline, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (getReputationTimeline200Response.SchemaVersionOption.IsSet && getReputationTimeline200Response.SchemaVersion == null)
-                throw new ArgumentNullException(nameof(getReputationTimeline200Response.SchemaVersion), "Property is required for class GetReputationTimeline200Response.");
+            if (getReputationTimeline200ResponseTimeline.TimelineOption.IsSet && getReputationTimeline200ResponseTimeline.Timeline == null)
+                throw new ArgumentNullException(nameof(getReputationTimeline200ResponseTimeline.Timeline), "Property is required for class GetReputationTimeline200ResponseTimeline.");
 
-            if (getReputationTimeline200Response.RequestIdOption.IsSet && getReputationTimeline200Response.RequestId == null)
-                throw new ArgumentNullException(nameof(getReputationTimeline200Response.RequestId), "Property is required for class GetReputationTimeline200Response.");
-
-            if (getReputationTimeline200Response.TimelineOption.IsSet && getReputationTimeline200Response.Timeline == null)
-                throw new ArgumentNullException(nameof(getReputationTimeline200Response.Timeline), "Property is required for class GetReputationTimeline200Response.");
-
-            if (getReputationTimeline200Response.SchemaVersionOption.IsSet)
-                writer.WriteString("schema_version", getReputationTimeline200Response.SchemaVersion);
-
-            if (getReputationTimeline200Response.RequestIdOption.IsSet)
-                writer.WriteString("request_id", getReputationTimeline200Response.RequestId);
-
-            if (getReputationTimeline200Response.TimelineOption.IsSet)
+            var periodRawValue = GetReputationTimeline200ResponseTimeline.PeriodEnumToJsonValue(getReputationTimeline200ResponseTimeline.PeriodOption.Value!.Value);
+            writer.WriteString("period", periodRawValue);
+            if (getReputationTimeline200ResponseTimeline.TimelineOption.IsSet)
             {
                 writer.WritePropertyName("timeline");
-                JsonSerializer.Serialize(writer, getReputationTimeline200Response.Timeline, jsonSerializerOptions);
+                JsonSerializer.Serialize(writer, getReputationTimeline200ResponseTimeline.Timeline, jsonSerializerOptions);
             }
         }
     }

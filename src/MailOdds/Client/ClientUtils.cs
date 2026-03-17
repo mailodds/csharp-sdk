@@ -128,8 +128,6 @@ namespace MailOdds.Client
                 return Campaign.StatusEnumToJsonValue(campaignStatusEnum);
             if (obj is ClassifyContent200ResponseContentCheck.StatusEnum classifyContent200ResponseContentCheckStatusEnum)
                 return ClassifyContent200ResponseContentCheck.StatusEnumToJsonValue(classifyContent200ResponseContentCheckStatusEnum);
-            if (obj is CreateBounceAnalysisRequest.PeriodEnum createBounceAnalysisRequestPeriodEnum)
-                return CreateBounceAnalysisRequest.PeriodEnumToJsonValue(createBounceAnalysisRequestPeriodEnum);
             if (obj is CreatePolicyFromPresetRequest.PresetIdEnum createPolicyFromPresetRequestPresetIdEnum)
                 return CreatePolicyFromPresetRequest.PresetIdEnumToJsonValue(createPolicyFromPresetRequestPresetIdEnum);
             if (obj is CreateStoreRequest.PlatformEnum createStoreRequestPlatformEnum)
@@ -144,6 +142,8 @@ namespace MailOdds.Client
                 return GetBounceRecords200ResponseRecordsInner.BounceTypeEnumToJsonValue(getBounceRecords200ResponseRecordsInnerBounceTypeEnum);
             if (obj is GetComplaintAssessment200Response.RiskLevelEnum getComplaintAssessment200ResponseRiskLevelEnum)
                 return GetComplaintAssessment200Response.RiskLevelEnumToJsonValue(getComplaintAssessment200ResponseRiskLevelEnum);
+            if (obj is GetReputationTimeline200ResponseTimeline.PeriodEnum getReputationTimeline200ResponseTimelinePeriodEnum)
+                return GetReputationTimeline200ResponseTimeline.PeriodEnumToJsonValue(getReputationTimeline200ResponseTimelinePeriodEnum);
             if (obj is GetSenderHealth200Response.GradeEnum getSenderHealth200ResponseGradeEnum)
                 return GetSenderHealth200Response.GradeEnumToJsonValue(getSenderHealth200ResponseGradeEnum);
             if (obj is Job.StatusEnum jobStatusEnum)

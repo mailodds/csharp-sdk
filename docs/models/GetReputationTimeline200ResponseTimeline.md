@@ -1,11 +1,11 @@
-# MailOdds.Model.CreateBounceAnalysisRequest
+# MailOdds.Model.GetReputationTimeline200ResponseTimeline
 
 ## Properties
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Text** | **string** | Bounce log text to analyze. Identifies patterns, categorizes bounce types, and provides remediation recommendations. | 
-**Name** | **string** | Optional name for this bounce analysis | [optional] 
+**Period** | **string** |  | [optional] 
+**Timeline** | [**List&lt;GetReputationTimeline200ResponseTimelineTimelineInner&gt;**](GetReputationTimeline200ResponseTimelineTimelineInner.md) |  | [optional] 
 
 [[Back to Model list]](../../README.md#documentation-for-models) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to README]](../../README.md)
 

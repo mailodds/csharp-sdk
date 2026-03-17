@@ -179,6 +179,8 @@ namespace MailOdds.Client
             _jsonOptions.Converters.Add(new GetReplyForwarding200ResponseJsonConverter());
             _jsonOptions.Converters.Add(new GetReputation200ResponseJsonConverter());
             _jsonOptions.Converters.Add(new GetReputationTimeline200ResponseJsonConverter());
+            _jsonOptions.Converters.Add(new GetReputationTimeline200ResponseTimelineJsonConverter());
+            _jsonOptions.Converters.Add(new GetReputationTimeline200ResponseTimelineTimelineInnerJsonConverter());
             _jsonOptions.Converters.Add(new GetSenderHealth200ResponseJsonConverter());
             _jsonOptions.Converters.Add(new GetSenderHealth200ResponseComponentsJsonConverter());
             _jsonOptions.Converters.Add(new GetSenderHealth200ResponseComponentsDeliveryRateJsonConverter());

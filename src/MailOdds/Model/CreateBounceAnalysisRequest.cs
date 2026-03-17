@@ -34,119 +34,38 @@ namespace MailOdds.Model
         /// <summary>
         /// Initializes a new instance of the <see cref="CreateBounceAnalysisRequest" /> class.
         /// </summary>
-        /// <param name="domainId">Sending domain UUID to analyze bounces for</param>
-        /// <param name="period">Time period to analyze (default to PeriodEnum._30d)</param>
+        /// <param name="text">Bounce log text to analyze. Identifies patterns, categorizes bounce types, and provides remediation recommendations.</param>
+        /// <param name="name">Optional name for this bounce analysis</param>
         [JsonConstructor]
-        public CreateBounceAnalysisRequest(string domainId, Option<PeriodEnum?> period = default)
+        public CreateBounceAnalysisRequest(string text, Option<string?> name = default)
         {
-            DomainId = domainId;
-            PeriodOption = period;
+            Text = text;
+            NameOption = name;
             OnCreated();
         }
 
         partial void OnCreated();
 
         /// <summary>
-        /// Time period to analyze
+        /// Bounce log text to analyze. Identifies patterns, categorizes bounce types, and provides remediation recommendations.
         /// </summary>
-        /// <value>Time period to analyze</value>
-        public enum PeriodEnum
-        {
-            /// <summary>
-            /// Enum _7d for value: 7d
-            /// </summary>
-            _7d = 1,
-
-            /// <summary>
-            /// Enum _30d for value: 30d
-            /// </summary>
-            _30d = 2,
-
-            /// <summary>
-            /// Enum _90d for value: 90d
-            /// </summary>
-            _90d = 3
-        }
+        /// <value>Bounce log text to analyze. Identifies patterns, categorizes bounce types, and provides remediation recommendations.</value>
+        [JsonPropertyName("text")]
+        public string Text { get; set; }
 
         /// <summary>
-        /// Returns a <see cref="PeriodEnum"/>
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static PeriodEnum PeriodEnumFromString(string value)
-        {
-            if (value.Equals("7d"))
-                return PeriodEnum._7d;
-
-            if (value.Equals("30d"))
-                return PeriodEnum._30d;
-
-            if (value.Equals("90d"))
-                return PeriodEnum._90d;
-
-            throw new NotImplementedException($"Could not convert value to type PeriodEnum: '{value}'");
-        }
-
-        /// <summary>
-        /// Returns a <see cref="PeriodEnum"/>
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static PeriodEnum? PeriodEnumFromStringOrDefault(string value)
-        {
-            if (value.Equals("7d"))
-                return PeriodEnum._7d;
-
-            if (value.Equals("30d"))
-                return PeriodEnum._30d;
-
-            if (value.Equals("90d"))
-                return PeriodEnum._90d;
-
-            return null;
-        }
-
-        /// <summary>
-        /// Converts the <see cref="PeriodEnum"/> to the json value
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static string PeriodEnumToJsonValue(PeriodEnum? value)
-        {
-            if (value == PeriodEnum._7d)
-                return "7d";
-
-            if (value == PeriodEnum._30d)
-                return "30d";
-
-            if (value == PeriodEnum._90d)
-                return "90d";
-
-            throw new NotImplementedException($"Value could not be handled: '{value}'");
-        }
-
-        /// <summary>
-        /// Used to track the state of Period
+        /// Used to track the state of Name
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<PeriodEnum?> PeriodOption { get; private set; }
+        public Option<string?> NameOption { get; private set; }
 
         /// <summary>
-        /// Time period to analyze
+        /// Optional name for this bounce analysis
         /// </summary>
-        /// <value>Time period to analyze</value>
-        [JsonPropertyName("period")]
-        public PeriodEnum? Period { get { return this.PeriodOption; } set { this.PeriodOption = new(value); } }
-
-        /// <summary>
-        /// Sending domain UUID to analyze bounces for
-        /// </summary>
-        /// <value>Sending domain UUID to analyze bounces for</value>
-        [JsonPropertyName("domain_id")]
-        public string DomainId { get; set; }
+        /// <value>Optional name for this bounce analysis</value>
+        [JsonPropertyName("name")]
+        public string? Name { get { return this.NameOption; } set { this.NameOption = new(value); } }
 
         /// <summary>
         /// Returns the string presentation of the object
@@ -156,8 +75,8 @@ namespace MailOdds.Model
         {
             StringBuilder sb = new StringBuilder();
             sb.Append("class CreateBounceAnalysisRequest {\n");
-            sb.Append("  DomainId: ").Append(DomainId).Append("\n");
-            sb.Append("  Period: ").Append(Period).Append("\n");
+            sb.Append("  Text: ").Append(Text).Append("\n");
+            sb.Append("  Name: ").Append(Name).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -195,8 +114,8 @@ namespace MailOdds.Model
 
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
-            Option<string?> domainId = default;
-            Option<CreateBounceAnalysisRequest.PeriodEnum?> period = default;
+            Option<string?> text = default;
+            Option<string?> name = default;
 
             while (utf8JsonReader.Read())
             {
@@ -213,13 +132,11 @@ namespace MailOdds.Model
 
                     switch (localVarJsonPropertyName)
                     {
-                        case "domain_id":
-                            domainId = new Option<string?>(utf8JsonReader.GetString()!);
+                        case "text":
+                            text = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
-                        case "period":
-                            string? periodRawValue = utf8JsonReader.GetString();
-                            if (periodRawValue != null)
-                                period = new Option<CreateBounceAnalysisRequest.PeriodEnum?>(CreateBounceAnalysisRequest.PeriodEnumFromStringOrDefault(periodRawValue));
+                        case "name":
+                            name = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         default:
                             break;
@@ -227,16 +144,16 @@ namespace MailOdds.Model
                 }
             }
 
-            if (!domainId.IsSet)
-                throw new ArgumentException("Property is required for class CreateBounceAnalysisRequest.", nameof(domainId));
+            if (!text.IsSet)
+                throw new ArgumentException("Property is required for class CreateBounceAnalysisRequest.", nameof(text));
 
-            if (domainId.IsSet && domainId.Value == null)
-                throw new ArgumentNullException(nameof(domainId), "Property is not nullable for class CreateBounceAnalysisRequest.");
+            if (text.IsSet && text.Value == null)
+                throw new ArgumentNullException(nameof(text), "Property is not nullable for class CreateBounceAnalysisRequest.");
 
-            if (period.IsSet && period.Value == null)
-                throw new ArgumentNullException(nameof(period), "Property is not nullable for class CreateBounceAnalysisRequest.");
+            if (name.IsSet && name.Value == null)
+                throw new ArgumentNullException(nameof(name), "Property is not nullable for class CreateBounceAnalysisRequest.");
 
-            return new CreateBounceAnalysisRequest(domainId.Value!, period);
+            return new CreateBounceAnalysisRequest(text.Value!, name);
         }
 
         /// <summary>
@@ -263,13 +180,16 @@ namespace MailOdds.Model
         /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, CreateBounceAnalysisRequest createBounceAnalysisRequest, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (createBounceAnalysisRequest.DomainId == null)
-                throw new ArgumentNullException(nameof(createBounceAnalysisRequest.DomainId), "Property is required for class CreateBounceAnalysisRequest.");
+            if (createBounceAnalysisRequest.Text == null)
+                throw new ArgumentNullException(nameof(createBounceAnalysisRequest.Text), "Property is required for class CreateBounceAnalysisRequest.");
 
-            writer.WriteString("domain_id", createBounceAnalysisRequest.DomainId);
+            if (createBounceAnalysisRequest.NameOption.IsSet && createBounceAnalysisRequest.Name == null)
+                throw new ArgumentNullException(nameof(createBounceAnalysisRequest.Name), "Property is required for class CreateBounceAnalysisRequest.");
 
-            var periodRawValue = CreateBounceAnalysisRequest.PeriodEnumToJsonValue(createBounceAnalysisRequest.PeriodOption.Value!.Value);
-            writer.WriteString("period", periodRawValue);
+            writer.WriteString("text", createBounceAnalysisRequest.Text);
+
+            if (createBounceAnalysisRequest.NameOption.IsSet)
+                writer.WriteString("name", createBounceAnalysisRequest.Name);
         }
     }
 }

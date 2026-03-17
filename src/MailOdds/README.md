@@ -6,12 +6,12 @@ Create a config.yaml file similar to what is below, then run the following power
 
 ```yaml
 generatorName: csharp
-inputSpec: docs/openapi.yaml
+inputSpec: /home/null/workspace/mailodds/docs/openapi.yaml
 outputDir: out
 
 # https://openapi-generator.tech/docs/generators/csharp
 additionalProperties:
-  packageGuid: '{3CABBFAD-65E7-4C1A-A333-94833DFAFF13}'
+  packageGuid: '{A1B2CFC7-5ED2-433A-A152-F05097EF8F28}'
 
 # https://openapi-generator.tech/docs/integrations/#github-integration
 # gitHost:
