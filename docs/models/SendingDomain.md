@@ -14,6 +14,7 @@ Name | Type | Description | Notes
 **BimiVmcUrl** | **string** | BIMI VMC certificate URL | [optional] 
 **BimiEnabled** | **bool** | Whether BIMI is enabled | [optional] 
 **ForwardRepliesTo** | **string** | Reply forwarding address | [optional] 
+**IsPrimary** | **bool** | Whether this is the account primary/default sending domain | [optional] 
 **CreatedAt** | **DateTime** |  | [optional] 
 **UpdatedAt** | **DateTime** |  | [optional] 
 

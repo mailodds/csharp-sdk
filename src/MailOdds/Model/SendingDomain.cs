@@ -44,10 +44,11 @@ namespace MailOdds.Model
         /// <param name="bimiVmcUrl">BIMI VMC certificate URL</param>
         /// <param name="bimiEnabled">Whether BIMI is enabled</param>
         /// <param name="forwardRepliesTo">Reply forwarding address</param>
+        /// <param name="isPrimary">Whether this is the account primary/default sending domain</param>
         /// <param name="createdAt">createdAt</param>
         /// <param name="updatedAt">updatedAt</param>
         [JsonConstructor]
-        public SendingDomain(Option<string?> id = default, Option<string?> domain = default, Option<string?> domainType = default, Option<StatusEnum?> status = default, Option<string?> dkimSelector = default, Option<SendingDomainDnsRecords?> dnsRecords = default, Option<string?> bimiSvgUrl = default, Option<string?> bimiVmcUrl = default, Option<bool?> bimiEnabled = default, Option<string?> forwardRepliesTo = default, Option<DateTime?> createdAt = default, Option<DateTime?> updatedAt = default)
+        public SendingDomain(Option<string?> id = default, Option<string?> domain = default, Option<string?> domainType = default, Option<StatusEnum?> status = default, Option<string?> dkimSelector = default, Option<SendingDomainDnsRecords?> dnsRecords = default, Option<string?> bimiSvgUrl = default, Option<string?> bimiVmcUrl = default, Option<bool?> bimiEnabled = default, Option<string?> forwardRepliesTo = default, Option<bool?> isPrimary = default, Option<DateTime?> createdAt = default, Option<DateTime?> updatedAt = default)
         {
             IdOption = id;
             DomainOption = domain;
@@ -59,6 +60,7 @@ namespace MailOdds.Model
             BimiVmcUrlOption = bimiVmcUrl;
             BimiEnabledOption = bimiEnabled;
             ForwardRepliesToOption = forwardRepliesTo;
+            IsPrimaryOption = isPrimary;
             CreatedAtOption = createdAt;
             UpdatedAtOption = updatedAt;
             OnCreated();
@@ -301,6 +303,20 @@ namespace MailOdds.Model
         public string? ForwardRepliesTo { get { return this.ForwardRepliesToOption; } set { this.ForwardRepliesToOption = new(value); } }
 
         /// <summary>
+        /// Used to track the state of IsPrimary
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<bool?> IsPrimaryOption { get; private set; }
+
+        /// <summary>
+        /// Whether this is the account primary/default sending domain
+        /// </summary>
+        /// <value>Whether this is the account primary/default sending domain</value>
+        [JsonPropertyName("is_primary")]
+        public bool? IsPrimary { get { return this.IsPrimaryOption; } set { this.IsPrimaryOption = new(value); } }
+
+        /// <summary>
         /// Used to track the state of CreatedAt
         /// </summary>
         [JsonIgnore]
@@ -344,6 +360,7 @@ namespace MailOdds.Model
             sb.Append("  BimiVmcUrl: ").Append(BimiVmcUrl).Append("\n");
             sb.Append("  BimiEnabled: ").Append(BimiEnabled).Append("\n");
             sb.Append("  ForwardRepliesTo: ").Append(ForwardRepliesTo).Append("\n");
+            sb.Append("  IsPrimary: ").Append(IsPrimary).Append("\n");
             sb.Append("  CreatedAt: ").Append(CreatedAt).Append("\n");
             sb.Append("  UpdatedAt: ").Append(UpdatedAt).Append("\n");
             sb.Append("}\n");
@@ -403,6 +420,7 @@ namespace MailOdds.Model
             Option<string?> bimiVmcUrl = default;
             Option<bool?> bimiEnabled = default;
             Option<string?> forwardRepliesTo = default;
+            Option<bool?> isPrimary = default;
             Option<DateTime?> createdAt = default;
             Option<DateTime?> updatedAt = default;
 
@@ -453,6 +471,9 @@ namespace MailOdds.Model
                         case "forward_replies_to":
                             forwardRepliesTo = new Option<string?>(utf8JsonReader.GetString());
                             break;
+                        case "is_primary":
+                            isPrimary = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
+                            break;
                         case "created_at":
                             createdAt = new Option<DateTime?>(JsonSerializer.Deserialize<DateTime>(ref utf8JsonReader, jsonSerializerOptions));
                             break;
@@ -486,13 +507,16 @@ namespace MailOdds.Model
             if (bimiEnabled.IsSet && bimiEnabled.Value == null)
                 throw new ArgumentNullException(nameof(bimiEnabled), "Property is not nullable for class SendingDomain.");
 
+            if (isPrimary.IsSet && isPrimary.Value == null)
+                throw new ArgumentNullException(nameof(isPrimary), "Property is not nullable for class SendingDomain.");
+
             if (createdAt.IsSet && createdAt.Value == null)
                 throw new ArgumentNullException(nameof(createdAt), "Property is not nullable for class SendingDomain.");
 
             if (updatedAt.IsSet && updatedAt.Value == null)
                 throw new ArgumentNullException(nameof(updatedAt), "Property is not nullable for class SendingDomain.");
 
-            return new SendingDomain(id, domain, domainType, status, dkimSelector, dnsRecords, bimiSvgUrl, bimiVmcUrl, bimiEnabled, forwardRepliesTo, createdAt, updatedAt);
+            return new SendingDomain(id, domain, domainType, status, dkimSelector, dnsRecords, bimiSvgUrl, bimiVmcUrl, bimiEnabled, forwardRepliesTo, isPrimary, createdAt, updatedAt);
         }
 
         /// <summary>
@@ -573,6 +597,9 @@ namespace MailOdds.Model
                     writer.WriteString("forward_replies_to", sendingDomain.ForwardRepliesTo);
                 else
                     writer.WriteNull("forward_replies_to");
+
+            if (sendingDomain.IsPrimaryOption.IsSet)
+                writer.WriteBoolean("is_primary", sendingDomain.IsPrimaryOption.Value!.Value);
 
             if (sendingDomain.CreatedAtOption.IsSet)
                 writer.WriteString("created_at", sendingDomain.CreatedAtOption.Value!.Value.ToString(CreatedAtFormat));

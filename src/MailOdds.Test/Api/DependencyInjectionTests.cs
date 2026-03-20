@@ -92,14 +92,23 @@ namespace MailOdds.Test.Api
             var campaignsApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<ICampaignsApi>();
             Assert.True(campaignsApi.HttpClient.BaseAddress != null);
 
+            var configurationSetsApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<IConfigurationSetsApi>();
+            Assert.True(configurationSetsApi.HttpClient.BaseAddress != null);
+
             var contactListsApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<IContactListsApi>();
             Assert.True(contactListsApi.HttpClient.BaseAddress != null);
 
             var contentClassificationApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<IContentClassificationApi>();
             Assert.True(contentClassificationApi.HttpClient.BaseAddress != null);
 
+            var dKIMManagementApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<IDKIMManagementApi>();
+            Assert.True(dKIMManagementApi.HttpClient.BaseAddress != null);
+
             var dMARCMonitoringApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<IDMARCMonitoringApi>();
             Assert.True(dMARCMonitoringApi.HttpClient.BaseAddress != null);
+
+            var deliverabilityAdvisorApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<IDeliverabilityAdvisorApi>();
+            Assert.True(deliverabilityAdvisorApi.HttpClient.BaseAddress != null);
 
             var domainInsightsApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<IDomainInsightsApi>();
             Assert.True(domainInsightsApi.HttpClient.BaseAddress != null);
@@ -113,11 +122,26 @@ namespace MailOdds.Test.Api
             var engagementApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<IEngagementApi>();
             Assert.True(engagementApi.HttpClient.BaseAddress != null);
 
+            var eventDestinationsApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<IEventDestinationsApi>();
+            Assert.True(eventDestinationsApi.HttpClient.BaseAddress != null);
+
             var eventsApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<IEventsApi>();
             Assert.True(eventsApi.HttpClient.BaseAddress != null);
 
+            var globalSuppressionsApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<IGlobalSuppressionsApi>();
+            Assert.True(globalSuppressionsApi.HttpClient.BaseAddress != null);
+
+            var iSPFBLGuidesApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<IISPFBLGuidesApi>();
+            Assert.True(iSPFBLGuidesApi.HttpClient.BaseAddress != null);
+
             var inboundProcessingApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<IInboundProcessingApi>();
             Assert.True(inboundProcessingApi.HttpClient.BaseAddress != null);
+
+            var inboundRulesApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<IInboundRulesApi>();
+            Assert.True(inboundRulesApi.HttpClient.BaseAddress != null);
+
+            var managedSPFApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<IManagedSPFApi>();
+            Assert.True(managedSPFApi.HttpClient.BaseAddress != null);
 
             var messageEventsApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<IMessageEventsApi>();
             Assert.True(messageEventsApi.HttpClient.BaseAddress != null);
@@ -128,6 +152,9 @@ namespace MailOdds.Test.Api
             var outOfOfficeApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<IOutOfOfficeApi>();
             Assert.True(outOfOfficeApi.HttpClient.BaseAddress != null);
 
+            var pipelineSimulationApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<IPipelineSimulationApi>();
+            Assert.True(pipelineSimulationApi.HttpClient.BaseAddress != null);
+
             var pixelSettingsApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<IPixelSettingsApi>();
             Assert.True(pixelSettingsApi.HttpClient.BaseAddress != null);
 
@@ -137,8 +164,14 @@ namespace MailOdds.Test.Api
             var reputationApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<IReputationApi>();
             Assert.True(reputationApi.HttpClient.BaseAddress != null);
 
+            var reputationPoliciesApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<IReputationPoliciesApi>();
+            Assert.True(reputationPoliciesApi.HttpClient.BaseAddress != null);
+
             var senderHealthApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<ISenderHealthApi>();
             Assert.True(senderHealthApi.HttpClient.BaseAddress != null);
+
+            var sendingDelegationsApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<ISendingDelegationsApi>();
+            Assert.True(sendingDelegationsApi.HttpClient.BaseAddress != null);
 
             var sendingDomainsApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<ISendingDomainsApi>();
             Assert.True(sendingDomainsApi.HttpClient.BaseAddress != null);
@@ -160,6 +193,9 @@ namespace MailOdds.Test.Api
 
             var systemApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<ISystemApi>();
             Assert.True(systemApi.HttpClient.BaseAddress != null);
+
+            var templateVersionsApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<ITemplateVersionsApi>();
+            Assert.True(templateVersionsApi.HttpClient.BaseAddress != null);
 
             var validationPoliciesApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<IValidationPoliciesApi>();
             Assert.True(validationPoliciesApi.HttpClient.BaseAddress != null);
@@ -195,14 +231,23 @@ namespace MailOdds.Test.Api
             var campaignsApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<ICampaignsApi>();
             Assert.True(campaignsApi.HttpClient.BaseAddress != null);
 
+            var configurationSetsApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<IConfigurationSetsApi>();
+            Assert.True(configurationSetsApi.HttpClient.BaseAddress != null);
+
             var contactListsApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<IContactListsApi>();
             Assert.True(contactListsApi.HttpClient.BaseAddress != null);
 
             var contentClassificationApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<IContentClassificationApi>();
             Assert.True(contentClassificationApi.HttpClient.BaseAddress != null);
 
+            var dKIMManagementApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<IDKIMManagementApi>();
+            Assert.True(dKIMManagementApi.HttpClient.BaseAddress != null);
+
             var dMARCMonitoringApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<IDMARCMonitoringApi>();
             Assert.True(dMARCMonitoringApi.HttpClient.BaseAddress != null);
+
+            var deliverabilityAdvisorApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<IDeliverabilityAdvisorApi>();
+            Assert.True(deliverabilityAdvisorApi.HttpClient.BaseAddress != null);
 
             var domainInsightsApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<IDomainInsightsApi>();
             Assert.True(domainInsightsApi.HttpClient.BaseAddress != null);
@@ -216,11 +261,26 @@ namespace MailOdds.Test.Api
             var engagementApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<IEngagementApi>();
             Assert.True(engagementApi.HttpClient.BaseAddress != null);
 
+            var eventDestinationsApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<IEventDestinationsApi>();
+            Assert.True(eventDestinationsApi.HttpClient.BaseAddress != null);
+
             var eventsApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<IEventsApi>();
             Assert.True(eventsApi.HttpClient.BaseAddress != null);
 
+            var globalSuppressionsApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<IGlobalSuppressionsApi>();
+            Assert.True(globalSuppressionsApi.HttpClient.BaseAddress != null);
+
+            var iSPFBLGuidesApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<IISPFBLGuidesApi>();
+            Assert.True(iSPFBLGuidesApi.HttpClient.BaseAddress != null);
+
             var inboundProcessingApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<IInboundProcessingApi>();
             Assert.True(inboundProcessingApi.HttpClient.BaseAddress != null);
+
+            var inboundRulesApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<IInboundRulesApi>();
+            Assert.True(inboundRulesApi.HttpClient.BaseAddress != null);
+
+            var managedSPFApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<IManagedSPFApi>();
+            Assert.True(managedSPFApi.HttpClient.BaseAddress != null);
 
             var messageEventsApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<IMessageEventsApi>();
             Assert.True(messageEventsApi.HttpClient.BaseAddress != null);
@@ -231,6 +291,9 @@ namespace MailOdds.Test.Api
             var outOfOfficeApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<IOutOfOfficeApi>();
             Assert.True(outOfOfficeApi.HttpClient.BaseAddress != null);
 
+            var pipelineSimulationApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<IPipelineSimulationApi>();
+            Assert.True(pipelineSimulationApi.HttpClient.BaseAddress != null);
+
             var pixelSettingsApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<IPixelSettingsApi>();
             Assert.True(pixelSettingsApi.HttpClient.BaseAddress != null);
 
@@ -240,8 +303,14 @@ namespace MailOdds.Test.Api
             var reputationApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<IReputationApi>();
             Assert.True(reputationApi.HttpClient.BaseAddress != null);
 
+            var reputationPoliciesApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<IReputationPoliciesApi>();
+            Assert.True(reputationPoliciesApi.HttpClient.BaseAddress != null);
+
             var senderHealthApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<ISenderHealthApi>();
             Assert.True(senderHealthApi.HttpClient.BaseAddress != null);
+
+            var sendingDelegationsApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<ISendingDelegationsApi>();
+            Assert.True(sendingDelegationsApi.HttpClient.BaseAddress != null);
 
             var sendingDomainsApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<ISendingDomainsApi>();
             Assert.True(sendingDomainsApi.HttpClient.BaseAddress != null);
@@ -263,6 +332,9 @@ namespace MailOdds.Test.Api
 
             var systemApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<ISystemApi>();
             Assert.True(systemApi.HttpClient.BaseAddress != null);
+
+            var templateVersionsApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<ITemplateVersionsApi>();
+            Assert.True(templateVersionsApi.HttpClient.BaseAddress != null);
 
             var validationPoliciesApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<IValidationPoliciesApi>();
             Assert.True(validationPoliciesApi.HttpClient.BaseAddress != null);
@@ -298,14 +370,23 @@ namespace MailOdds.Test.Api
             var campaignsApi = _hostUsingAddWithAClient.Services.GetRequiredService<ICampaignsApi>();
             Assert.True(campaignsApi.HttpClient.BaseAddress != null);
             
+            var configurationSetsApi = _hostUsingAddWithAClient.Services.GetRequiredService<IConfigurationSetsApi>();
+            Assert.True(configurationSetsApi.HttpClient.BaseAddress != null);
+            
             var contactListsApi = _hostUsingAddWithAClient.Services.GetRequiredService<IContactListsApi>();
             Assert.True(contactListsApi.HttpClient.BaseAddress != null);
             
             var contentClassificationApi = _hostUsingAddWithAClient.Services.GetRequiredService<IContentClassificationApi>();
             Assert.True(contentClassificationApi.HttpClient.BaseAddress != null);
             
+            var dKIMManagementApi = _hostUsingAddWithAClient.Services.GetRequiredService<IDKIMManagementApi>();
+            Assert.True(dKIMManagementApi.HttpClient.BaseAddress != null);
+            
             var dMARCMonitoringApi = _hostUsingAddWithAClient.Services.GetRequiredService<IDMARCMonitoringApi>();
             Assert.True(dMARCMonitoringApi.HttpClient.BaseAddress != null);
+            
+            var deliverabilityAdvisorApi = _hostUsingAddWithAClient.Services.GetRequiredService<IDeliverabilityAdvisorApi>();
+            Assert.True(deliverabilityAdvisorApi.HttpClient.BaseAddress != null);
             
             var domainInsightsApi = _hostUsingAddWithAClient.Services.GetRequiredService<IDomainInsightsApi>();
             Assert.True(domainInsightsApi.HttpClient.BaseAddress != null);
@@ -319,11 +400,26 @@ namespace MailOdds.Test.Api
             var engagementApi = _hostUsingAddWithAClient.Services.GetRequiredService<IEngagementApi>();
             Assert.True(engagementApi.HttpClient.BaseAddress != null);
             
+            var eventDestinationsApi = _hostUsingAddWithAClient.Services.GetRequiredService<IEventDestinationsApi>();
+            Assert.True(eventDestinationsApi.HttpClient.BaseAddress != null);
+            
             var eventsApi = _hostUsingAddWithAClient.Services.GetRequiredService<IEventsApi>();
             Assert.True(eventsApi.HttpClient.BaseAddress != null);
             
+            var globalSuppressionsApi = _hostUsingAddWithAClient.Services.GetRequiredService<IGlobalSuppressionsApi>();
+            Assert.True(globalSuppressionsApi.HttpClient.BaseAddress != null);
+            
+            var iSPFBLGuidesApi = _hostUsingAddWithAClient.Services.GetRequiredService<IISPFBLGuidesApi>();
+            Assert.True(iSPFBLGuidesApi.HttpClient.BaseAddress != null);
+            
             var inboundProcessingApi = _hostUsingAddWithAClient.Services.GetRequiredService<IInboundProcessingApi>();
             Assert.True(inboundProcessingApi.HttpClient.BaseAddress != null);
+            
+            var inboundRulesApi = _hostUsingAddWithAClient.Services.GetRequiredService<IInboundRulesApi>();
+            Assert.True(inboundRulesApi.HttpClient.BaseAddress != null);
+            
+            var managedSPFApi = _hostUsingAddWithAClient.Services.GetRequiredService<IManagedSPFApi>();
+            Assert.True(managedSPFApi.HttpClient.BaseAddress != null);
             
             var messageEventsApi = _hostUsingAddWithAClient.Services.GetRequiredService<IMessageEventsApi>();
             Assert.True(messageEventsApi.HttpClient.BaseAddress != null);
@@ -334,6 +430,9 @@ namespace MailOdds.Test.Api
             var outOfOfficeApi = _hostUsingAddWithAClient.Services.GetRequiredService<IOutOfOfficeApi>();
             Assert.True(outOfOfficeApi.HttpClient.BaseAddress != null);
             
+            var pipelineSimulationApi = _hostUsingAddWithAClient.Services.GetRequiredService<IPipelineSimulationApi>();
+            Assert.True(pipelineSimulationApi.HttpClient.BaseAddress != null);
+            
             var pixelSettingsApi = _hostUsingAddWithAClient.Services.GetRequiredService<IPixelSettingsApi>();
             Assert.True(pixelSettingsApi.HttpClient.BaseAddress != null);
             
@@ -343,8 +442,14 @@ namespace MailOdds.Test.Api
             var reputationApi = _hostUsingAddWithAClient.Services.GetRequiredService<IReputationApi>();
             Assert.True(reputationApi.HttpClient.BaseAddress != null);
             
+            var reputationPoliciesApi = _hostUsingAddWithAClient.Services.GetRequiredService<IReputationPoliciesApi>();
+            Assert.True(reputationPoliciesApi.HttpClient.BaseAddress != null);
+            
             var senderHealthApi = _hostUsingAddWithAClient.Services.GetRequiredService<ISenderHealthApi>();
             Assert.True(senderHealthApi.HttpClient.BaseAddress != null);
+            
+            var sendingDelegationsApi = _hostUsingAddWithAClient.Services.GetRequiredService<ISendingDelegationsApi>();
+            Assert.True(sendingDelegationsApi.HttpClient.BaseAddress != null);
             
             var sendingDomainsApi = _hostUsingAddWithAClient.Services.GetRequiredService<ISendingDomainsApi>();
             Assert.True(sendingDomainsApi.HttpClient.BaseAddress != null);
@@ -366,6 +471,9 @@ namespace MailOdds.Test.Api
             
             var systemApi = _hostUsingAddWithAClient.Services.GetRequiredService<ISystemApi>();
             Assert.True(systemApi.HttpClient.BaseAddress != null);
+            
+            var templateVersionsApi = _hostUsingAddWithAClient.Services.GetRequiredService<ITemplateVersionsApi>();
+            Assert.True(templateVersionsApi.HttpClient.BaseAddress != null);
             
             var validationPoliciesApi = _hostUsingAddWithAClient.Services.GetRequiredService<IValidationPoliciesApi>();
             Assert.True(validationPoliciesApi.HttpClient.BaseAddress != null);
@@ -401,14 +509,23 @@ namespace MailOdds.Test.Api
             var campaignsApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<ICampaignsApi>();
             Assert.True(campaignsApi.HttpClient.BaseAddress != null);
 
+            var configurationSetsApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<IConfigurationSetsApi>();
+            Assert.True(configurationSetsApi.HttpClient.BaseAddress != null);
+
             var contactListsApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<IContactListsApi>();
             Assert.True(contactListsApi.HttpClient.BaseAddress != null);
 
             var contentClassificationApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<IContentClassificationApi>();
             Assert.True(contentClassificationApi.HttpClient.BaseAddress != null);
 
+            var dKIMManagementApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<IDKIMManagementApi>();
+            Assert.True(dKIMManagementApi.HttpClient.BaseAddress != null);
+
             var dMARCMonitoringApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<IDMARCMonitoringApi>();
             Assert.True(dMARCMonitoringApi.HttpClient.BaseAddress != null);
+
+            var deliverabilityAdvisorApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<IDeliverabilityAdvisorApi>();
+            Assert.True(deliverabilityAdvisorApi.HttpClient.BaseAddress != null);
 
             var domainInsightsApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<IDomainInsightsApi>();
             Assert.True(domainInsightsApi.HttpClient.BaseAddress != null);
@@ -422,11 +539,26 @@ namespace MailOdds.Test.Api
             var engagementApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<IEngagementApi>();
             Assert.True(engagementApi.HttpClient.BaseAddress != null);
 
+            var eventDestinationsApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<IEventDestinationsApi>();
+            Assert.True(eventDestinationsApi.HttpClient.BaseAddress != null);
+
             var eventsApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<IEventsApi>();
             Assert.True(eventsApi.HttpClient.BaseAddress != null);
 
+            var globalSuppressionsApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<IGlobalSuppressionsApi>();
+            Assert.True(globalSuppressionsApi.HttpClient.BaseAddress != null);
+
+            var iSPFBLGuidesApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<IISPFBLGuidesApi>();
+            Assert.True(iSPFBLGuidesApi.HttpClient.BaseAddress != null);
+
             var inboundProcessingApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<IInboundProcessingApi>();
             Assert.True(inboundProcessingApi.HttpClient.BaseAddress != null);
+
+            var inboundRulesApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<IInboundRulesApi>();
+            Assert.True(inboundRulesApi.HttpClient.BaseAddress != null);
+
+            var managedSPFApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<IManagedSPFApi>();
+            Assert.True(managedSPFApi.HttpClient.BaseAddress != null);
 
             var messageEventsApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<IMessageEventsApi>();
             Assert.True(messageEventsApi.HttpClient.BaseAddress != null);
@@ -437,6 +569,9 @@ namespace MailOdds.Test.Api
             var outOfOfficeApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<IOutOfOfficeApi>();
             Assert.True(outOfOfficeApi.HttpClient.BaseAddress != null);
 
+            var pipelineSimulationApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<IPipelineSimulationApi>();
+            Assert.True(pipelineSimulationApi.HttpClient.BaseAddress != null);
+
             var pixelSettingsApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<IPixelSettingsApi>();
             Assert.True(pixelSettingsApi.HttpClient.BaseAddress != null);
 
@@ -446,8 +581,14 @@ namespace MailOdds.Test.Api
             var reputationApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<IReputationApi>();
             Assert.True(reputationApi.HttpClient.BaseAddress != null);
 
+            var reputationPoliciesApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<IReputationPoliciesApi>();
+            Assert.True(reputationPoliciesApi.HttpClient.BaseAddress != null);
+
             var senderHealthApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<ISenderHealthApi>();
             Assert.True(senderHealthApi.HttpClient.BaseAddress != null);
+
+            var sendingDelegationsApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<ISendingDelegationsApi>();
+            Assert.True(sendingDelegationsApi.HttpClient.BaseAddress != null);
 
             var sendingDomainsApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<ISendingDomainsApi>();
             Assert.True(sendingDomainsApi.HttpClient.BaseAddress != null);
@@ -469,6 +610,9 @@ namespace MailOdds.Test.Api
 
             var systemApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<ISystemApi>();
             Assert.True(systemApi.HttpClient.BaseAddress != null);
+
+            var templateVersionsApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<ITemplateVersionsApi>();
+            Assert.True(templateVersionsApi.HttpClient.BaseAddress != null);
 
             var validationPoliciesApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<IValidationPoliciesApi>();
             Assert.True(validationPoliciesApi.HttpClient.BaseAddress != null);

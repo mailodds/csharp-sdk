@@ -37,9 +37,9 @@ namespace MailOdds.Model
         /// <param name="to">List of recipient email addresses</param>
         /// <param name="from">Sender email address (must match sending domain)</param>
         /// <param name="subject">Email subject line</param>
-        /// <param name="domainId">Sending domain UUID</param>
         /// <param name="html">HTML email body</param>
         /// <param name="text">Plain text email body</param>
+        /// <param name="domainId">Sending domain UUID. Optional - - auto-resolved from the from address, or falls back to primary domain.</param>
         /// <param name="replyTo">Reply-to address</param>
         /// <param name="headers">Extra email headers</param>
         /// <param name="tags">Tags for categorization</param>
@@ -50,14 +50,14 @@ namespace MailOdds.Model
         /// <param name="aiSummary">Hidden text summary for AI email assistants (max 500 characters)</param>
         /// <param name="options">options</param>
         [JsonConstructor]
-        public DeliverRequest(List<DeliverRequestToInner> to, string from, string subject, string domainId, Option<string?> html = default, Option<string?> text = default, Option<string?> replyTo = default, Option<Object?> headers = default, Option<List<string>?> tags = default, Option<CampaignTypeEnum?> campaignType = default, Option<DeliverRequestStructuredData?> structuredData = default, Option<Dictionary<string, string>?> schemaData = default, Option<bool?> autoDetectSchema = default, Option<string?> aiSummary = default, Option<DeliverRequestOptions?> options = default)
+        public DeliverRequest(List<DeliverRequestToInner> to, string from, string subject, Option<string?> html = default, Option<string?> text = default, Option<string?> domainId = default, Option<string?> replyTo = default, Option<Object?> headers = default, Option<List<string>?> tags = default, Option<CampaignTypeEnum?> campaignType = default, Option<DeliverRequestStructuredData?> structuredData = default, Option<Dictionary<string, string>?> schemaData = default, Option<bool?> autoDetectSchema = default, Option<string?> aiSummary = default, Option<DeliverRequestOptions?> options = default)
         {
             To = to;
             From = from;
             Subject = subject;
-            DomainId = domainId;
             HtmlOption = html;
             TextOption = text;
+            DomainIdOption = domainId;
             ReplyToOption = replyTo;
             HeadersOption = headers;
             TagsOption = tags;
@@ -287,13 +287,6 @@ namespace MailOdds.Model
         public string Subject { get; set; }
 
         /// <summary>
-        /// Sending domain UUID
-        /// </summary>
-        /// <value>Sending domain UUID</value>
-        [JsonPropertyName("domain_id")]
-        public string DomainId { get; set; }
-
-        /// <summary>
         /// Used to track the state of Html
         /// </summary>
         [JsonIgnore]
@@ -320,6 +313,20 @@ namespace MailOdds.Model
         /// <value>Plain text email body</value>
         [JsonPropertyName("text")]
         public string? Text { get { return this.TextOption; } set { this.TextOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of DomainId
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> DomainIdOption { get; private set; }
+
+        /// <summary>
+        /// Sending domain UUID. Optional - - auto-resolved from the from address, or falls back to primary domain.
+        /// </summary>
+        /// <value>Sending domain UUID. Optional - - auto-resolved from the from address, or falls back to primary domain.</value>
+        [JsonPropertyName("domain_id")]
+        public string? DomainId { get { return this.DomainIdOption; } set { this.DomainIdOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of ReplyTo
@@ -442,9 +449,9 @@ namespace MailOdds.Model
             sb.Append("  To: ").Append(To).Append("\n");
             sb.Append("  From: ").Append(From).Append("\n");
             sb.Append("  Subject: ").Append(Subject).Append("\n");
-            sb.Append("  DomainId: ").Append(DomainId).Append("\n");
             sb.Append("  Html: ").Append(Html).Append("\n");
             sb.Append("  Text: ").Append(Text).Append("\n");
+            sb.Append("  DomainId: ").Append(DomainId).Append("\n");
             sb.Append("  ReplyTo: ").Append(ReplyTo).Append("\n");
             sb.Append("  Headers: ").Append(Headers).Append("\n");
             sb.Append("  Tags: ").Append(Tags).Append("\n");
@@ -500,9 +507,9 @@ namespace MailOdds.Model
             Option<List<DeliverRequestToInner>?> to = default;
             Option<string?> from = default;
             Option<string?> subject = default;
-            Option<string?> domainId = default;
             Option<string?> html = default;
             Option<string?> text = default;
+            Option<string?> domainId = default;
             Option<string?> replyTo = default;
             Option<Object?> headers = default;
             Option<List<string>?> tags = default;
@@ -537,14 +544,14 @@ namespace MailOdds.Model
                         case "subject":
                             subject = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
-                        case "domain_id":
-                            domainId = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
                         case "html":
                             html = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         case "text":
                             text = new Option<string?>(utf8JsonReader.GetString()!);
+                            break;
+                        case "domain_id":
+                            domainId = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         case "reply_to":
                             replyTo = new Option<string?>(utf8JsonReader.GetString()!);
@@ -590,9 +597,6 @@ namespace MailOdds.Model
             if (!subject.IsSet)
                 throw new ArgumentException("Property is required for class DeliverRequest.", nameof(subject));
 
-            if (!domainId.IsSet)
-                throw new ArgumentException("Property is required for class DeliverRequest.", nameof(domainId));
-
             if (to.IsSet && to.Value == null)
                 throw new ArgumentNullException(nameof(to), "Property is not nullable for class DeliverRequest.");
 
@@ -602,14 +606,14 @@ namespace MailOdds.Model
             if (subject.IsSet && subject.Value == null)
                 throw new ArgumentNullException(nameof(subject), "Property is not nullable for class DeliverRequest.");
 
-            if (domainId.IsSet && domainId.Value == null)
-                throw new ArgumentNullException(nameof(domainId), "Property is not nullable for class DeliverRequest.");
-
             if (html.IsSet && html.Value == null)
                 throw new ArgumentNullException(nameof(html), "Property is not nullable for class DeliverRequest.");
 
             if (text.IsSet && text.Value == null)
                 throw new ArgumentNullException(nameof(text), "Property is not nullable for class DeliverRequest.");
+
+            if (domainId.IsSet && domainId.Value == null)
+                throw new ArgumentNullException(nameof(domainId), "Property is not nullable for class DeliverRequest.");
 
             if (replyTo.IsSet && replyTo.Value == null)
                 throw new ArgumentNullException(nameof(replyTo), "Property is not nullable for class DeliverRequest.");
@@ -638,7 +642,7 @@ namespace MailOdds.Model
             if (options.IsSet && options.Value == null)
                 throw new ArgumentNullException(nameof(options), "Property is not nullable for class DeliverRequest.");
 
-            return new DeliverRequest(to.Value!, from.Value!, subject.Value!, domainId.Value!, html, text, replyTo, headers, tags, campaignType, structuredData, schemaData, autoDetectSchema, aiSummary, options);
+            return new DeliverRequest(to.Value!, from.Value!, subject.Value!, html, text, domainId, replyTo, headers, tags, campaignType, structuredData, schemaData, autoDetectSchema, aiSummary, options);
         }
 
         /// <summary>
@@ -674,14 +678,14 @@ namespace MailOdds.Model
             if (deliverRequest.Subject == null)
                 throw new ArgumentNullException(nameof(deliverRequest.Subject), "Property is required for class DeliverRequest.");
 
-            if (deliverRequest.DomainId == null)
-                throw new ArgumentNullException(nameof(deliverRequest.DomainId), "Property is required for class DeliverRequest.");
-
             if (deliverRequest.HtmlOption.IsSet && deliverRequest.Html == null)
                 throw new ArgumentNullException(nameof(deliverRequest.Html), "Property is required for class DeliverRequest.");
 
             if (deliverRequest.TextOption.IsSet && deliverRequest.Text == null)
                 throw new ArgumentNullException(nameof(deliverRequest.Text), "Property is required for class DeliverRequest.");
+
+            if (deliverRequest.DomainIdOption.IsSet && deliverRequest.DomainId == null)
+                throw new ArgumentNullException(nameof(deliverRequest.DomainId), "Property is required for class DeliverRequest.");
 
             if (deliverRequest.ReplyToOption.IsSet && deliverRequest.ReplyTo == null)
                 throw new ArgumentNullException(nameof(deliverRequest.ReplyTo), "Property is required for class DeliverRequest.");
@@ -710,13 +714,14 @@ namespace MailOdds.Model
 
             writer.WriteString("subject", deliverRequest.Subject);
 
-            writer.WriteString("domain_id", deliverRequest.DomainId);
-
             if (deliverRequest.HtmlOption.IsSet)
                 writer.WriteString("html", deliverRequest.Html);
 
             if (deliverRequest.TextOption.IsSet)
                 writer.WriteString("text", deliverRequest.Text);
+
+            if (deliverRequest.DomainIdOption.IsSet)
+                writer.WriteString("domain_id", deliverRequest.DomainId);
 
             if (deliverRequest.ReplyToOption.IsSet)
                 writer.WriteString("reply_to", deliverRequest.ReplyTo);

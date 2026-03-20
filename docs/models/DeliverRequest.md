@@ -7,9 +7,9 @@ Name | Type | Description | Notes
 **To** | [**List&lt;DeliverRequestToInner&gt;**](DeliverRequestToInner.md) | List of recipient email addresses | 
 **From** | **string** | Sender email address (must match sending domain) | 
 **Subject** | **string** | Email subject line | 
-**DomainId** | **string** | Sending domain UUID | 
 **Html** | **string** | HTML email body | [optional] 
 **Text** | **string** | Plain text email body | [optional] 
+**DomainId** | **string** | Sending domain UUID. Optional - - auto-resolved from the from address, or falls back to primary domain. | [optional] 
 **ReplyTo** | **string** | Reply-to address | [optional] 
 **Headers** | **Object** | Extra email headers | [optional] 
 **Tags** | **List&lt;string&gt;** | Tags for categorization | [optional] 

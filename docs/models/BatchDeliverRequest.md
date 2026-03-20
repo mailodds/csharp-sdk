@@ -8,9 +8,9 @@ Name | Type | Description | Notes
 **To** | **List&lt;string&gt;** | List of recipient email addresses (max 100) | 
 **From** | **string** |  | 
 **Subject** | **string** |  | 
-**DomainId** | **string** |  | 
 **Html** | **string** |  | [optional] 
 **Text** | **string** |  | [optional] 
+**DomainId** | **string** | Sending domain UUID. Optional - - auto-resolved from the from address, or falls back to primary domain. | [optional] 
 **ReplyTo** | **string** |  | [optional] 
 **Headers** | **Object** |  | [optional] 
 **Tags** | **List&lt;string&gt;** |  | [optional] 

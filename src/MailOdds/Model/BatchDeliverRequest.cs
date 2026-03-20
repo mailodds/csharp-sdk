@@ -37,9 +37,9 @@ namespace MailOdds.Model
         /// <param name="to">List of recipient email addresses (max 100)</param>
         /// <param name="from">from</param>
         /// <param name="subject">subject</param>
-        /// <param name="domainId">domainId</param>
         /// <param name="html">html</param>
         /// <param name="text">text</param>
+        /// <param name="domainId">Sending domain UUID. Optional - - auto-resolved from the from address, or falls back to primary domain.</param>
         /// <param name="replyTo">replyTo</param>
         /// <param name="headers">headers</param>
         /// <param name="tags">tags</param>
@@ -47,14 +47,14 @@ namespace MailOdds.Model
         /// <param name="structuredData">structuredData</param>
         /// <param name="options">options</param>
         [JsonConstructor]
-        public BatchDeliverRequest(List<string> to, string from, string subject, string domainId, Option<string?> html = default, Option<string?> text = default, Option<string?> replyTo = default, Option<Object?> headers = default, Option<List<string>?> tags = default, Option<string?> campaignType = default, Option<BatchDeliverRequestStructuredData?> structuredData = default, Option<Object?> options = default)
+        public BatchDeliverRequest(List<string> to, string from, string subject, Option<string?> html = default, Option<string?> text = default, Option<string?> domainId = default, Option<string?> replyTo = default, Option<Object?> headers = default, Option<List<string>?> tags = default, Option<string?> campaignType = default, Option<BatchDeliverRequestStructuredData?> structuredData = default, Option<Object?> options = default)
         {
             To = to;
             From = from;
             Subject = subject;
-            DomainId = domainId;
             HtmlOption = html;
             TextOption = text;
+            DomainIdOption = domainId;
             ReplyToOption = replyTo;
             HeadersOption = headers;
             TagsOption = tags;
@@ -86,12 +86,6 @@ namespace MailOdds.Model
         public string Subject { get; set; }
 
         /// <summary>
-        /// Gets or Sets DomainId
-        /// </summary>
-        [JsonPropertyName("domain_id")]
-        public string DomainId { get; set; }
-
-        /// <summary>
         /// Used to track the state of Html
         /// </summary>
         [JsonIgnore]
@@ -116,6 +110,20 @@ namespace MailOdds.Model
         /// </summary>
         [JsonPropertyName("text")]
         public string? Text { get { return this.TextOption; } set { this.TextOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of DomainId
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> DomainIdOption { get; private set; }
+
+        /// <summary>
+        /// Sending domain UUID. Optional - - auto-resolved from the from address, or falls back to primary domain.
+        /// </summary>
+        /// <value>Sending domain UUID. Optional - - auto-resolved from the from address, or falls back to primary domain.</value>
+        [JsonPropertyName("domain_id")]
+        public string? DomainId { get { return this.DomainIdOption; } set { this.DomainIdOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of ReplyTo
@@ -206,9 +214,9 @@ namespace MailOdds.Model
             sb.Append("  To: ").Append(To).Append("\n");
             sb.Append("  From: ").Append(From).Append("\n");
             sb.Append("  Subject: ").Append(Subject).Append("\n");
-            sb.Append("  DomainId: ").Append(DomainId).Append("\n");
             sb.Append("  Html: ").Append(Html).Append("\n");
             sb.Append("  Text: ").Append(Text).Append("\n");
+            sb.Append("  DomainId: ").Append(DomainId).Append("\n");
             sb.Append("  ReplyTo: ").Append(ReplyTo).Append("\n");
             sb.Append("  Headers: ").Append(Headers).Append("\n");
             sb.Append("  Tags: ").Append(Tags).Append("\n");
@@ -255,9 +263,9 @@ namespace MailOdds.Model
             Option<List<string>?> to = default;
             Option<string?> from = default;
             Option<string?> subject = default;
-            Option<string?> domainId = default;
             Option<string?> html = default;
             Option<string?> text = default;
+            Option<string?> domainId = default;
             Option<string?> replyTo = default;
             Option<Object?> headers = default;
             Option<List<string>?> tags = default;
@@ -289,14 +297,14 @@ namespace MailOdds.Model
                         case "subject":
                             subject = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
-                        case "domain_id":
-                            domainId = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
                         case "html":
                             html = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         case "text":
                             text = new Option<string?>(utf8JsonReader.GetString()!);
+                            break;
+                        case "domain_id":
+                            domainId = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         case "reply_to":
                             replyTo = new Option<string?>(utf8JsonReader.GetString()!);
@@ -331,9 +339,6 @@ namespace MailOdds.Model
             if (!subject.IsSet)
                 throw new ArgumentException("Property is required for class BatchDeliverRequest.", nameof(subject));
 
-            if (!domainId.IsSet)
-                throw new ArgumentException("Property is required for class BatchDeliverRequest.", nameof(domainId));
-
             if (to.IsSet && to.Value == null)
                 throw new ArgumentNullException(nameof(to), "Property is not nullable for class BatchDeliverRequest.");
 
@@ -343,14 +348,14 @@ namespace MailOdds.Model
             if (subject.IsSet && subject.Value == null)
                 throw new ArgumentNullException(nameof(subject), "Property is not nullable for class BatchDeliverRequest.");
 
-            if (domainId.IsSet && domainId.Value == null)
-                throw new ArgumentNullException(nameof(domainId), "Property is not nullable for class BatchDeliverRequest.");
-
             if (html.IsSet && html.Value == null)
                 throw new ArgumentNullException(nameof(html), "Property is not nullable for class BatchDeliverRequest.");
 
             if (text.IsSet && text.Value == null)
                 throw new ArgumentNullException(nameof(text), "Property is not nullable for class BatchDeliverRequest.");
+
+            if (domainId.IsSet && domainId.Value == null)
+                throw new ArgumentNullException(nameof(domainId), "Property is not nullable for class BatchDeliverRequest.");
 
             if (replyTo.IsSet && replyTo.Value == null)
                 throw new ArgumentNullException(nameof(replyTo), "Property is not nullable for class BatchDeliverRequest.");
@@ -370,7 +375,7 @@ namespace MailOdds.Model
             if (options.IsSet && options.Value == null)
                 throw new ArgumentNullException(nameof(options), "Property is not nullable for class BatchDeliverRequest.");
 
-            return new BatchDeliverRequest(to.Value!, from.Value!, subject.Value!, domainId.Value!, html, text, replyTo, headers, tags, campaignType, structuredData, options);
+            return new BatchDeliverRequest(to.Value!, from.Value!, subject.Value!, html, text, domainId, replyTo, headers, tags, campaignType, structuredData, options);
         }
 
         /// <summary>
@@ -406,14 +411,14 @@ namespace MailOdds.Model
             if (batchDeliverRequest.Subject == null)
                 throw new ArgumentNullException(nameof(batchDeliverRequest.Subject), "Property is required for class BatchDeliverRequest.");
 
-            if (batchDeliverRequest.DomainId == null)
-                throw new ArgumentNullException(nameof(batchDeliverRequest.DomainId), "Property is required for class BatchDeliverRequest.");
-
             if (batchDeliverRequest.HtmlOption.IsSet && batchDeliverRequest.Html == null)
                 throw new ArgumentNullException(nameof(batchDeliverRequest.Html), "Property is required for class BatchDeliverRequest.");
 
             if (batchDeliverRequest.TextOption.IsSet && batchDeliverRequest.Text == null)
                 throw new ArgumentNullException(nameof(batchDeliverRequest.Text), "Property is required for class BatchDeliverRequest.");
+
+            if (batchDeliverRequest.DomainIdOption.IsSet && batchDeliverRequest.DomainId == null)
+                throw new ArgumentNullException(nameof(batchDeliverRequest.DomainId), "Property is required for class BatchDeliverRequest.");
 
             if (batchDeliverRequest.ReplyToOption.IsSet && batchDeliverRequest.ReplyTo == null)
                 throw new ArgumentNullException(nameof(batchDeliverRequest.ReplyTo), "Property is required for class BatchDeliverRequest.");
@@ -439,13 +444,14 @@ namespace MailOdds.Model
 
             writer.WriteString("subject", batchDeliverRequest.Subject);
 
-            writer.WriteString("domain_id", batchDeliverRequest.DomainId);
-
             if (batchDeliverRequest.HtmlOption.IsSet)
                 writer.WriteString("html", batchDeliverRequest.Html);
 
             if (batchDeliverRequest.TextOption.IsSet)
                 writer.WriteString("text", batchDeliverRequest.Text);
+
+            if (batchDeliverRequest.DomainIdOption.IsSet)
+                writer.WriteString("domain_id", batchDeliverRequest.DomainId);
 
             if (batchDeliverRequest.ReplyToOption.IsSet)
                 writer.WriteString("reply_to", batchDeliverRequest.ReplyTo);

@@ -11,6 +11,7 @@ All URIs are relative to *https://api.mailodds.com/v1*
 | [**GetSendingDomainIdentityScore**](SendingDomainsApi.md#getsendingdomainidentityscore) | **GET** /v1/sending-domains/{domain_id}/identity-score | Get domain identity score |
 | [**GetSendingStats**](SendingDomainsApi.md#getsendingstats) | **GET** /v1/sending-stats | Get sending statistics |
 | [**ListSendingDomains**](SendingDomainsApi.md#listsendingdomains) | **GET** /v1/sending-domains | List sending domains |
+| [**SetPrimarySendingDomain**](SendingDomainsApi.md#setprimarysendingdomain) | **POST** /v1/sending-domains/{domain_id}/set-primary | Set primary sending domain |
 | [**UpdateReplyForwarding**](SendingDomainsApi.md#updatereplyforwarding) | **PATCH** /v1/sending-domains/{domain_id}/reply-forwarding | Update reply forwarding config |
 | [**VerifySendingDomain**](SendingDomainsApi.md#verifysendingdomain) | **POST** /v1/sending-domains/{domain_id}/verify | Verify domain DNS records |
 
@@ -275,6 +276,44 @@ This endpoint does not need any parameter.
 |-------------|-------------|------------------|
 | **200** | List of sending domains |  -  |
 | **403** | Forbidden - Insufficient permissions or no credits |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
+
+[[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
+
+<a id="setprimarysendingdomain"></a>
+# **SetPrimarySendingDomain**
+> CreateSendingDomain201Response SetPrimarySendingDomain (string domainId)
+
+Set primary sending domain
+
+Designate a domain as the primary/default sending domain. When domain_id is omitted from deliver calls, the primary domain is used automatically.
+
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **domainId** | **string** |  |  |
+
+### Return type
+
+[**CreateSendingDomain201Response**](CreateSendingDomain201Response.md)
+
+### Authorization
+
+[BearerAuth](../README.md#BearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Primary domain set |  -  |
+| **404** | Resource not found |  -  |
 | **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
