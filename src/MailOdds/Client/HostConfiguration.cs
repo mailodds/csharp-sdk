@@ -131,6 +131,7 @@ namespace MailOdds.Client
             _jsonOptions.Converters.Add(new GetBounceRecords200ResponseJsonConverter());
             _jsonOptions.Converters.Add(new GetBounceRecords200ResponseRecordsInnerJsonConverter());
             _jsonOptions.Converters.Add(new GetBounceStats200ResponseJsonConverter());
+            _jsonOptions.Converters.Add(new GetBounceStats200ResponseStatsJsonConverter());
             _jsonOptions.Converters.Add(new GetBounceStatsSummary200ResponseJsonConverter());
             _jsonOptions.Converters.Add(new GetCampaignABResults200ResponseJsonConverter());
             _jsonOptions.Converters.Add(new GetCampaignABResults200ResponseVariantsInnerJsonConverter());

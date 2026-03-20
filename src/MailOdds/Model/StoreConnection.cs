@@ -94,7 +94,12 @@ namespace MailOdds.Model
             /// <summary>
             /// Enum Feed for value: feed
             /// </summary>
-            Feed = 4
+            Feed = 4,
+
+            /// <summary>
+            /// Enum Custom for value: custom
+            /// </summary>
+            Custom = 5
         }
 
         /// <summary>
@@ -116,6 +121,9 @@ namespace MailOdds.Model
 
             if (value.Equals("feed"))
                 return PlatformEnum.Feed;
+
+            if (value.Equals("custom"))
+                return PlatformEnum.Custom;
 
             throw new NotImplementedException($"Could not convert value to type PlatformEnum: '{value}'");
         }
@@ -139,6 +147,9 @@ namespace MailOdds.Model
             if (value.Equals("feed"))
                 return PlatformEnum.Feed;
 
+            if (value.Equals("custom"))
+                return PlatformEnum.Custom;
+
             return null;
         }
 
@@ -161,6 +172,9 @@ namespace MailOdds.Model
 
             if (value == PlatformEnum.Feed)
                 return "feed";
+
+            if (value == PlatformEnum.Custom)
+                return "custom";
 
             throw new NotImplementedException($"Value could not be handled: '{value}'");
         }

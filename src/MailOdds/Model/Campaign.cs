@@ -37,35 +37,63 @@ namespace MailOdds.Model
         /// <param name="id">Campaign UUID</param>
         /// <param name="name">Campaign name</param>
         /// <param name="status">status</param>
-        /// <param name="listId">Target subscriber list UUID</param>
         /// <param name="domainId">Sending domain UUID</param>
-        /// <param name="fromEmail">fromEmail</param>
+        /// <param name="fromAddress">Sender email address</param>
         /// <param name="createdAt">createdAt</param>
-        /// <param name="fromName">fromName</param>
+        /// <param name="accountId">accountId</param>
+        /// <param name="subject">subject</param>
         /// <param name="replyTo">replyTo</param>
+        /// <param name="htmlBody">htmlBody</param>
+        /// <param name="textBody">textBody</param>
+        /// <param name="htmlBodyDark">htmlBodyDark</param>
+        /// <param name="textBodyDark">textBodyDark</param>
+        /// <param name="campaignType">campaignType</param>
+        /// <param name="autoDetectSchema">autoDetectSchema</param>
+        /// <param name="promoAnnotations">promoAnnotations</param>
+        /// <param name="throwawayPolicy">throwawayPolicy</param>
         /// <param name="scheduledAt">scheduledAt</param>
-        /// <param name="sentAt">sentAt</param>
-        /// <param name="cancelledAt">cancelledAt</param>
-        /// <param name="variantCount">Number of A/B variants</param>
+        /// <param name="startedAt">startedAt</param>
+        /// <param name="completedAt">completedAt</param>
+        /// <param name="recipientCount">recipientCount</param>
+        /// <param name="isAbTest">isAbTest</param>
+        /// <param name="winningVariantId">winningVariantId</param>
+        /// <param name="abTestConfig">abTestConfig</param>
+        /// <param name="errorMessage">errorMessage</param>
         /// <param name="stats">stats</param>
+        /// <param name="openRate">openRate</param>
+        /// <param name="clickRate">clickRate</param>
         /// <param name="updatedAt">updatedAt</param>
         [JsonConstructor]
-        public Campaign(string id, string name, StatusEnum status, string listId, string domainId, string fromEmail, DateTime createdAt, Option<string?> fromName = default, Option<string?> replyTo = default, Option<DateTime?> scheduledAt = default, Option<DateTime?> sentAt = default, Option<DateTime?> cancelledAt = default, Option<int?> variantCount = default, Option<CampaignStats?> stats = default, Option<DateTime?> updatedAt = default)
+        public Campaign(string id, string name, StatusEnum status, string domainId, string fromAddress, DateTime createdAt, Option<int?> accountId = default, Option<string?> subject = default, Option<string?> replyTo = default, Option<string?> htmlBody = default, Option<string?> textBody = default, Option<string?> htmlBodyDark = default, Option<string?> textBodyDark = default, Option<string?> campaignType = default, Option<bool?> autoDetectSchema = default, Option<Object?> promoAnnotations = default, Option<string?> throwawayPolicy = default, Option<DateTime?> scheduledAt = default, Option<DateTime?> startedAt = default, Option<DateTime?> completedAt = default, Option<int?> recipientCount = default, Option<bool?> isAbTest = default, Option<string?> winningVariantId = default, Option<Object?> abTestConfig = default, Option<string?> errorMessage = default, Option<CampaignStats?> stats = default, Option<decimal?> openRate = default, Option<decimal?> clickRate = default, Option<DateTime?> updatedAt = default)
         {
             Id = id;
             Name = name;
             Status = status;
-            ListId = listId;
             DomainId = domainId;
-            FromEmail = fromEmail;
+            FromAddress = fromAddress;
             CreatedAt = createdAt;
-            FromNameOption = fromName;
+            AccountIdOption = accountId;
+            SubjectOption = subject;
             ReplyToOption = replyTo;
+            HtmlBodyOption = htmlBody;
+            TextBodyOption = textBody;
+            HtmlBodyDarkOption = htmlBodyDark;
+            TextBodyDarkOption = textBodyDark;
+            CampaignTypeOption = campaignType;
+            AutoDetectSchemaOption = autoDetectSchema;
+            PromoAnnotationsOption = promoAnnotations;
+            ThrowawayPolicyOption = throwawayPolicy;
             ScheduledAtOption = scheduledAt;
-            SentAtOption = sentAt;
-            CancelledAtOption = cancelledAt;
-            VariantCountOption = variantCount;
+            StartedAtOption = startedAt;
+            CompletedAtOption = completedAt;
+            RecipientCountOption = recipientCount;
+            IsAbTestOption = isAbTest;
+            WinningVariantIdOption = winningVariantId;
+            AbTestConfigOption = abTestConfig;
+            ErrorMessageOption = errorMessage;
             StatsOption = stats;
+            OpenRateOption = openRate;
+            ClickRateOption = clickRate;
             UpdatedAtOption = updatedAt;
             OnCreated();
         }
@@ -201,13 +229,6 @@ namespace MailOdds.Model
         public string Name { get; set; }
 
         /// <summary>
-        /// Target subscriber list UUID
-        /// </summary>
-        /// <value>Target subscriber list UUID</value>
-        [JsonPropertyName("list_id")]
-        public string ListId { get; set; }
-
-        /// <summary>
         /// Sending domain UUID
         /// </summary>
         /// <value>Sending domain UUID</value>
@@ -215,10 +236,11 @@ namespace MailOdds.Model
         public string DomainId { get; set; }
 
         /// <summary>
-        /// Gets or Sets FromEmail
+        /// Sender email address
         /// </summary>
-        [JsonPropertyName("from_email")]
-        public string FromEmail { get; set; }
+        /// <value>Sender email address</value>
+        [JsonPropertyName("from_address")]
+        public string FromAddress { get; set; }
 
         /// <summary>
         /// Gets or Sets CreatedAt
@@ -227,17 +249,30 @@ namespace MailOdds.Model
         public DateTime CreatedAt { get; set; }
 
         /// <summary>
-        /// Used to track the state of FromName
+        /// Used to track the state of AccountId
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<string?> FromNameOption { get; private set; }
+        public Option<int?> AccountIdOption { get; private set; }
 
         /// <summary>
-        /// Gets or Sets FromName
+        /// Gets or Sets AccountId
         /// </summary>
-        [JsonPropertyName("from_name")]
-        public string? FromName { get { return this.FromNameOption; } set { this.FromNameOption = new(value); } }
+        [JsonPropertyName("account_id")]
+        public int? AccountId { get { return this.AccountIdOption; } set { this.AccountIdOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of Subject
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> SubjectOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets Subject
+        /// </summary>
+        [JsonPropertyName("subject")]
+        public string? Subject { get { return this.SubjectOption; } set { this.SubjectOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of ReplyTo
@@ -253,6 +288,110 @@ namespace MailOdds.Model
         public string? ReplyTo { get { return this.ReplyToOption; } set { this.ReplyToOption = new(value); } }
 
         /// <summary>
+        /// Used to track the state of HtmlBody
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> HtmlBodyOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets HtmlBody
+        /// </summary>
+        [JsonPropertyName("html_body")]
+        public string? HtmlBody { get { return this.HtmlBodyOption; } set { this.HtmlBodyOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of TextBody
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> TextBodyOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets TextBody
+        /// </summary>
+        [JsonPropertyName("text_body")]
+        public string? TextBody { get { return this.TextBodyOption; } set { this.TextBodyOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of HtmlBodyDark
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> HtmlBodyDarkOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets HtmlBodyDark
+        /// </summary>
+        [JsonPropertyName("html_body_dark")]
+        public string? HtmlBodyDark { get { return this.HtmlBodyDarkOption; } set { this.HtmlBodyDarkOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of TextBodyDark
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> TextBodyDarkOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets TextBodyDark
+        /// </summary>
+        [JsonPropertyName("text_body_dark")]
+        public string? TextBodyDark { get { return this.TextBodyDarkOption; } set { this.TextBodyDarkOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of CampaignType
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> CampaignTypeOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets CampaignType
+        /// </summary>
+        [JsonPropertyName("campaign_type")]
+        public string? CampaignType { get { return this.CampaignTypeOption; } set { this.CampaignTypeOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of AutoDetectSchema
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<bool?> AutoDetectSchemaOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets AutoDetectSchema
+        /// </summary>
+        [JsonPropertyName("auto_detect_schema")]
+        public bool? AutoDetectSchema { get { return this.AutoDetectSchemaOption; } set { this.AutoDetectSchemaOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of PromoAnnotations
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<Object?> PromoAnnotationsOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets PromoAnnotations
+        /// </summary>
+        [JsonPropertyName("promo_annotations")]
+        public Object? PromoAnnotations { get { return this.PromoAnnotationsOption; } set { this.PromoAnnotationsOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of ThrowawayPolicy
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> ThrowawayPolicyOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets ThrowawayPolicy
+        /// </summary>
+        [JsonPropertyName("throwaway_policy")]
+        public string? ThrowawayPolicy { get { return this.ThrowawayPolicyOption; } set { this.ThrowawayPolicyOption = new(value); } }
+
+        /// <summary>
         /// Used to track the state of ScheduledAt
         /// </summary>
         [JsonIgnore]
@@ -266,44 +405,95 @@ namespace MailOdds.Model
         public DateTime? ScheduledAt { get { return this.ScheduledAtOption; } set { this.ScheduledAtOption = new(value); } }
 
         /// <summary>
-        /// Used to track the state of SentAt
+        /// Used to track the state of StartedAt
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<DateTime?> SentAtOption { get; private set; }
+        public Option<DateTime?> StartedAtOption { get; private set; }
 
         /// <summary>
-        /// Gets or Sets SentAt
+        /// Gets or Sets StartedAt
         /// </summary>
-        [JsonPropertyName("sent_at")]
-        public DateTime? SentAt { get { return this.SentAtOption; } set { this.SentAtOption = new(value); } }
+        [JsonPropertyName("started_at")]
+        public DateTime? StartedAt { get { return this.StartedAtOption; } set { this.StartedAtOption = new(value); } }
 
         /// <summary>
-        /// Used to track the state of CancelledAt
-        /// </summary>
-        [JsonIgnore]
-        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<DateTime?> CancelledAtOption { get; private set; }
-
-        /// <summary>
-        /// Gets or Sets CancelledAt
-        /// </summary>
-        [JsonPropertyName("cancelled_at")]
-        public DateTime? CancelledAt { get { return this.CancelledAtOption; } set { this.CancelledAtOption = new(value); } }
-
-        /// <summary>
-        /// Used to track the state of VariantCount
+        /// Used to track the state of CompletedAt
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> VariantCountOption { get; private set; }
+        public Option<DateTime?> CompletedAtOption { get; private set; }
 
         /// <summary>
-        /// Number of A/B variants
+        /// Gets or Sets CompletedAt
         /// </summary>
-        /// <value>Number of A/B variants</value>
-        [JsonPropertyName("variant_count")]
-        public int? VariantCount { get { return this.VariantCountOption; } set { this.VariantCountOption = new(value); } }
+        [JsonPropertyName("completed_at")]
+        public DateTime? CompletedAt { get { return this.CompletedAtOption; } set { this.CompletedAtOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of RecipientCount
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<int?> RecipientCountOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets RecipientCount
+        /// </summary>
+        [JsonPropertyName("recipient_count")]
+        public int? RecipientCount { get { return this.RecipientCountOption; } set { this.RecipientCountOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of IsAbTest
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<bool?> IsAbTestOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets IsAbTest
+        /// </summary>
+        [JsonPropertyName("is_ab_test")]
+        public bool? IsAbTest { get { return this.IsAbTestOption; } set { this.IsAbTestOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of WinningVariantId
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> WinningVariantIdOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets WinningVariantId
+        /// </summary>
+        [JsonPropertyName("winning_variant_id")]
+        public string? WinningVariantId { get { return this.WinningVariantIdOption; } set { this.WinningVariantIdOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of AbTestConfig
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<Object?> AbTestConfigOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets AbTestConfig
+        /// </summary>
+        [JsonPropertyName("ab_test_config")]
+        public Object? AbTestConfig { get { return this.AbTestConfigOption; } set { this.AbTestConfigOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of ErrorMessage
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> ErrorMessageOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets ErrorMessage
+        /// </summary>
+        [JsonPropertyName("error_message")]
+        public string? ErrorMessage { get { return this.ErrorMessageOption; } set { this.ErrorMessageOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Stats
@@ -317,6 +507,32 @@ namespace MailOdds.Model
         /// </summary>
         [JsonPropertyName("stats")]
         public CampaignStats? Stats { get { return this.StatsOption; } set { this.StatsOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of OpenRate
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<decimal?> OpenRateOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets OpenRate
+        /// </summary>
+        [JsonPropertyName("open_rate")]
+        public decimal? OpenRate { get { return this.OpenRateOption; } set { this.OpenRateOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of ClickRate
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<decimal?> ClickRateOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets ClickRate
+        /// </summary>
+        [JsonPropertyName("click_rate")]
+        public decimal? ClickRate { get { return this.ClickRateOption; } set { this.ClickRateOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of UpdatedAt
@@ -342,17 +558,31 @@ namespace MailOdds.Model
             sb.Append("  Id: ").Append(Id).Append("\n");
             sb.Append("  Name: ").Append(Name).Append("\n");
             sb.Append("  Status: ").Append(Status).Append("\n");
-            sb.Append("  ListId: ").Append(ListId).Append("\n");
             sb.Append("  DomainId: ").Append(DomainId).Append("\n");
-            sb.Append("  FromEmail: ").Append(FromEmail).Append("\n");
+            sb.Append("  FromAddress: ").Append(FromAddress).Append("\n");
             sb.Append("  CreatedAt: ").Append(CreatedAt).Append("\n");
-            sb.Append("  FromName: ").Append(FromName).Append("\n");
+            sb.Append("  AccountId: ").Append(AccountId).Append("\n");
+            sb.Append("  Subject: ").Append(Subject).Append("\n");
             sb.Append("  ReplyTo: ").Append(ReplyTo).Append("\n");
+            sb.Append("  HtmlBody: ").Append(HtmlBody).Append("\n");
+            sb.Append("  TextBody: ").Append(TextBody).Append("\n");
+            sb.Append("  HtmlBodyDark: ").Append(HtmlBodyDark).Append("\n");
+            sb.Append("  TextBodyDark: ").Append(TextBodyDark).Append("\n");
+            sb.Append("  CampaignType: ").Append(CampaignType).Append("\n");
+            sb.Append("  AutoDetectSchema: ").Append(AutoDetectSchema).Append("\n");
+            sb.Append("  PromoAnnotations: ").Append(PromoAnnotations).Append("\n");
+            sb.Append("  ThrowawayPolicy: ").Append(ThrowawayPolicy).Append("\n");
             sb.Append("  ScheduledAt: ").Append(ScheduledAt).Append("\n");
-            sb.Append("  SentAt: ").Append(SentAt).Append("\n");
-            sb.Append("  CancelledAt: ").Append(CancelledAt).Append("\n");
-            sb.Append("  VariantCount: ").Append(VariantCount).Append("\n");
+            sb.Append("  StartedAt: ").Append(StartedAt).Append("\n");
+            sb.Append("  CompletedAt: ").Append(CompletedAt).Append("\n");
+            sb.Append("  RecipientCount: ").Append(RecipientCount).Append("\n");
+            sb.Append("  IsAbTest: ").Append(IsAbTest).Append("\n");
+            sb.Append("  WinningVariantId: ").Append(WinningVariantId).Append("\n");
+            sb.Append("  AbTestConfig: ").Append(AbTestConfig).Append("\n");
+            sb.Append("  ErrorMessage: ").Append(ErrorMessage).Append("\n");
             sb.Append("  Stats: ").Append(Stats).Append("\n");
+            sb.Append("  OpenRate: ").Append(OpenRate).Append("\n");
+            sb.Append("  ClickRate: ").Append(ClickRate).Append("\n");
             sb.Append("  UpdatedAt: ").Append(UpdatedAt).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
@@ -385,14 +615,14 @@ namespace MailOdds.Model
         public static string ScheduledAtFormat { get; set; } = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffffK";
 
         /// <summary>
-        /// The format to use to serialize SentAt
+        /// The format to use to serialize StartedAt
         /// </summary>
-        public static string SentAtFormat { get; set; } = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffffK";
+        public static string StartedAtFormat { get; set; } = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffffK";
 
         /// <summary>
-        /// The format to use to serialize CancelledAt
+        /// The format to use to serialize CompletedAt
         /// </summary>
-        public static string CancelledAtFormat { get; set; } = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffffK";
+        public static string CompletedAtFormat { get; set; } = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffffK";
 
         /// <summary>
         /// The format to use to serialize UpdatedAt
@@ -419,17 +649,31 @@ namespace MailOdds.Model
             Option<string?> id = default;
             Option<string?> name = default;
             Option<Campaign.StatusEnum?> status = default;
-            Option<string?> listId = default;
             Option<string?> domainId = default;
-            Option<string?> fromEmail = default;
+            Option<string?> fromAddress = default;
             Option<DateTime?> createdAt = default;
-            Option<string?> fromName = default;
+            Option<int?> accountId = default;
+            Option<string?> subject = default;
             Option<string?> replyTo = default;
+            Option<string?> htmlBody = default;
+            Option<string?> textBody = default;
+            Option<string?> htmlBodyDark = default;
+            Option<string?> textBodyDark = default;
+            Option<string?> campaignType = default;
+            Option<bool?> autoDetectSchema = default;
+            Option<Object?> promoAnnotations = default;
+            Option<string?> throwawayPolicy = default;
             Option<DateTime?> scheduledAt = default;
-            Option<DateTime?> sentAt = default;
-            Option<DateTime?> cancelledAt = default;
-            Option<int?> variantCount = default;
+            Option<DateTime?> startedAt = default;
+            Option<DateTime?> completedAt = default;
+            Option<int?> recipientCount = default;
+            Option<bool?> isAbTest = default;
+            Option<string?> winningVariantId = default;
+            Option<Object?> abTestConfig = default;
+            Option<string?> errorMessage = default;
             Option<CampaignStats?> stats = default;
+            Option<decimal?> openRate = default;
+            Option<decimal?> clickRate = default;
             Option<DateTime?> updatedAt = default;
 
             while (utf8JsonReader.Read())
@@ -458,38 +702,80 @@ namespace MailOdds.Model
                             if (statusRawValue != null)
                                 status = new Option<Campaign.StatusEnum?>(Campaign.StatusEnumFromStringOrDefault(statusRawValue));
                             break;
-                        case "list_id":
-                            listId = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
                         case "domain_id":
                             domainId = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
-                        case "from_email":
-                            fromEmail = new Option<string?>(utf8JsonReader.GetString()!);
+                        case "from_address":
+                            fromAddress = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         case "created_at":
                             createdAt = new Option<DateTime?>(JsonSerializer.Deserialize<DateTime>(ref utf8JsonReader, jsonSerializerOptions));
                             break;
-                        case "from_name":
-                            fromName = new Option<string?>(utf8JsonReader.GetString()!);
+                        case "account_id":
+                            accountId = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
+                            break;
+                        case "subject":
+                            subject = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         case "reply_to":
                             replyTo = new Option<string?>(utf8JsonReader.GetString());
                             break;
+                        case "html_body":
+                            htmlBody = new Option<string?>(utf8JsonReader.GetString());
+                            break;
+                        case "text_body":
+                            textBody = new Option<string?>(utf8JsonReader.GetString());
+                            break;
+                        case "html_body_dark":
+                            htmlBodyDark = new Option<string?>(utf8JsonReader.GetString());
+                            break;
+                        case "text_body_dark":
+                            textBodyDark = new Option<string?>(utf8JsonReader.GetString());
+                            break;
+                        case "campaign_type":
+                            campaignType = new Option<string?>(utf8JsonReader.GetString());
+                            break;
+                        case "auto_detect_schema":
+                            autoDetectSchema = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
+                            break;
+                        case "promo_annotations":
+                            promoAnnotations = new Option<Object?>(JsonSerializer.Deserialize<Object>(ref utf8JsonReader, jsonSerializerOptions));
+                            break;
+                        case "throwaway_policy":
+                            throwawayPolicy = new Option<string?>(utf8JsonReader.GetString()!);
+                            break;
                         case "scheduled_at":
                             scheduledAt = new Option<DateTime?>(JsonSerializer.Deserialize<DateTime?>(ref utf8JsonReader, jsonSerializerOptions));
                             break;
-                        case "sent_at":
-                            sentAt = new Option<DateTime?>(JsonSerializer.Deserialize<DateTime?>(ref utf8JsonReader, jsonSerializerOptions));
+                        case "started_at":
+                            startedAt = new Option<DateTime?>(JsonSerializer.Deserialize<DateTime?>(ref utf8JsonReader, jsonSerializerOptions));
                             break;
-                        case "cancelled_at":
-                            cancelledAt = new Option<DateTime?>(JsonSerializer.Deserialize<DateTime?>(ref utf8JsonReader, jsonSerializerOptions));
+                        case "completed_at":
+                            completedAt = new Option<DateTime?>(JsonSerializer.Deserialize<DateTime?>(ref utf8JsonReader, jsonSerializerOptions));
                             break;
-                        case "variant_count":
-                            variantCount = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
+                        case "recipient_count":
+                            recipientCount = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
+                            break;
+                        case "is_ab_test":
+                            isAbTest = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
+                            break;
+                        case "winning_variant_id":
+                            winningVariantId = new Option<string?>(utf8JsonReader.GetString());
+                            break;
+                        case "ab_test_config":
+                            abTestConfig = new Option<Object?>(JsonSerializer.Deserialize<Object>(ref utf8JsonReader, jsonSerializerOptions));
+                            break;
+                        case "error_message":
+                            errorMessage = new Option<string?>(utf8JsonReader.GetString());
                             break;
                         case "stats":
                             stats = new Option<CampaignStats?>(JsonSerializer.Deserialize<CampaignStats>(ref utf8JsonReader, jsonSerializerOptions)!);
+                            break;
+                        case "open_rate":
+                            openRate = new Option<decimal?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (decimal?)null : utf8JsonReader.GetDecimal());
+                            break;
+                        case "click_rate":
+                            clickRate = new Option<decimal?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (decimal?)null : utf8JsonReader.GetDecimal());
                             break;
                         case "updated_at":
                             updatedAt = new Option<DateTime?>(JsonSerializer.Deserialize<DateTime>(ref utf8JsonReader, jsonSerializerOptions));
@@ -509,14 +795,11 @@ namespace MailOdds.Model
             if (!status.IsSet)
                 throw new ArgumentException("Property is required for class Campaign.", nameof(status));
 
-            if (!listId.IsSet)
-                throw new ArgumentException("Property is required for class Campaign.", nameof(listId));
-
             if (!domainId.IsSet)
                 throw new ArgumentException("Property is required for class Campaign.", nameof(domainId));
 
-            if (!fromEmail.IsSet)
-                throw new ArgumentException("Property is required for class Campaign.", nameof(fromEmail));
+            if (!fromAddress.IsSet)
+                throw new ArgumentException("Property is required for class Campaign.", nameof(fromAddress));
 
             if (!createdAt.IsSet)
                 throw new ArgumentException("Property is required for class Campaign.", nameof(createdAt));
@@ -530,31 +813,46 @@ namespace MailOdds.Model
             if (status.IsSet && status.Value == null)
                 throw new ArgumentNullException(nameof(status), "Property is not nullable for class Campaign.");
 
-            if (listId.IsSet && listId.Value == null)
-                throw new ArgumentNullException(nameof(listId), "Property is not nullable for class Campaign.");
-
             if (domainId.IsSet && domainId.Value == null)
                 throw new ArgumentNullException(nameof(domainId), "Property is not nullable for class Campaign.");
 
-            if (fromEmail.IsSet && fromEmail.Value == null)
-                throw new ArgumentNullException(nameof(fromEmail), "Property is not nullable for class Campaign.");
+            if (fromAddress.IsSet && fromAddress.Value == null)
+                throw new ArgumentNullException(nameof(fromAddress), "Property is not nullable for class Campaign.");
 
             if (createdAt.IsSet && createdAt.Value == null)
                 throw new ArgumentNullException(nameof(createdAt), "Property is not nullable for class Campaign.");
 
-            if (fromName.IsSet && fromName.Value == null)
-                throw new ArgumentNullException(nameof(fromName), "Property is not nullable for class Campaign.");
+            if (accountId.IsSet && accountId.Value == null)
+                throw new ArgumentNullException(nameof(accountId), "Property is not nullable for class Campaign.");
 
-            if (variantCount.IsSet && variantCount.Value == null)
-                throw new ArgumentNullException(nameof(variantCount), "Property is not nullable for class Campaign.");
+            if (subject.IsSet && subject.Value == null)
+                throw new ArgumentNullException(nameof(subject), "Property is not nullable for class Campaign.");
+
+            if (autoDetectSchema.IsSet && autoDetectSchema.Value == null)
+                throw new ArgumentNullException(nameof(autoDetectSchema), "Property is not nullable for class Campaign.");
+
+            if (throwawayPolicy.IsSet && throwawayPolicy.Value == null)
+                throw new ArgumentNullException(nameof(throwawayPolicy), "Property is not nullable for class Campaign.");
+
+            if (recipientCount.IsSet && recipientCount.Value == null)
+                throw new ArgumentNullException(nameof(recipientCount), "Property is not nullable for class Campaign.");
+
+            if (isAbTest.IsSet && isAbTest.Value == null)
+                throw new ArgumentNullException(nameof(isAbTest), "Property is not nullable for class Campaign.");
 
             if (stats.IsSet && stats.Value == null)
                 throw new ArgumentNullException(nameof(stats), "Property is not nullable for class Campaign.");
 
+            if (openRate.IsSet && openRate.Value == null)
+                throw new ArgumentNullException(nameof(openRate), "Property is not nullable for class Campaign.");
+
+            if (clickRate.IsSet && clickRate.Value == null)
+                throw new ArgumentNullException(nameof(clickRate), "Property is not nullable for class Campaign.");
+
             if (updatedAt.IsSet && updatedAt.Value == null)
                 throw new ArgumentNullException(nameof(updatedAt), "Property is not nullable for class Campaign.");
 
-            return new Campaign(id.Value!, name.Value!, status.Value!.Value!, listId.Value!, domainId.Value!, fromEmail.Value!, createdAt.Value!.Value!, fromName, replyTo, scheduledAt, sentAt, cancelledAt, variantCount, stats, updatedAt);
+            return new Campaign(id.Value!, name.Value!, status.Value!.Value!, domainId.Value!, fromAddress.Value!, createdAt.Value!.Value!, accountId, subject, replyTo, htmlBody, textBody, htmlBodyDark, textBodyDark, campaignType, autoDetectSchema, promoAnnotations, throwawayPolicy, scheduledAt, startedAt, completedAt, recipientCount, isAbTest, winningVariantId, abTestConfig, errorMessage, stats, openRate, clickRate, updatedAt);
         }
 
         /// <summary>
@@ -587,17 +885,17 @@ namespace MailOdds.Model
             if (campaign.Name == null)
                 throw new ArgumentNullException(nameof(campaign.Name), "Property is required for class Campaign.");
 
-            if (campaign.ListId == null)
-                throw new ArgumentNullException(nameof(campaign.ListId), "Property is required for class Campaign.");
-
             if (campaign.DomainId == null)
                 throw new ArgumentNullException(nameof(campaign.DomainId), "Property is required for class Campaign.");
 
-            if (campaign.FromEmail == null)
-                throw new ArgumentNullException(nameof(campaign.FromEmail), "Property is required for class Campaign.");
+            if (campaign.FromAddress == null)
+                throw new ArgumentNullException(nameof(campaign.FromAddress), "Property is required for class Campaign.");
 
-            if (campaign.FromNameOption.IsSet && campaign.FromName == null)
-                throw new ArgumentNullException(nameof(campaign.FromName), "Property is required for class Campaign.");
+            if (campaign.SubjectOption.IsSet && campaign.Subject == null)
+                throw new ArgumentNullException(nameof(campaign.Subject), "Property is required for class Campaign.");
+
+            if (campaign.ThrowawayPolicyOption.IsSet && campaign.ThrowawayPolicy == null)
+                throw new ArgumentNullException(nameof(campaign.ThrowawayPolicy), "Property is required for class Campaign.");
 
             if (campaign.StatsOption.IsSet && campaign.Stats == null)
                 throw new ArgumentNullException(nameof(campaign.Stats), "Property is required for class Campaign.");
@@ -608,16 +906,17 @@ namespace MailOdds.Model
 
             var statusRawValue = Campaign.StatusEnumToJsonValue(campaign.Status);
             writer.WriteString("status", statusRawValue);
-            writer.WriteString("list_id", campaign.ListId);
-
             writer.WriteString("domain_id", campaign.DomainId);
 
-            writer.WriteString("from_email", campaign.FromEmail);
+            writer.WriteString("from_address", campaign.FromAddress);
 
             writer.WriteString("created_at", campaign.CreatedAt.ToString(CreatedAtFormat));
 
-            if (campaign.FromNameOption.IsSet)
-                writer.WriteString("from_name", campaign.FromName);
+            if (campaign.AccountIdOption.IsSet)
+                writer.WriteNumber("account_id", campaign.AccountIdOption.Value!.Value);
+
+            if (campaign.SubjectOption.IsSet)
+                writer.WriteString("subject", campaign.Subject);
 
             if (campaign.ReplyToOption.IsSet)
                 if (campaign.ReplyToOption.Value != null)
@@ -625,32 +924,105 @@ namespace MailOdds.Model
                 else
                     writer.WriteNull("reply_to");
 
+            if (campaign.HtmlBodyOption.IsSet)
+                if (campaign.HtmlBodyOption.Value != null)
+                    writer.WriteString("html_body", campaign.HtmlBody);
+                else
+                    writer.WriteNull("html_body");
+
+            if (campaign.TextBodyOption.IsSet)
+                if (campaign.TextBodyOption.Value != null)
+                    writer.WriteString("text_body", campaign.TextBody);
+                else
+                    writer.WriteNull("text_body");
+
+            if (campaign.HtmlBodyDarkOption.IsSet)
+                if (campaign.HtmlBodyDarkOption.Value != null)
+                    writer.WriteString("html_body_dark", campaign.HtmlBodyDark);
+                else
+                    writer.WriteNull("html_body_dark");
+
+            if (campaign.TextBodyDarkOption.IsSet)
+                if (campaign.TextBodyDarkOption.Value != null)
+                    writer.WriteString("text_body_dark", campaign.TextBodyDark);
+                else
+                    writer.WriteNull("text_body_dark");
+
+            if (campaign.CampaignTypeOption.IsSet)
+                if (campaign.CampaignTypeOption.Value != null)
+                    writer.WriteString("campaign_type", campaign.CampaignType);
+                else
+                    writer.WriteNull("campaign_type");
+
+            if (campaign.AutoDetectSchemaOption.IsSet)
+                writer.WriteBoolean("auto_detect_schema", campaign.AutoDetectSchemaOption.Value!.Value);
+
+            if (campaign.PromoAnnotationsOption.IsSet)
+                if (campaign.PromoAnnotationsOption.Value != null)
+                {
+                    writer.WritePropertyName("promo_annotations");
+                    JsonSerializer.Serialize(writer, campaign.PromoAnnotations, jsonSerializerOptions);
+                }
+                else
+                    writer.WriteNull("promo_annotations");
+            if (campaign.ThrowawayPolicyOption.IsSet)
+                writer.WriteString("throwaway_policy", campaign.ThrowawayPolicy);
+
             if (campaign.ScheduledAtOption.IsSet)
                 if (campaign.ScheduledAtOption.Value != null)
                     writer.WriteString("scheduled_at", campaign.ScheduledAtOption.Value!.Value.ToString(ScheduledAtFormat));
                 else
                     writer.WriteNull("scheduled_at");
 
-            if (campaign.SentAtOption.IsSet)
-                if (campaign.SentAtOption.Value != null)
-                    writer.WriteString("sent_at", campaign.SentAtOption.Value!.Value.ToString(SentAtFormat));
+            if (campaign.StartedAtOption.IsSet)
+                if (campaign.StartedAtOption.Value != null)
+                    writer.WriteString("started_at", campaign.StartedAtOption.Value!.Value.ToString(StartedAtFormat));
                 else
-                    writer.WriteNull("sent_at");
+                    writer.WriteNull("started_at");
 
-            if (campaign.CancelledAtOption.IsSet)
-                if (campaign.CancelledAtOption.Value != null)
-                    writer.WriteString("cancelled_at", campaign.CancelledAtOption.Value!.Value.ToString(CancelledAtFormat));
+            if (campaign.CompletedAtOption.IsSet)
+                if (campaign.CompletedAtOption.Value != null)
+                    writer.WriteString("completed_at", campaign.CompletedAtOption.Value!.Value.ToString(CompletedAtFormat));
                 else
-                    writer.WriteNull("cancelled_at");
+                    writer.WriteNull("completed_at");
 
-            if (campaign.VariantCountOption.IsSet)
-                writer.WriteNumber("variant_count", campaign.VariantCountOption.Value!.Value);
+            if (campaign.RecipientCountOption.IsSet)
+                writer.WriteNumber("recipient_count", campaign.RecipientCountOption.Value!.Value);
+
+            if (campaign.IsAbTestOption.IsSet)
+                writer.WriteBoolean("is_ab_test", campaign.IsAbTestOption.Value!.Value);
+
+            if (campaign.WinningVariantIdOption.IsSet)
+                if (campaign.WinningVariantIdOption.Value != null)
+                    writer.WriteString("winning_variant_id", campaign.WinningVariantId);
+                else
+                    writer.WriteNull("winning_variant_id");
+
+            if (campaign.AbTestConfigOption.IsSet)
+                if (campaign.AbTestConfigOption.Value != null)
+                {
+                    writer.WritePropertyName("ab_test_config");
+                    JsonSerializer.Serialize(writer, campaign.AbTestConfig, jsonSerializerOptions);
+                }
+                else
+                    writer.WriteNull("ab_test_config");
+            if (campaign.ErrorMessageOption.IsSet)
+                if (campaign.ErrorMessageOption.Value != null)
+                    writer.WriteString("error_message", campaign.ErrorMessage);
+                else
+                    writer.WriteNull("error_message");
 
             if (campaign.StatsOption.IsSet)
             {
                 writer.WritePropertyName("stats");
                 JsonSerializer.Serialize(writer, campaign.Stats, jsonSerializerOptions);
             }
+            if (campaign.OpenRateOption.IsSet)
+                writer.WriteNumber("open_rate", campaign.OpenRateOption.Value!.Value);
+
+            if (campaign.ClickRateOption.IsSet)
+                writer.WriteNumber("click_rate", campaign.ClickRateOption.Value!.Value);
+
             if (campaign.UpdatedAtOption.IsSet)
                 writer.WriteString("updated_at", campaign.UpdatedAtOption.Value!.Value.ToString(UpdatedAtFormat));
         }

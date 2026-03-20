@@ -66,7 +66,7 @@ namespace MailOdds.Api
         /// Clear out-of-office status for an email address. Requires Growth+ plan.
         /// </remarks>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
-        /// <param name="email">Email address</param>
+        /// <param name="email"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IDeleteOooContactApiResponse"/>&gt;</returns>
         Task<IDeleteOooContactApiResponse> DeleteOooContactAsync(string email, System.Threading.CancellationToken cancellationToken = default);
@@ -77,7 +77,7 @@ namespace MailOdds.Api
         /// <remarks>
         /// Clear out-of-office status for an email address. Requires Growth+ plan.
         /// </remarks>
-        /// <param name="email">Email address</param>
+        /// <param name="email"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IDeleteOooContactApiResponse"/>?&gt;</returns>
         Task<IDeleteOooContactApiResponse?> DeleteOooContactOrDefaultAsync(string email, System.Threading.CancellationToken cancellationToken = default);
@@ -89,7 +89,7 @@ namespace MailOdds.Api
         /// Check if a specific email address is currently out-of-office. Requires Growth+ plan.
         /// </remarks>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
-        /// <param name="email">Email address to check</param>
+        /// <param name="email"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetOooStatusApiResponse"/>&gt;</returns>
         Task<IGetOooStatusApiResponse> GetOooStatusAsync(string email, System.Threading.CancellationToken cancellationToken = default);
@@ -100,7 +100,7 @@ namespace MailOdds.Api
         /// <remarks>
         /// Check if a specific email address is currently out-of-office. Requires Growth+ plan.
         /// </remarks>
-        /// <param name="email">Email address to check</param>
+        /// <param name="email"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetOooStatusApiResponse"/>?&gt;</returns>
         Task<IGetOooStatusApiResponse?> GetOooStatusOrDefaultAsync(string email, System.Threading.CancellationToken cancellationToken = default);
@@ -139,7 +139,7 @@ namespace MailOdds.Api
         /// Manually set or clear out-of-office status for an email. Requires Growth+ plan.
         /// </remarks>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
-        /// <param name="email">Email address</param>
+        /// <param name="email"></param>
         /// <param name="updateOooContactRequest"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IUpdateOooContactApiResponse"/>&gt;</returns>
@@ -151,7 +151,7 @@ namespace MailOdds.Api
         /// <remarks>
         /// Manually set or clear out-of-office status for an email. Requires Growth+ plan.
         /// </remarks>
-        /// <param name="email">Email address</param>
+        /// <param name="email"></param>
         /// <param name="updateOooContactRequest"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IUpdateOooContactApiResponse"/>?&gt;</returns>
@@ -161,13 +161,19 @@ namespace MailOdds.Api
     /// <summary>
     /// The <see cref="IBatchCheckOooApiResponse"/>
     /// </summary>
-    public interface IBatchCheckOooApiResponse : MailOdds.Client.IApiResponse, IOk<MailOdds.Model.BatchCheckOoo200Response?>, IBadRequest<MailOdds.Model.ErrorResponse?>, IUnauthorized<MailOdds.Model.ErrorResponse?>, IForbidden<MailOdds.Model.ErrorResponse?>
+    public interface IBatchCheckOooApiResponse : MailOdds.Client.IApiResponse, IOk<MailOdds.Model.BatchCheckOoo200Response?>, IForbidden<MailOdds.Model.ErrorResponse?>, IBadRequest<MailOdds.Model.ErrorResponse?>, IUnauthorized<MailOdds.Model.ErrorResponse?>
     {
         /// <summary>
         /// Returns true if the response is 200 Ok
         /// </summary>
         /// <returns></returns>
         bool IsOk { get; }
+
+        /// <summary>
+        /// Returns true if the response is 403 Forbidden
+        /// </summary>
+        /// <returns></returns>
+        bool IsForbidden { get; }
 
         /// <summary>
         /// Returns true if the response is 400 BadRequest
@@ -180,30 +186,18 @@ namespace MailOdds.Api
         /// </summary>
         /// <returns></returns>
         bool IsUnauthorized { get; }
-
-        /// <summary>
-        /// Returns true if the response is 403 Forbidden
-        /// </summary>
-        /// <returns></returns>
-        bool IsForbidden { get; }
     }
 
     /// <summary>
     /// The <see cref="IDeleteOooContactApiResponse"/>
     /// </summary>
-    public interface IDeleteOooContactApiResponse : MailOdds.Client.IApiResponse, IOk<MailOdds.Model.DeleteOooContact200Response?>, IUnauthorized<MailOdds.Model.ErrorResponse?>, IForbidden<MailOdds.Model.ErrorResponse?>, INotFound<MailOdds.Model.ErrorResponse?>
+    public interface IDeleteOooContactApiResponse : MailOdds.Client.IApiResponse, IOk<MailOdds.Model.DeleteOooContact200Response?>, IForbidden<MailOdds.Model.ErrorResponse?>, INotFound<MailOdds.Model.ErrorResponse?>, IUnauthorized<MailOdds.Model.ErrorResponse?>
     {
         /// <summary>
         /// Returns true if the response is 200 Ok
         /// </summary>
         /// <returns></returns>
         bool IsOk { get; }
-
-        /// <summary>
-        /// Returns true if the response is 401 Unauthorized
-        /// </summary>
-        /// <returns></returns>
-        bool IsUnauthorized { get; }
 
         /// <summary>
         /// Returns true if the response is 403 Forbidden
@@ -216,12 +210,18 @@ namespace MailOdds.Api
         /// </summary>
         /// <returns></returns>
         bool IsNotFound { get; }
+
+        /// <summary>
+        /// Returns true if the response is 401 Unauthorized
+        /// </summary>
+        /// <returns></returns>
+        bool IsUnauthorized { get; }
     }
 
     /// <summary>
     /// The <see cref="IGetOooStatusApiResponse"/>
     /// </summary>
-    public interface IGetOooStatusApiResponse : MailOdds.Client.IApiResponse, IOk<MailOdds.Model.GetOooStatus200Response?>, IUnauthorized<MailOdds.Model.ErrorResponse?>, IForbidden<MailOdds.Model.ErrorResponse?>
+    public interface IGetOooStatusApiResponse : MailOdds.Client.IApiResponse, IOk<MailOdds.Model.GetOooStatus200Response?>, IForbidden<MailOdds.Model.ErrorResponse?>, IUnauthorized<MailOdds.Model.ErrorResponse?>
     {
         /// <summary>
         /// Returns true if the response is 200 Ok
@@ -230,22 +230,22 @@ namespace MailOdds.Api
         bool IsOk { get; }
 
         /// <summary>
-        /// Returns true if the response is 401 Unauthorized
-        /// </summary>
-        /// <returns></returns>
-        bool IsUnauthorized { get; }
-
-        /// <summary>
         /// Returns true if the response is 403 Forbidden
         /// </summary>
         /// <returns></returns>
         bool IsForbidden { get; }
+
+        /// <summary>
+        /// Returns true if the response is 401 Unauthorized
+        /// </summary>
+        /// <returns></returns>
+        bool IsUnauthorized { get; }
     }
 
     /// <summary>
     /// The <see cref="IListOooContactsApiResponse"/>
     /// </summary>
-    public interface IListOooContactsApiResponse : MailOdds.Client.IApiResponse, IOk<MailOdds.Model.ListOooContacts200Response?>, IUnauthorized<MailOdds.Model.ErrorResponse?>, IForbidden<MailOdds.Model.ErrorResponse?>
+    public interface IListOooContactsApiResponse : MailOdds.Client.IApiResponse, IOk<MailOdds.Model.ListOooContacts200Response?>, IForbidden<MailOdds.Model.ErrorResponse?>, IUnauthorized<MailOdds.Model.ErrorResponse?>
     {
         /// <summary>
         /// Returns true if the response is 200 Ok
@@ -254,22 +254,22 @@ namespace MailOdds.Api
         bool IsOk { get; }
 
         /// <summary>
-        /// Returns true if the response is 401 Unauthorized
-        /// </summary>
-        /// <returns></returns>
-        bool IsUnauthorized { get; }
-
-        /// <summary>
         /// Returns true if the response is 403 Forbidden
         /// </summary>
         /// <returns></returns>
         bool IsForbidden { get; }
+
+        /// <summary>
+        /// Returns true if the response is 401 Unauthorized
+        /// </summary>
+        /// <returns></returns>
+        bool IsUnauthorized { get; }
     }
 
     /// <summary>
     /// The <see cref="IUpdateOooContactApiResponse"/>
     /// </summary>
-    public interface IUpdateOooContactApiResponse : MailOdds.Client.IApiResponse, IOk<Object?>, IUnauthorized<MailOdds.Model.ErrorResponse?>, IForbidden<MailOdds.Model.ErrorResponse?>
+    public interface IUpdateOooContactApiResponse : MailOdds.Client.IApiResponse, IOk<Object?>, IForbidden<MailOdds.Model.ErrorResponse?>, IBadRequest<MailOdds.Model.ErrorResponse?>, IUnauthorized<MailOdds.Model.ErrorResponse?>
     {
         /// <summary>
         /// Returns true if the response is 200 Ok
@@ -278,16 +278,22 @@ namespace MailOdds.Api
         bool IsOk { get; }
 
         /// <summary>
-        /// Returns true if the response is 401 Unauthorized
-        /// </summary>
-        /// <returns></returns>
-        bool IsUnauthorized { get; }
-
-        /// <summary>
         /// Returns true if the response is 403 Forbidden
         /// </summary>
         /// <returns></returns>
         bool IsForbidden { get; }
+
+        /// <summary>
+        /// Returns true if the response is 400 BadRequest
+        /// </summary>
+        /// <returns></returns>
+        bool IsBadRequest { get; }
+
+        /// <summary>
+        /// Returns true if the response is 401 Unauthorized
+        /// </summary>
+        /// <returns></returns>
+        bool IsUnauthorized { get; }
     }
 
     /// <summary>
@@ -698,6 +704,44 @@ namespace MailOdds.Api
             }
 
             /// <summary>
+            /// Returns true if the response is 403 Forbidden
+            /// </summary>
+            /// <returns></returns>
+            public bool IsForbidden => 403 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 403 Forbidden
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.ErrorResponse? Forbidden()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsForbidden
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 403 Forbidden and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryForbidden([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Forbidden();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)403);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
             /// Returns true if the response is 400 BadRequest
             /// </summary>
             /// <returns></returns>
@@ -768,44 +812,6 @@ namespace MailOdds.Api
                 } catch (Exception e)
                 {
                     OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)401);
-                }
-
-                return result != null;
-            }
-
-            /// <summary>
-            /// Returns true if the response is 403 Forbidden
-            /// </summary>
-            /// <returns></returns>
-            public bool IsForbidden => 403 == (int)StatusCode;
-
-            /// <summary>
-            /// Deserializes the response if the response is 403 Forbidden
-            /// </summary>
-            /// <returns></returns>
-            public MailOdds.Model.ErrorResponse? Forbidden()
-            {
-                // This logic may be modified with the AsModel.mustache template
-                return IsForbidden
-                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
-                    : null;
-            }
-
-            /// <summary>
-            /// Returns true if the response is 403 Forbidden and the deserialized response is not null
-            /// </summary>
-            /// <param name="result"></param>
-            /// <returns></returns>
-            public bool TryForbidden([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
-            {
-                result = null;
-
-                try
-                {
-                    result = Forbidden();
-                } catch (Exception e)
-                {
-                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)403);
                 }
 
                 return result != null;
@@ -884,7 +890,7 @@ namespace MailOdds.Api
         /// <summary>
         /// Delete OOO contact Clear out-of-office status for an email address. Requires Growth+ plan.
         /// </summary>
-        /// <param name="email">Email address</param>
+        /// <param name="email"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IDeleteOooContactApiResponse"/>&gt;</returns>
         public async Task<IDeleteOooContactApiResponse?> DeleteOooContactOrDefaultAsync(string email, System.Threading.CancellationToken cancellationToken = default)
@@ -903,7 +909,7 @@ namespace MailOdds.Api
         /// Delete OOO contact Clear out-of-office status for an email address. Requires Growth+ plan.
         /// </summary>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
-        /// <param name="email">Email address</param>
+        /// <param name="email"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IDeleteOooContactApiResponse"/>&gt;</returns>
         public async Task<IDeleteOooContactApiResponse> DeleteOooContactAsync(string email, System.Threading.CancellationToken cancellationToken = default)
@@ -1065,44 +1071,6 @@ namespace MailOdds.Api
             }
 
             /// <summary>
-            /// Returns true if the response is 401 Unauthorized
-            /// </summary>
-            /// <returns></returns>
-            public bool IsUnauthorized => 401 == (int)StatusCode;
-
-            /// <summary>
-            /// Deserializes the response if the response is 401 Unauthorized
-            /// </summary>
-            /// <returns></returns>
-            public MailOdds.Model.ErrorResponse? Unauthorized()
-            {
-                // This logic may be modified with the AsModel.mustache template
-                return IsUnauthorized
-                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
-                    : null;
-            }
-
-            /// <summary>
-            /// Returns true if the response is 401 Unauthorized and the deserialized response is not null
-            /// </summary>
-            /// <param name="result"></param>
-            /// <returns></returns>
-            public bool TryUnauthorized([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
-            {
-                result = null;
-
-                try
-                {
-                    result = Unauthorized();
-                } catch (Exception e)
-                {
-                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)401);
-                }
-
-                return result != null;
-            }
-
-            /// <summary>
             /// Returns true if the response is 403 Forbidden
             /// </summary>
             /// <returns></returns>
@@ -1173,6 +1141,44 @@ namespace MailOdds.Api
                 } catch (Exception e)
                 {
                     OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)404);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public bool IsUnauthorized => 401 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.ErrorResponse? Unauthorized()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsUnauthorized
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryUnauthorized([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Unauthorized();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)401);
                 }
 
                 return result != null;
@@ -1251,7 +1257,7 @@ namespace MailOdds.Api
         /// <summary>
         /// Get OOO status for email Check if a specific email address is currently out-of-office. Requires Growth+ plan.
         /// </summary>
-        /// <param name="email">Email address to check</param>
+        /// <param name="email"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetOooStatusApiResponse"/>&gt;</returns>
         public async Task<IGetOooStatusApiResponse?> GetOooStatusOrDefaultAsync(string email, System.Threading.CancellationToken cancellationToken = default)
@@ -1270,7 +1276,7 @@ namespace MailOdds.Api
         /// Get OOO status for email Check if a specific email address is currently out-of-office. Requires Growth+ plan.
         /// </summary>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
-        /// <param name="email">Email address to check</param>
+        /// <param name="email"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetOooStatusApiResponse"/>&gt;</returns>
         public async Task<IGetOooStatusApiResponse> GetOooStatusAsync(string email, System.Threading.CancellationToken cancellationToken = default)
@@ -1432,44 +1438,6 @@ namespace MailOdds.Api
             }
 
             /// <summary>
-            /// Returns true if the response is 401 Unauthorized
-            /// </summary>
-            /// <returns></returns>
-            public bool IsUnauthorized => 401 == (int)StatusCode;
-
-            /// <summary>
-            /// Deserializes the response if the response is 401 Unauthorized
-            /// </summary>
-            /// <returns></returns>
-            public MailOdds.Model.ErrorResponse? Unauthorized()
-            {
-                // This logic may be modified with the AsModel.mustache template
-                return IsUnauthorized
-                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
-                    : null;
-            }
-
-            /// <summary>
-            /// Returns true if the response is 401 Unauthorized and the deserialized response is not null
-            /// </summary>
-            /// <param name="result"></param>
-            /// <returns></returns>
-            public bool TryUnauthorized([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
-            {
-                result = null;
-
-                try
-                {
-                    result = Unauthorized();
-                } catch (Exception e)
-                {
-                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)401);
-                }
-
-                return result != null;
-            }
-
-            /// <summary>
             /// Returns true if the response is 403 Forbidden
             /// </summary>
             /// <returns></returns>
@@ -1502,6 +1470,44 @@ namespace MailOdds.Api
                 } catch (Exception e)
                 {
                     OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)403);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public bool IsUnauthorized => 401 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.ErrorResponse? Unauthorized()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsUnauthorized
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryUnauthorized([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Unauthorized();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)401);
                 }
 
                 return result != null;
@@ -1772,44 +1778,6 @@ namespace MailOdds.Api
             }
 
             /// <summary>
-            /// Returns true if the response is 401 Unauthorized
-            /// </summary>
-            /// <returns></returns>
-            public bool IsUnauthorized => 401 == (int)StatusCode;
-
-            /// <summary>
-            /// Deserializes the response if the response is 401 Unauthorized
-            /// </summary>
-            /// <returns></returns>
-            public MailOdds.Model.ErrorResponse? Unauthorized()
-            {
-                // This logic may be modified with the AsModel.mustache template
-                return IsUnauthorized
-                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
-                    : null;
-            }
-
-            /// <summary>
-            /// Returns true if the response is 401 Unauthorized and the deserialized response is not null
-            /// </summary>
-            /// <param name="result"></param>
-            /// <returns></returns>
-            public bool TryUnauthorized([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
-            {
-                result = null;
-
-                try
-                {
-                    result = Unauthorized();
-                } catch (Exception e)
-                {
-                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)401);
-                }
-
-                return result != null;
-            }
-
-            /// <summary>
             /// Returns true if the response is 403 Forbidden
             /// </summary>
             /// <returns></returns>
@@ -1842,6 +1810,44 @@ namespace MailOdds.Api
                 } catch (Exception e)
                 {
                     OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)403);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public bool IsUnauthorized => 401 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.ErrorResponse? Unauthorized()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsUnauthorized
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryUnauthorized([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Unauthorized();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)401);
                 }
 
                 return result != null;
@@ -1928,7 +1934,7 @@ namespace MailOdds.Api
         /// <summary>
         /// Update OOO contact Manually set or clear out-of-office status for an email. Requires Growth+ plan.
         /// </summary>
-        /// <param name="email">Email address</param>
+        /// <param name="email"></param>
         /// <param name="updateOooContactRequest"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IUpdateOooContactApiResponse"/>&gt;</returns>
@@ -1948,7 +1954,7 @@ namespace MailOdds.Api
         /// Update OOO contact Manually set or clear out-of-office status for an email. Requires Growth+ plan.
         /// </summary>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
-        /// <param name="email">Email address</param>
+        /// <param name="email"></param>
         /// <param name="updateOooContactRequest"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IUpdateOooContactApiResponse"/>&gt;</returns>
@@ -2124,44 +2130,6 @@ namespace MailOdds.Api
             }
 
             /// <summary>
-            /// Returns true if the response is 401 Unauthorized
-            /// </summary>
-            /// <returns></returns>
-            public bool IsUnauthorized => 401 == (int)StatusCode;
-
-            /// <summary>
-            /// Deserializes the response if the response is 401 Unauthorized
-            /// </summary>
-            /// <returns></returns>
-            public MailOdds.Model.ErrorResponse? Unauthorized()
-            {
-                // This logic may be modified with the AsModel.mustache template
-                return IsUnauthorized
-                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
-                    : null;
-            }
-
-            /// <summary>
-            /// Returns true if the response is 401 Unauthorized and the deserialized response is not null
-            /// </summary>
-            /// <param name="result"></param>
-            /// <returns></returns>
-            public bool TryUnauthorized([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
-            {
-                result = null;
-
-                try
-                {
-                    result = Unauthorized();
-                } catch (Exception e)
-                {
-                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)401);
-                }
-
-                return result != null;
-            }
-
-            /// <summary>
             /// Returns true if the response is 403 Forbidden
             /// </summary>
             /// <returns></returns>
@@ -2194,6 +2162,82 @@ namespace MailOdds.Api
                 } catch (Exception e)
                 {
                     OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)403);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 400 BadRequest
+            /// </summary>
+            /// <returns></returns>
+            public bool IsBadRequest => 400 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 400 BadRequest
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.ErrorResponse? BadRequest()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsBadRequest
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 400 BadRequest and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryBadRequest([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = BadRequest();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)400);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public bool IsUnauthorized => 401 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.ErrorResponse? Unauthorized()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsUnauthorized
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryUnauthorized([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Unauthorized();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)401);
                 }
 
                 return result != null;

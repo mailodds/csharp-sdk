@@ -42,9 +42,9 @@ Get webhook delivery effectiveness metrics for a sending domain. Requires Pro+ p
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Hook effectiveness metrics |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **403** | Forbidden - Insufficient permissions or no credits |  -  |
 | **404** | Resource not found |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -82,9 +82,9 @@ Get engagement funnel for a sending domain (sent > delivered > opened > clicked 
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Engagement funnel data |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **403** | Forbidden - Insufficient permissions or no credits |  -  |
 | **404** | Resource not found |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -122,9 +122,9 @@ Get daily engagement trend data for a sending domain. Requires Pro+ plan.
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Engagement trend data |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **403** | Forbidden - Insufficient permissions or no credits |  -  |
 | **404** | Resource not found |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 

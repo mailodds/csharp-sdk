@@ -27,7 +27,7 @@ using MailOdds.Client;
 namespace MailOdds.Model
 {
     /// <summary>
-    /// Delivery and engagement statistics. Present when the campaign has started sending.
+    /// Delivery and engagement statistics.
     /// </summary>
     public partial class CampaignStats : IValidatableObject
     {
@@ -40,12 +40,11 @@ namespace MailOdds.Model
         /// <param name="clicked">clicked</param>
         /// <param name="bounced">bounced</param>
         /// <param name="unsubscribed">unsubscribed</param>
-        /// <param name="complained">complained</param>
-        /// <param name="deliveryRate">deliveryRate</param>
-        /// <param name="openRate">openRate</param>
-        /// <param name="clickRate">clickRate</param>
+        /// <param name="suppressed">suppressed</param>
+        /// <param name="failed">failed</param>
+        /// <param name="conversions">conversions</param>
         [JsonConstructor]
-        public CampaignStats(Option<int?> sent = default, Option<int?> delivered = default, Option<int?> opened = default, Option<int?> clicked = default, Option<int?> bounced = default, Option<int?> unsubscribed = default, Option<int?> complained = default, Option<decimal?> deliveryRate = default, Option<decimal?> openRate = default, Option<decimal?> clickRate = default)
+        public CampaignStats(Option<int?> sent = default, Option<int?> delivered = default, Option<int?> opened = default, Option<int?> clicked = default, Option<int?> bounced = default, Option<int?> unsubscribed = default, Option<int?> suppressed = default, Option<int?> failed = default, Option<int?> conversions = default)
         {
             SentOption = sent;
             DeliveredOption = delivered;
@@ -53,10 +52,9 @@ namespace MailOdds.Model
             ClickedOption = clicked;
             BouncedOption = bounced;
             UnsubscribedOption = unsubscribed;
-            ComplainedOption = complained;
-            DeliveryRateOption = deliveryRate;
-            OpenRateOption = openRate;
-            ClickRateOption = clickRate;
+            SuppressedOption = suppressed;
+            FailedOption = failed;
+            ConversionsOption = conversions;
             OnCreated();
         }
 
@@ -141,56 +139,43 @@ namespace MailOdds.Model
         public int? Unsubscribed { get { return this.UnsubscribedOption; } set { this.UnsubscribedOption = new(value); } }
 
         /// <summary>
-        /// Used to track the state of Complained
+        /// Used to track the state of Suppressed
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> ComplainedOption { get; private set; }
+        public Option<int?> SuppressedOption { get; private set; }
 
         /// <summary>
-        /// Gets or Sets Complained
+        /// Gets or Sets Suppressed
         /// </summary>
-        [JsonPropertyName("complained")]
-        public int? Complained { get { return this.ComplainedOption; } set { this.ComplainedOption = new(value); } }
+        [JsonPropertyName("suppressed")]
+        public int? Suppressed { get { return this.SuppressedOption; } set { this.SuppressedOption = new(value); } }
 
         /// <summary>
-        /// Used to track the state of DeliveryRate
-        /// </summary>
-        [JsonIgnore]
-        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<decimal?> DeliveryRateOption { get; private set; }
-
-        /// <summary>
-        /// Gets or Sets DeliveryRate
-        /// </summary>
-        [JsonPropertyName("delivery_rate")]
-        public decimal? DeliveryRate { get { return this.DeliveryRateOption; } set { this.DeliveryRateOption = new(value); } }
-
-        /// <summary>
-        /// Used to track the state of OpenRate
+        /// Used to track the state of Failed
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<decimal?> OpenRateOption { get; private set; }
+        public Option<int?> FailedOption { get; private set; }
 
         /// <summary>
-        /// Gets or Sets OpenRate
+        /// Gets or Sets Failed
         /// </summary>
-        [JsonPropertyName("open_rate")]
-        public decimal? OpenRate { get { return this.OpenRateOption; } set { this.OpenRateOption = new(value); } }
+        [JsonPropertyName("failed")]
+        public int? Failed { get { return this.FailedOption; } set { this.FailedOption = new(value); } }
 
         /// <summary>
-        /// Used to track the state of ClickRate
+        /// Used to track the state of Conversions
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<decimal?> ClickRateOption { get; private set; }
+        public Option<int?> ConversionsOption { get; private set; }
 
         /// <summary>
-        /// Gets or Sets ClickRate
+        /// Gets or Sets Conversions
         /// </summary>
-        [JsonPropertyName("click_rate")]
-        public decimal? ClickRate { get { return this.ClickRateOption; } set { this.ClickRateOption = new(value); } }
+        [JsonPropertyName("conversions")]
+        public int? Conversions { get { return this.ConversionsOption; } set { this.ConversionsOption = new(value); } }
 
         /// <summary>
         /// Returns the string presentation of the object
@@ -206,10 +191,9 @@ namespace MailOdds.Model
             sb.Append("  Clicked: ").Append(Clicked).Append("\n");
             sb.Append("  Bounced: ").Append(Bounced).Append("\n");
             sb.Append("  Unsubscribed: ").Append(Unsubscribed).Append("\n");
-            sb.Append("  Complained: ").Append(Complained).Append("\n");
-            sb.Append("  DeliveryRate: ").Append(DeliveryRate).Append("\n");
-            sb.Append("  OpenRate: ").Append(OpenRate).Append("\n");
-            sb.Append("  ClickRate: ").Append(ClickRate).Append("\n");
+            sb.Append("  Suppressed: ").Append(Suppressed).Append("\n");
+            sb.Append("  Failed: ").Append(Failed).Append("\n");
+            sb.Append("  Conversions: ").Append(Conversions).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -253,10 +237,9 @@ namespace MailOdds.Model
             Option<int?> clicked = default;
             Option<int?> bounced = default;
             Option<int?> unsubscribed = default;
-            Option<int?> complained = default;
-            Option<decimal?> deliveryRate = default;
-            Option<decimal?> openRate = default;
-            Option<decimal?> clickRate = default;
+            Option<int?> suppressed = default;
+            Option<int?> failed = default;
+            Option<int?> conversions = default;
 
             while (utf8JsonReader.Read())
             {
@@ -291,17 +274,14 @@ namespace MailOdds.Model
                         case "unsubscribed":
                             unsubscribed = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
                             break;
-                        case "complained":
-                            complained = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
+                        case "suppressed":
+                            suppressed = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
                             break;
-                        case "delivery_rate":
-                            deliveryRate = new Option<decimal?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (decimal?)null : utf8JsonReader.GetDecimal());
+                        case "failed":
+                            failed = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
                             break;
-                        case "open_rate":
-                            openRate = new Option<decimal?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (decimal?)null : utf8JsonReader.GetDecimal());
-                            break;
-                        case "click_rate":
-                            clickRate = new Option<decimal?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (decimal?)null : utf8JsonReader.GetDecimal());
+                        case "conversions":
+                            conversions = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
                             break;
                         default:
                             break;
@@ -327,19 +307,16 @@ namespace MailOdds.Model
             if (unsubscribed.IsSet && unsubscribed.Value == null)
                 throw new ArgumentNullException(nameof(unsubscribed), "Property is not nullable for class CampaignStats.");
 
-            if (complained.IsSet && complained.Value == null)
-                throw new ArgumentNullException(nameof(complained), "Property is not nullable for class CampaignStats.");
+            if (suppressed.IsSet && suppressed.Value == null)
+                throw new ArgumentNullException(nameof(suppressed), "Property is not nullable for class CampaignStats.");
 
-            if (deliveryRate.IsSet && deliveryRate.Value == null)
-                throw new ArgumentNullException(nameof(deliveryRate), "Property is not nullable for class CampaignStats.");
+            if (failed.IsSet && failed.Value == null)
+                throw new ArgumentNullException(nameof(failed), "Property is not nullable for class CampaignStats.");
 
-            if (openRate.IsSet && openRate.Value == null)
-                throw new ArgumentNullException(nameof(openRate), "Property is not nullable for class CampaignStats.");
+            if (conversions.IsSet && conversions.Value == null)
+                throw new ArgumentNullException(nameof(conversions), "Property is not nullable for class CampaignStats.");
 
-            if (clickRate.IsSet && clickRate.Value == null)
-                throw new ArgumentNullException(nameof(clickRate), "Property is not nullable for class CampaignStats.");
-
-            return new CampaignStats(sent, delivered, opened, clicked, bounced, unsubscribed, complained, deliveryRate, openRate, clickRate);
+            return new CampaignStats(sent, delivered, opened, clicked, bounced, unsubscribed, suppressed, failed, conversions);
         }
 
         /// <summary>
@@ -384,17 +361,14 @@ namespace MailOdds.Model
             if (campaignStats.UnsubscribedOption.IsSet)
                 writer.WriteNumber("unsubscribed", campaignStats.UnsubscribedOption.Value!.Value);
 
-            if (campaignStats.ComplainedOption.IsSet)
-                writer.WriteNumber("complained", campaignStats.ComplainedOption.Value!.Value);
+            if (campaignStats.SuppressedOption.IsSet)
+                writer.WriteNumber("suppressed", campaignStats.SuppressedOption.Value!.Value);
 
-            if (campaignStats.DeliveryRateOption.IsSet)
-                writer.WriteNumber("delivery_rate", campaignStats.DeliveryRateOption.Value!.Value);
+            if (campaignStats.FailedOption.IsSet)
+                writer.WriteNumber("failed", campaignStats.FailedOption.Value!.Value);
 
-            if (campaignStats.OpenRateOption.IsSet)
-                writer.WriteNumber("open_rate", campaignStats.OpenRateOption.Value!.Value);
-
-            if (campaignStats.ClickRateOption.IsSet)
-                writer.WriteNumber("click_rate", campaignStats.ClickRateOption.Value!.Value);
+            if (campaignStats.ConversionsOption.IsSet)
+                writer.WriteNumber("conversions", campaignStats.ConversionsOption.Value!.Value);
         }
     }
 }

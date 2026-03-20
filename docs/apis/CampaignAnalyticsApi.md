@@ -43,8 +43,8 @@ Get per-variant performance metrics for an A/B test campaign including open rate
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | A/B test results |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **404** | Resource not found |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -81,8 +81,8 @@ Get first-touch and last-touch attribution comparison for campaign conversions.
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Attribution data |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **404** | Resource not found |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -119,8 +119,8 @@ Get a predicted delivery confidence score before sending a campaign. Evaluates l
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Delivery confidence score |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **404** | Resource not found |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -157,8 +157,8 @@ Get the full delivery and engagement funnel for a campaign showing progression f
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Campaign funnel analytics |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **404** | Resource not found |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -195,8 +195,8 @@ Get per-provider delivery and engagement breakdown for a campaign (e.g. Gmail, O
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Provider intelligence data |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **404** | Resource not found |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 

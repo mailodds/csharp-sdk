@@ -29,7 +29,7 @@ Add a single contact to a contact list.
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **listId** | **string** | Contact list ID |  |
+| **listId** | **string** |  |  |
 | **addContactRequest** | [**AddContactRequest**](AddContactRequest.md) |  |  |
 
 ### Return type
@@ -50,9 +50,9 @@ Add a single contact to a contact list.
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **201** | Contact added |  -  |
+| **404** | Resource not found |  -  |
 | **400** | Bad request |  -  |
 | **401** | Unauthorized - Invalid or missing API key |  -  |
-| **404** | Resource not found |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -69,7 +69,7 @@ Append validated emails from additional jobs to an existing contact list. Duplic
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **listId** | **string** | Contact list UUID |  |
+| **listId** | **string** |  |  |
 | **appendToContactListRequest** | [**AppendToContactListRequest**](AppendToContactListRequest.md) |  |  |
 
 ### Return type
@@ -90,9 +90,9 @@ Append validated emails from additional jobs to an existing contact list. Duplic
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Append result |  -  |
+| **404** | Resource not found |  -  |
 | **400** | Bad request |  -  |
 | **401** | Unauthorized - Invalid or missing API key |  -  |
-| **404** | Resource not found |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -129,9 +129,9 @@ Create a new contact list from one or more completed validation jobs. Only accep
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **201** | Contact list created |  -  |
+| **403** | Forbidden - Insufficient permissions or no credits |  -  |
 | **400** | Bad request |  -  |
 | **401** | Unauthorized - Invalid or missing API key |  -  |
-| **403** | Forbidden - Insufficient permissions or no credits |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -148,8 +148,8 @@ Remove a single contact from a contact list.
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **listId** | **string** | Contact list ID |  |
-| **contactId** | **string** | Contact ID |  |
+| **listId** | **string** |  |  |
+| **contactId** | **string** |  |  |
 
 ### Return type
 
@@ -169,8 +169,8 @@ Remove a single contact from a contact list.
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Contact deleted |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **404** | Resource not found |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -187,7 +187,7 @@ Permanently delete a contact list and all its entries.
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **listId** | **string** | Contact list UUID |  |
+| **listId** | **string** |  |  |
 
 ### Return type
 
@@ -207,8 +207,8 @@ Permanently delete a contact list and all its entries.
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Contact list deleted |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **404** | Resource not found |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -225,7 +225,7 @@ Export a contact list as CSV.
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **listId** | **string** | Contact list ID |  |
+| **listId** | **string** |  |  |
 
 ### Return type
 
@@ -245,8 +245,8 @@ Export a contact list as CSV.
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | CSV export |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **404** | Resource not found |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -283,8 +283,8 @@ Get a report of contacts across all lists with no engagement activity (opens, cl
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Inactive contacts report |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **403** | Forbidden - Insufficient permissions or no credits |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -301,7 +301,7 @@ Import contacts into a list from a CSV file (max 10MB).
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **listId** | **string** | Contact list ID |  |
+| **listId** | **string** |  |  |
 | **file** | **System.IO.Stream****System.IO.Stream** | CSV file (max 10MB) |  |
 | **columnMapping** | **string** | JSON mapping of CSV columns to contact fields | [optional]  |
 | **consentSource** | **string** | Source of consent for imported contacts | [optional]  |
@@ -325,9 +325,9 @@ Import contacts into a list from a CSV file (max 10MB).
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Import results |  -  |
+| **404** | Resource not found |  -  |
 | **400** | Bad request |  -  |
 | **401** | Unauthorized - Invalid or missing API key |  -  |
-| **404** | Resource not found |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -365,8 +365,8 @@ List contact lists for the authenticated account. Contact lists are built from v
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | List of contact lists |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **403** | Forbidden - Insufficient permissions or no credits |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -383,7 +383,7 @@ Query contact list entries with structured filters. Supports filtering by valida
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **listId** | **string** | Contact list UUID |  |
+| **listId** | **string** |  |  |
 | **queryContactListRequest** | [**QueryContactListRequest**](QueryContactListRequest.md) |  |  |
 
 ### Return type
@@ -404,9 +404,9 @@ Query contact list entries with structured filters. Supports filtering by valida
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Query results |  -  |
+| **404** | Resource not found |  -  |
 | **400** | Bad request |  -  |
 | **401** | Unauthorized - Invalid or missing API key |  -  |
-| **404** | Resource not found |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -423,8 +423,8 @@ Update a single contact in a contact list.
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **listId** | **string** | Contact list ID |  |
-| **contactId** | **string** | Contact ID |  |
+| **listId** | **string** |  |  |
+| **contactId** | **string** |  |  |
 | **updateContactRequest** | [**UpdateContactRequest**](UpdateContactRequest.md) |  |  |
 
 ### Return type
@@ -445,9 +445,9 @@ Update a single contact in a contact list.
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Contact updated |  -  |
+| **404** | Resource not found |  -  |
 | **400** | Bad request |  -  |
 | **401** | Unauthorized - Invalid or missing API key |  -  |
-| **404** | Resource not found |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 

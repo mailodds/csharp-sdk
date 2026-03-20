@@ -66,7 +66,7 @@ namespace MailOdds.Api
         /// Permanently remove a blacklist monitor and its check history.
         /// </remarks>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
-        /// <param name="monitorId">Monitor UUID</param>
+        /// <param name="monitorId"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IDeleteBlacklistMonitorApiResponse"/>&gt;</returns>
         Task<IDeleteBlacklistMonitorApiResponse> DeleteBlacklistMonitorAsync(string monitorId, System.Threading.CancellationToken cancellationToken = default);
@@ -77,7 +77,7 @@ namespace MailOdds.Api
         /// <remarks>
         /// Permanently remove a blacklist monitor and its check history.
         /// </remarks>
-        /// <param name="monitorId">Monitor UUID</param>
+        /// <param name="monitorId"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IDeleteBlacklistMonitorApiResponse"/>?&gt;</returns>
         Task<IDeleteBlacklistMonitorApiResponse?> DeleteBlacklistMonitorOrDefaultAsync(string monitorId, System.Threading.CancellationToken cancellationToken = default);
@@ -89,7 +89,7 @@ namespace MailOdds.Api
         /// Get the listing and delisting timeline for a monitored IP or domain.
         /// </remarks>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
-        /// <param name="monitorId">Monitor UUID</param>
+        /// <param name="monitorId"></param>
         /// <param name="page"> (optional, default to 1)</param>
         /// <param name="perPage"> (optional, default to 20)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
@@ -102,7 +102,7 @@ namespace MailOdds.Api
         /// <remarks>
         /// Get the listing and delisting timeline for a monitored IP or domain.
         /// </remarks>
-        /// <param name="monitorId">Monitor UUID</param>
+        /// <param name="monitorId"></param>
         /// <param name="page"> (optional, default to 1)</param>
         /// <param name="perPage"> (optional, default to 20)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
@@ -137,7 +137,7 @@ namespace MailOdds.Api
         /// Run an on-demand DNSBL check for a monitored IP or domain.
         /// </remarks>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
-        /// <param name="monitorId">Monitor UUID</param>
+        /// <param name="monitorId"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IRunBlacklistCheckApiResponse"/>&gt;</returns>
         Task<IRunBlacklistCheckApiResponse> RunBlacklistCheckAsync(string monitorId, System.Threading.CancellationToken cancellationToken = default);
@@ -148,7 +148,7 @@ namespace MailOdds.Api
         /// <remarks>
         /// Run an on-demand DNSBL check for a monitored IP or domain.
         /// </remarks>
-        /// <param name="monitorId">Monitor UUID</param>
+        /// <param name="monitorId"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IRunBlacklistCheckApiResponse"/>?&gt;</returns>
         Task<IRunBlacklistCheckApiResponse?> RunBlacklistCheckOrDefaultAsync(string monitorId, System.Threading.CancellationToken cancellationToken = default);
@@ -181,7 +181,7 @@ namespace MailOdds.Api
     /// <summary>
     /// The <see cref="IDeleteBlacklistMonitorApiResponse"/>
     /// </summary>
-    public interface IDeleteBlacklistMonitorApiResponse : MailOdds.Client.IApiResponse, IOk<MailOdds.Model.DeletePolicyRule200Response?>, IUnauthorized<MailOdds.Model.ErrorResponse?>, INotFound<MailOdds.Model.ErrorResponse?>
+    public interface IDeleteBlacklistMonitorApiResponse : MailOdds.Client.IApiResponse, IOk<MailOdds.Model.DeletePolicyRule200Response?>, INotFound<MailOdds.Model.ErrorResponse?>, IUnauthorized<MailOdds.Model.ErrorResponse?>
     {
         /// <summary>
         /// Returns true if the response is 200 Ok
@@ -190,22 +190,22 @@ namespace MailOdds.Api
         bool IsOk { get; }
 
         /// <summary>
-        /// Returns true if the response is 401 Unauthorized
-        /// </summary>
-        /// <returns></returns>
-        bool IsUnauthorized { get; }
-
-        /// <summary>
         /// Returns true if the response is 404 NotFound
         /// </summary>
         /// <returns></returns>
         bool IsNotFound { get; }
+
+        /// <summary>
+        /// Returns true if the response is 401 Unauthorized
+        /// </summary>
+        /// <returns></returns>
+        bool IsUnauthorized { get; }
     }
 
     /// <summary>
     /// The <see cref="IGetBlacklistHistoryApiResponse"/>
     /// </summary>
-    public interface IGetBlacklistHistoryApiResponse : MailOdds.Client.IApiResponse, IOk<MailOdds.Model.GetBlacklistHistory200Response?>, IUnauthorized<MailOdds.Model.ErrorResponse?>, INotFound<MailOdds.Model.ErrorResponse?>
+    public interface IGetBlacklistHistoryApiResponse : MailOdds.Client.IApiResponse, IOk<MailOdds.Model.GetBlacklistHistory200Response?>, INotFound<MailOdds.Model.ErrorResponse?>, IUnauthorized<MailOdds.Model.ErrorResponse?>
     {
         /// <summary>
         /// Returns true if the response is 200 Ok
@@ -214,16 +214,16 @@ namespace MailOdds.Api
         bool IsOk { get; }
 
         /// <summary>
-        /// Returns true if the response is 401 Unauthorized
-        /// </summary>
-        /// <returns></returns>
-        bool IsUnauthorized { get; }
-
-        /// <summary>
         /// Returns true if the response is 404 NotFound
         /// </summary>
         /// <returns></returns>
         bool IsNotFound { get; }
+
+        /// <summary>
+        /// Returns true if the response is 401 Unauthorized
+        /// </summary>
+        /// <returns></returns>
+        bool IsUnauthorized { get; }
     }
 
     /// <summary>
@@ -247,7 +247,7 @@ namespace MailOdds.Api
     /// <summary>
     /// The <see cref="IRunBlacklistCheckApiResponse"/>
     /// </summary>
-    public interface IRunBlacklistCheckApiResponse : MailOdds.Client.IApiResponse, IOk<MailOdds.Model.RunBlacklistCheck200Response?>, IUnauthorized<MailOdds.Model.ErrorResponse?>, INotFound<MailOdds.Model.ErrorResponse?>
+    public interface IRunBlacklistCheckApiResponse : MailOdds.Client.IApiResponse, IOk<MailOdds.Model.RunBlacklistCheck200Response?>, INotFound<MailOdds.Model.ErrorResponse?>, IUnauthorized<MailOdds.Model.ErrorResponse?>
     {
         /// <summary>
         /// Returns true if the response is 200 Ok
@@ -256,16 +256,16 @@ namespace MailOdds.Api
         bool IsOk { get; }
 
         /// <summary>
-        /// Returns true if the response is 401 Unauthorized
-        /// </summary>
-        /// <returns></returns>
-        bool IsUnauthorized { get; }
-
-        /// <summary>
         /// Returns true if the response is 404 NotFound
         /// </summary>
         /// <returns></returns>
         bool IsNotFound { get; }
+
+        /// <summary>
+        /// Returns true if the response is 401 Unauthorized
+        /// </summary>
+        /// <returns></returns>
+        bool IsUnauthorized { get; }
     }
 
     /// <summary>
@@ -824,7 +824,7 @@ namespace MailOdds.Api
         /// <summary>
         /// Delete a blacklist monitor Permanently remove a blacklist monitor and its check history.
         /// </summary>
-        /// <param name="monitorId">Monitor UUID</param>
+        /// <param name="monitorId"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IDeleteBlacklistMonitorApiResponse"/>&gt;</returns>
         public async Task<IDeleteBlacklistMonitorApiResponse?> DeleteBlacklistMonitorOrDefaultAsync(string monitorId, System.Threading.CancellationToken cancellationToken = default)
@@ -843,7 +843,7 @@ namespace MailOdds.Api
         /// Delete a blacklist monitor Permanently remove a blacklist monitor and its check history.
         /// </summary>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
-        /// <param name="monitorId">Monitor UUID</param>
+        /// <param name="monitorId"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IDeleteBlacklistMonitorApiResponse"/>&gt;</returns>
         public async Task<IDeleteBlacklistMonitorApiResponse> DeleteBlacklistMonitorAsync(string monitorId, System.Threading.CancellationToken cancellationToken = default)
@@ -1005,44 +1005,6 @@ namespace MailOdds.Api
             }
 
             /// <summary>
-            /// Returns true if the response is 401 Unauthorized
-            /// </summary>
-            /// <returns></returns>
-            public bool IsUnauthorized => 401 == (int)StatusCode;
-
-            /// <summary>
-            /// Deserializes the response if the response is 401 Unauthorized
-            /// </summary>
-            /// <returns></returns>
-            public MailOdds.Model.ErrorResponse? Unauthorized()
-            {
-                // This logic may be modified with the AsModel.mustache template
-                return IsUnauthorized
-                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
-                    : null;
-            }
-
-            /// <summary>
-            /// Returns true if the response is 401 Unauthorized and the deserialized response is not null
-            /// </summary>
-            /// <param name="result"></param>
-            /// <returns></returns>
-            public bool TryUnauthorized([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
-            {
-                result = null;
-
-                try
-                {
-                    result = Unauthorized();
-                } catch (Exception e)
-                {
-                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)401);
-                }
-
-                return result != null;
-            }
-
-            /// <summary>
             /// Returns true if the response is 404 NotFound
             /// </summary>
             /// <returns></returns>
@@ -1075,6 +1037,44 @@ namespace MailOdds.Api
                 } catch (Exception e)
                 {
                     OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)404);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public bool IsUnauthorized => 401 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.ErrorResponse? Unauthorized()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsUnauthorized
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryUnauthorized([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Unauthorized();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)401);
                 }
 
                 return result != null;
@@ -1161,7 +1161,7 @@ namespace MailOdds.Api
         /// <summary>
         /// Get blacklist check history Get the listing and delisting timeline for a monitored IP or domain.
         /// </summary>
-        /// <param name="monitorId">Monitor UUID</param>
+        /// <param name="monitorId"></param>
         /// <param name="page"> (optional, default to 1)</param>
         /// <param name="perPage"> (optional, default to 20)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
@@ -1182,7 +1182,7 @@ namespace MailOdds.Api
         /// Get blacklist check history Get the listing and delisting timeline for a monitored IP or domain.
         /// </summary>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
-        /// <param name="monitorId">Monitor UUID</param>
+        /// <param name="monitorId"></param>
         /// <param name="page"> (optional, default to 1)</param>
         /// <param name="perPage"> (optional, default to 20)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
@@ -1356,44 +1356,6 @@ namespace MailOdds.Api
             }
 
             /// <summary>
-            /// Returns true if the response is 401 Unauthorized
-            /// </summary>
-            /// <returns></returns>
-            public bool IsUnauthorized => 401 == (int)StatusCode;
-
-            /// <summary>
-            /// Deserializes the response if the response is 401 Unauthorized
-            /// </summary>
-            /// <returns></returns>
-            public MailOdds.Model.ErrorResponse? Unauthorized()
-            {
-                // This logic may be modified with the AsModel.mustache template
-                return IsUnauthorized
-                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
-                    : null;
-            }
-
-            /// <summary>
-            /// Returns true if the response is 401 Unauthorized and the deserialized response is not null
-            /// </summary>
-            /// <param name="result"></param>
-            /// <returns></returns>
-            public bool TryUnauthorized([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
-            {
-                result = null;
-
-                try
-                {
-                    result = Unauthorized();
-                } catch (Exception e)
-                {
-                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)401);
-                }
-
-                return result != null;
-            }
-
-            /// <summary>
             /// Returns true if the response is 404 NotFound
             /// </summary>
             /// <returns></returns>
@@ -1426,6 +1388,44 @@ namespace MailOdds.Api
                 } catch (Exception e)
                 {
                     OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)404);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public bool IsUnauthorized => 401 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.ErrorResponse? Unauthorized()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsUnauthorized
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryUnauthorized([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Unauthorized();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)401);
                 }
 
                 return result != null;
@@ -1771,7 +1771,7 @@ namespace MailOdds.Api
         /// <summary>
         /// Run blacklist check Run an on-demand DNSBL check for a monitored IP or domain.
         /// </summary>
-        /// <param name="monitorId">Monitor UUID</param>
+        /// <param name="monitorId"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IRunBlacklistCheckApiResponse"/>&gt;</returns>
         public async Task<IRunBlacklistCheckApiResponse?> RunBlacklistCheckOrDefaultAsync(string monitorId, System.Threading.CancellationToken cancellationToken = default)
@@ -1790,7 +1790,7 @@ namespace MailOdds.Api
         /// Run blacklist check Run an on-demand DNSBL check for a monitored IP or domain.
         /// </summary>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
-        /// <param name="monitorId">Monitor UUID</param>
+        /// <param name="monitorId"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IRunBlacklistCheckApiResponse"/>&gt;</returns>
         public async Task<IRunBlacklistCheckApiResponse> RunBlacklistCheckAsync(string monitorId, System.Threading.CancellationToken cancellationToken = default)
@@ -1952,44 +1952,6 @@ namespace MailOdds.Api
             }
 
             /// <summary>
-            /// Returns true if the response is 401 Unauthorized
-            /// </summary>
-            /// <returns></returns>
-            public bool IsUnauthorized => 401 == (int)StatusCode;
-
-            /// <summary>
-            /// Deserializes the response if the response is 401 Unauthorized
-            /// </summary>
-            /// <returns></returns>
-            public MailOdds.Model.ErrorResponse? Unauthorized()
-            {
-                // This logic may be modified with the AsModel.mustache template
-                return IsUnauthorized
-                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
-                    : null;
-            }
-
-            /// <summary>
-            /// Returns true if the response is 401 Unauthorized and the deserialized response is not null
-            /// </summary>
-            /// <param name="result"></param>
-            /// <returns></returns>
-            public bool TryUnauthorized([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
-            {
-                result = null;
-
-                try
-                {
-                    result = Unauthorized();
-                } catch (Exception e)
-                {
-                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)401);
-                }
-
-                return result != null;
-            }
-
-            /// <summary>
             /// Returns true if the response is 404 NotFound
             /// </summary>
             /// <returns></returns>
@@ -2022,6 +1984,44 @@ namespace MailOdds.Api
                 } catch (Exception e)
                 {
                     OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)404);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public bool IsUnauthorized => 401 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.ErrorResponse? Unauthorized()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsUnauthorized
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryUnauthorized([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Unauthorized();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)401);
                 }
 
                 return result != null;

@@ -46,8 +46,8 @@ List contacts that have not engaged within the specified period. Requires Growth
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Paginated list of disengaged contacts |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **403** | Forbidden - Insufficient permissions or no credits |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -64,7 +64,7 @@ Get the engagement score for a specific email address. Requires Growth+ plan.
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **email** | **string** | Email address |  |
+| **email** | **string** |  |  |
 
 ### Return type
 
@@ -84,8 +84,8 @@ Get the engagement score for a specific email address. Requires Growth+ plan.
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Engagement score |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **403** | Forbidden - Insufficient permissions or no credits |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -122,8 +122,8 @@ Get aggregate engagement metrics across all contacts. Requires Growth+ plan.
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Engagement summary |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **403** | Forbidden - Insufficient permissions or no credits |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -160,8 +160,9 @@ Add disengaged contacts to the suppression list. Supports dry_run mode. Requires
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Suppression result or dry-run preview |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **403** | Forbidden - Insufficient permissions or no credits |  -  |
+| **400** | Bad request |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 

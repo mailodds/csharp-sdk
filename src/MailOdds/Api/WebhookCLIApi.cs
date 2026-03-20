@@ -66,7 +66,7 @@ namespace MailOdds.Api
         /// Close a webhook CLI forwarding session.
         /// </remarks>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
-        /// <param name="sessionId">Session ID</param>
+        /// <param name="sessionId"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IDeleteWebhookCliSessionApiResponse"/>&gt;</returns>
         Task<IDeleteWebhookCliSessionApiResponse> DeleteWebhookCliSessionAsync(string sessionId, System.Threading.CancellationToken cancellationToken = default);
@@ -77,7 +77,7 @@ namespace MailOdds.Api
         /// <remarks>
         /// Close a webhook CLI forwarding session.
         /// </remarks>
-        /// <param name="sessionId">Session ID</param>
+        /// <param name="sessionId"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IDeleteWebhookCliSessionApiResponse"/>?&gt;</returns>
         Task<IDeleteWebhookCliSessionApiResponse?> DeleteWebhookCliSessionOrDefaultAsync(string sessionId, System.Threading.CancellationToken cancellationToken = default);
@@ -112,7 +112,7 @@ namespace MailOdds.Api
         /// Replay a historical webhook delivery to active CLI sessions.
         /// </remarks>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
-        /// <param name="deliveryId">Delivery ID</param>
+        /// <param name="deliveryId"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IReplayWebhookDeliveryApiResponse"/>&gt;</returns>
         Task<IReplayWebhookDeliveryApiResponse> ReplayWebhookDeliveryAsync(int deliveryId, System.Threading.CancellationToken cancellationToken = default);
@@ -123,7 +123,7 @@ namespace MailOdds.Api
         /// <remarks>
         /// Replay a historical webhook delivery to active CLI sessions.
         /// </remarks>
-        /// <param name="deliveryId">Delivery ID</param>
+        /// <param name="deliveryId"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IReplayWebhookDeliveryApiResponse"/>?&gt;</returns>
         Task<IReplayWebhookDeliveryApiResponse?> ReplayWebhookDeliveryOrDefaultAsync(int deliveryId, System.Threading.CancellationToken cancellationToken = default);
@@ -132,13 +132,19 @@ namespace MailOdds.Api
     /// <summary>
     /// The <see cref="ICreateWebhookCliSessionApiResponse"/>
     /// </summary>
-    public interface ICreateWebhookCliSessionApiResponse : MailOdds.Client.IApiResponse, ICreated<MailOdds.Model.CreateWebhookCliSession201Response?>, IUnauthorized<MailOdds.Model.ErrorResponse?>
+    public interface ICreateWebhookCliSessionApiResponse : MailOdds.Client.IApiResponse, ICreated<MailOdds.Model.CreateWebhookCliSession201Response?>, IBadRequest<MailOdds.Model.ErrorResponse?>, IUnauthorized<MailOdds.Model.ErrorResponse?>
     {
         /// <summary>
         /// Returns true if the response is 201 Created
         /// </summary>
         /// <returns></returns>
         bool IsCreated { get; }
+
+        /// <summary>
+        /// Returns true if the response is 400 BadRequest
+        /// </summary>
+        /// <returns></returns>
+        bool IsBadRequest { get; }
 
         /// <summary>
         /// Returns true if the response is 401 Unauthorized
@@ -150,7 +156,7 @@ namespace MailOdds.Api
     /// <summary>
     /// The <see cref="IDeleteWebhookCliSessionApiResponse"/>
     /// </summary>
-    public interface IDeleteWebhookCliSessionApiResponse : MailOdds.Client.IApiResponse, IOk<MailOdds.Model.DeleteWebhookCliSession200Response?>, IUnauthorized<MailOdds.Model.ErrorResponse?>, INotFound<MailOdds.Model.ErrorResponse?>
+    public interface IDeleteWebhookCliSessionApiResponse : MailOdds.Client.IApiResponse, IOk<MailOdds.Model.DeleteWebhookCliSession200Response?>, INotFound<MailOdds.Model.ErrorResponse?>, IUnauthorized<MailOdds.Model.ErrorResponse?>
     {
         /// <summary>
         /// Returns true if the response is 200 Ok
@@ -159,16 +165,16 @@ namespace MailOdds.Api
         bool IsOk { get; }
 
         /// <summary>
-        /// Returns true if the response is 401 Unauthorized
-        /// </summary>
-        /// <returns></returns>
-        bool IsUnauthorized { get; }
-
-        /// <summary>
         /// Returns true if the response is 404 NotFound
         /// </summary>
         /// <returns></returns>
         bool IsNotFound { get; }
+
+        /// <summary>
+        /// Returns true if the response is 401 Unauthorized
+        /// </summary>
+        /// <returns></returns>
+        bool IsUnauthorized { get; }
     }
 
     /// <summary>
@@ -192,7 +198,7 @@ namespace MailOdds.Api
     /// <summary>
     /// The <see cref="IReplayWebhookDeliveryApiResponse"/>
     /// </summary>
-    public interface IReplayWebhookDeliveryApiResponse : MailOdds.Client.IApiResponse, IOk<MailOdds.Model.ReplayWebhookDelivery200Response?>, IUnauthorized<MailOdds.Model.ErrorResponse?>, INotFound<MailOdds.Model.ErrorResponse?>
+    public interface IReplayWebhookDeliveryApiResponse : MailOdds.Client.IApiResponse, IOk<MailOdds.Model.ReplayWebhookDelivery200Response?>, INotFound<MailOdds.Model.ErrorResponse?>, IUnauthorized<MailOdds.Model.ErrorResponse?>
     {
         /// <summary>
         /// Returns true if the response is 200 Ok
@@ -201,16 +207,16 @@ namespace MailOdds.Api
         bool IsOk { get; }
 
         /// <summary>
-        /// Returns true if the response is 401 Unauthorized
-        /// </summary>
-        /// <returns></returns>
-        bool IsUnauthorized { get; }
-
-        /// <summary>
         /// Returns true if the response is 404 NotFound
         /// </summary>
         /// <returns></returns>
         bool IsNotFound { get; }
+
+        /// <summary>
+        /// Returns true if the response is 401 Unauthorized
+        /// </summary>
+        /// <returns></returns>
+        bool IsUnauthorized { get; }
     }
 
     /// <summary>
@@ -602,6 +608,44 @@ namespace MailOdds.Api
             }
 
             /// <summary>
+            /// Returns true if the response is 400 BadRequest
+            /// </summary>
+            /// <returns></returns>
+            public bool IsBadRequest => 400 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 400 BadRequest
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.ErrorResponse? BadRequest()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsBadRequest
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 400 BadRequest and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryBadRequest([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = BadRequest();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)400);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
             /// Returns true if the response is 401 Unauthorized
             /// </summary>
             /// <returns></returns>
@@ -712,7 +756,7 @@ namespace MailOdds.Api
         /// <summary>
         /// Close CLI session Close a webhook CLI forwarding session.
         /// </summary>
-        /// <param name="sessionId">Session ID</param>
+        /// <param name="sessionId"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IDeleteWebhookCliSessionApiResponse"/>&gt;</returns>
         public async Task<IDeleteWebhookCliSessionApiResponse?> DeleteWebhookCliSessionOrDefaultAsync(string sessionId, System.Threading.CancellationToken cancellationToken = default)
@@ -731,7 +775,7 @@ namespace MailOdds.Api
         /// Close CLI session Close a webhook CLI forwarding session.
         /// </summary>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
-        /// <param name="sessionId">Session ID</param>
+        /// <param name="sessionId"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IDeleteWebhookCliSessionApiResponse"/>&gt;</returns>
         public async Task<IDeleteWebhookCliSessionApiResponse> DeleteWebhookCliSessionAsync(string sessionId, System.Threading.CancellationToken cancellationToken = default)
@@ -893,44 +937,6 @@ namespace MailOdds.Api
             }
 
             /// <summary>
-            /// Returns true if the response is 401 Unauthorized
-            /// </summary>
-            /// <returns></returns>
-            public bool IsUnauthorized => 401 == (int)StatusCode;
-
-            /// <summary>
-            /// Deserializes the response if the response is 401 Unauthorized
-            /// </summary>
-            /// <returns></returns>
-            public MailOdds.Model.ErrorResponse? Unauthorized()
-            {
-                // This logic may be modified with the AsModel.mustache template
-                return IsUnauthorized
-                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
-                    : null;
-            }
-
-            /// <summary>
-            /// Returns true if the response is 401 Unauthorized and the deserialized response is not null
-            /// </summary>
-            /// <param name="result"></param>
-            /// <returns></returns>
-            public bool TryUnauthorized([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
-            {
-                result = null;
-
-                try
-                {
-                    result = Unauthorized();
-                } catch (Exception e)
-                {
-                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)401);
-                }
-
-                return result != null;
-            }
-
-            /// <summary>
             /// Returns true if the response is 404 NotFound
             /// </summary>
             /// <returns></returns>
@@ -963,6 +969,44 @@ namespace MailOdds.Api
                 } catch (Exception e)
                 {
                     OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)404);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public bool IsUnauthorized => 401 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.ErrorResponse? Unauthorized()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsUnauthorized
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryUnauthorized([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Unauthorized();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)401);
                 }
 
                 return result != null;
@@ -1314,7 +1358,7 @@ namespace MailOdds.Api
         /// <summary>
         /// Replay webhook delivery Replay a historical webhook delivery to active CLI sessions.
         /// </summary>
-        /// <param name="deliveryId">Delivery ID</param>
+        /// <param name="deliveryId"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IReplayWebhookDeliveryApiResponse"/>&gt;</returns>
         public async Task<IReplayWebhookDeliveryApiResponse?> ReplayWebhookDeliveryOrDefaultAsync(int deliveryId, System.Threading.CancellationToken cancellationToken = default)
@@ -1333,7 +1377,7 @@ namespace MailOdds.Api
         /// Replay webhook delivery Replay a historical webhook delivery to active CLI sessions.
         /// </summary>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
-        /// <param name="deliveryId">Delivery ID</param>
+        /// <param name="deliveryId"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IReplayWebhookDeliveryApiResponse"/>&gt;</returns>
         public async Task<IReplayWebhookDeliveryApiResponse> ReplayWebhookDeliveryAsync(int deliveryId, System.Threading.CancellationToken cancellationToken = default)
@@ -1493,44 +1537,6 @@ namespace MailOdds.Api
             }
 
             /// <summary>
-            /// Returns true if the response is 401 Unauthorized
-            /// </summary>
-            /// <returns></returns>
-            public bool IsUnauthorized => 401 == (int)StatusCode;
-
-            /// <summary>
-            /// Deserializes the response if the response is 401 Unauthorized
-            /// </summary>
-            /// <returns></returns>
-            public MailOdds.Model.ErrorResponse? Unauthorized()
-            {
-                // This logic may be modified with the AsModel.mustache template
-                return IsUnauthorized
-                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
-                    : null;
-            }
-
-            /// <summary>
-            /// Returns true if the response is 401 Unauthorized and the deserialized response is not null
-            /// </summary>
-            /// <param name="result"></param>
-            /// <returns></returns>
-            public bool TryUnauthorized([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
-            {
-                result = null;
-
-                try
-                {
-                    result = Unauthorized();
-                } catch (Exception e)
-                {
-                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)401);
-                }
-
-                return result != null;
-            }
-
-            /// <summary>
             /// Returns true if the response is 404 NotFound
             /// </summary>
             /// <returns></returns>
@@ -1563,6 +1569,44 @@ namespace MailOdds.Api
                 } catch (Exception e)
                 {
                     OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)404);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public bool IsUnauthorized => 401 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.ErrorResponse? Unauthorized()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsUnauthorized
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryUnauthorized([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Unauthorized();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)401);
                 }
 
                 return result != null;

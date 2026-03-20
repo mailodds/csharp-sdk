@@ -24,7 +24,7 @@ Submit a human correction for an inbound message classification. Requires Pro+ p
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **messageId** | **string** | Message ID |  |
+| **messageId** | **string** |  |  |
 | **correctInboundMessageRequest** | [**CorrectInboundMessageRequest**](CorrectInboundMessageRequest.md) |  |  |
 
 ### Return type
@@ -45,9 +45,10 @@ Submit a human correction for an inbound message classification. Requires Pro+ p
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Message updated with correction |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **403** | Forbidden - Insufficient permissions or no credits |  -  |
 | **404** | Resource not found |  -  |
+| **400** | Bad request |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -86,8 +87,8 @@ Get bounce and complaint statistics grouped by time period. Requires Growth+ pla
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Bounce statistics |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **403** | Forbidden - Insufficient permissions or no credits |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -125,8 +126,8 @@ Get aggregated bounce and complaint statistics. Requires Growth+ plan.
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Bounce statistics summary |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **403** | Forbidden - Insufficient permissions or no credits |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -164,8 +165,8 @@ Assess complaint risk based on recent inbound data. Requires Growth+ plan.
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Complaint assessment |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **403** | Forbidden - Insufficient permissions or no credits |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -182,7 +183,7 @@ Get a single inbound message with full body content. Requires Growth+ plan.
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **messageId** | **string** | Message ID |  |
+| **messageId** | **string** |  |  |
 
 ### Return type
 
@@ -202,9 +203,9 @@ Get a single inbound message with full body content. Requires Growth+ plan.
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Inbound message details |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **403** | Forbidden - Insufficient permissions or no credits |  -  |
 | **404** | Resource not found |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -249,8 +250,8 @@ List inbound messages (bounces, complaints, replies, OOO). Requires Growth+ plan
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Paginated list of inbound messages |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **403** | Forbidden - Insufficient permissions or no credits |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 

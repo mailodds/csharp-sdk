@@ -64,7 +64,7 @@ Disconnect a store and deactivate its products. Products are retained but marked
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **storeId** | **string** | Store connection UUID |  |
+| **storeId** | **string** |  |  |
 
 ### Return type
 
@@ -84,8 +84,8 @@ Disconnect a store and deactivate its products. Products are retained but marked
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Store disconnected |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **404** | Resource not found |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -102,7 +102,7 @@ Get details of a specific store connection including sync status and product cou
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **storeId** | **string** | Store connection UUID |  |
+| **storeId** | **string** |  |  |
 
 ### Return type
 
@@ -122,8 +122,8 @@ Get details of a specific store connection including sync status and product cou
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Store connection details |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **404** | Resource not found |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -140,8 +140,8 @@ Get error details for a sync job.
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **storeId** | **string** | Store ID |  |
-| **jobId** | **string** | Sync job ID |  |
+| **storeId** | **string** |  |  |
+| **jobId** | **string** |  |  |
 | **page** | **int** |  | [optional] [default to 1] |
 | **perPage** | **int** |  | [optional] [default to 50] |
 
@@ -163,8 +163,8 @@ Get error details for a sync job.
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Sync job errors |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **404** | Resource not found |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -218,7 +218,7 @@ List sync job history for a store.
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **storeId** | **string** | Store ID |  |
+| **storeId** | **string** |  |  |
 | **page** | **int** |  | [optional] [default to 1] |
 | **perPage** | **int** |  | [optional] [default to 20] |
 
@@ -240,8 +240,8 @@ List sync job history for a store.
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | List of sync jobs |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **404** | Resource not found |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -258,7 +258,7 @@ Trigger a manual product sync for a store. Supports idempotency via the Idempote
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **storeId** | **string** | Store connection UUID |  |
+| **storeId** | **string** |  |  |
 | **idempotencyKey** | **string** | Idempotency key to prevent duplicate syncs (5 min TTL) | [optional]  |
 
 ### Return type
@@ -280,8 +280,8 @@ Trigger a manual product sync for a store. Supports idempotency via the Idempote
 |-------------|-------------|------------------|
 | **200** | Sync scheduled |  -  |
 | **400** | Bad request |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **404** | Resource not found |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -298,7 +298,7 @@ Update store settings such as name, sync interval, or credentials.
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **storeId** | **string** | Store connection UUID |  |
+| **storeId** | **string** |  |  |
 | **updateStoreRequest** | [**UpdateStoreRequest**](UpdateStoreRequest.md) |  |  |
 
 ### Return type
@@ -319,9 +319,9 @@ Update store settings such as name, sync interval, or credentials.
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Store connection updated |  -  |
+| **404** | Resource not found |  -  |
 | **400** | Bad request |  -  |
 | **401** | Unauthorized - Invalid or missing API key |  -  |
-| **404** | Resource not found |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 

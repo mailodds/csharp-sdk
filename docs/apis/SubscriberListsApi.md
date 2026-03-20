@@ -85,9 +85,9 @@ Create a new subscriber list. Use lists to organize subscribers and manage doubl
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **201** | List created |  -  |
+| **403** | Forbidden - Insufficient permissions or no credits |  -  |
 | **400** | Bad request |  -  |
 | **401** | Unauthorized - Invalid or missing API key |  -  |
-| **403** | Forbidden - Insufficient permissions or no credits |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -124,8 +124,8 @@ Soft-delete a subscriber list. Existing subscribers are retained but the list is
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | List deleted |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **404** | Resource not found |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -162,8 +162,8 @@ Get details of a specific subscriber list including subscriber and confirmed cou
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Subscriber list details |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **404** | Resource not found |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -241,8 +241,8 @@ List paginated subscribers for a specific list. Optionally filter by status.
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Paginated list of subscribers |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **404** | Resource not found |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -280,11 +280,11 @@ Add a subscriber to a list and initiate the double opt-in confirmation flow. The
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **201** | Subscriber created (pending confirmation) |  -  |
-| **400** | Bad request |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **403** | Forbidden - Insufficient permissions or no credits |  -  |
 | **422** | Invalid email address |  -  |
 | **429** | Rate limit exceeded |  -  |
+| **400** | Bad request |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -322,8 +322,8 @@ Set a subscriber's status to unsubscribed. The consent record is retained for co
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Subscriber unsubscribed |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **404** | Resource not found |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 

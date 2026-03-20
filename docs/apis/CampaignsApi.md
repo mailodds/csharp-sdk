@@ -46,8 +46,8 @@ Cancel a scheduled or in-progress campaign. Messages already delivered are not r
 |-------------|-------------|------------------|
 | **200** | Campaign cancelled |  -  |
 | **400** | Bad request |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **404** | Resource not found |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -84,9 +84,9 @@ Create a new email campaign. Campaigns target a subscriber list and support A/B 
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **201** | Campaign created |  -  |
+| **403** | Forbidden - Insufficient permissions or no credits |  -  |
 | **400** | Bad request |  -  |
 | **401** | Unauthorized - Invalid or missing API key |  -  |
-| **403** | Forbidden - Insufficient permissions or no credits |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -124,9 +124,9 @@ Add an A/B test variant to a campaign. Each variant has its own subject, body, a
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **201** | Variant created |  -  |
+| **404** | Resource not found |  -  |
 | **400** | Bad request |  -  |
 | **401** | Unauthorized - Invalid or missing API key |  -  |
-| **404** | Resource not found |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -163,8 +163,8 @@ Get a campaign by ID including delivery statistics and engagement metrics.
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Campaign details with stats |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **404** | Resource not found |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -241,9 +241,9 @@ Schedule a campaign for future delivery. Provide a send_at timestamp in ISO 8601
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Campaign scheduled |  -  |
+| **404** | Resource not found |  -  |
 | **400** | Bad request |  -  |
 | **401** | Unauthorized - Invalid or missing API key |  -  |
-| **404** | Resource not found |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -281,8 +281,8 @@ Begin sending a campaign immediately. The campaign must be in draft status with 
 |-------------|-------------|------------------|
 | **202** | Campaign accepted for sending |  -  |
 | **400** | Bad request |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **404** | Resource not found |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 

@@ -27,65 +27,65 @@ using MailOdds.Client;
 namespace MailOdds.Model
 {
     /// <summary>
-    /// GetBounceStats200Response
+    /// Bounce statistics with time-series data
     /// </summary>
-    public partial class GetBounceStats200Response : IValidatableObject
+    public partial class GetBounceStats200ResponseStats : IValidatableObject
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GetBounceStats200Response" /> class.
+        /// Initializes a new instance of the <see cref="GetBounceStats200ResponseStats" /> class.
         /// </summary>
-        /// <param name="schemaVersion">schemaVersion</param>
-        /// <param name="requestId">requestId</param>
-        /// <param name="stats">stats</param>
+        /// <param name="period">period</param>
+        /// <param name="groupBy">groupBy</param>
+        /// <param name="data">data</param>
         [JsonConstructor]
-        public GetBounceStats200Response(Option<string?> schemaVersion = default, Option<string?> requestId = default, Option<GetBounceStats200ResponseStats?> stats = default)
+        public GetBounceStats200ResponseStats(Option<string?> period = default, Option<string?> groupBy = default, Option<List<Object>?> data = default)
         {
-            SchemaVersionOption = schemaVersion;
-            RequestIdOption = requestId;
-            StatsOption = stats;
+            PeriodOption = period;
+            GroupByOption = groupBy;
+            DataOption = data;
             OnCreated();
         }
 
         partial void OnCreated();
 
         /// <summary>
-        /// Used to track the state of SchemaVersion
+        /// Used to track the state of Period
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<string?> SchemaVersionOption { get; private set; }
+        public Option<string?> PeriodOption { get; private set; }
 
         /// <summary>
-        /// Gets or Sets SchemaVersion
+        /// Gets or Sets Period
         /// </summary>
-        [JsonPropertyName("schema_version")]
-        public string? SchemaVersion { get { return this.SchemaVersionOption; } set { this.SchemaVersionOption = new(value); } }
+        [JsonPropertyName("period")]
+        public string? Period { get { return this.PeriodOption; } set { this.PeriodOption = new(value); } }
 
         /// <summary>
-        /// Used to track the state of RequestId
-        /// </summary>
-        [JsonIgnore]
-        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<string?> RequestIdOption { get; private set; }
-
-        /// <summary>
-        /// Gets or Sets RequestId
-        /// </summary>
-        [JsonPropertyName("request_id")]
-        public string? RequestId { get { return this.RequestIdOption; } set { this.RequestIdOption = new(value); } }
-
-        /// <summary>
-        /// Used to track the state of Stats
+        /// Used to track the state of GroupBy
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<GetBounceStats200ResponseStats?> StatsOption { get; private set; }
+        public Option<string?> GroupByOption { get; private set; }
 
         /// <summary>
-        /// Gets or Sets Stats
+        /// Gets or Sets GroupBy
         /// </summary>
-        [JsonPropertyName("stats")]
-        public GetBounceStats200ResponseStats? Stats { get { return this.StatsOption; } set { this.StatsOption = new(value); } }
+        [JsonPropertyName("group_by")]
+        public string? GroupBy { get { return this.GroupByOption; } set { this.GroupByOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of Data
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<List<Object>?> DataOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets Data
+        /// </summary>
+        [JsonPropertyName("data")]
+        public List<Object>? Data { get { return this.DataOption; } set { this.DataOption = new(value); } }
 
         /// <summary>
         /// Returns the string presentation of the object
@@ -94,10 +94,10 @@ namespace MailOdds.Model
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append("class GetBounceStats200Response {\n");
-            sb.Append("  SchemaVersion: ").Append(SchemaVersion).Append("\n");
-            sb.Append("  RequestId: ").Append(RequestId).Append("\n");
-            sb.Append("  Stats: ").Append(Stats).Append("\n");
+            sb.Append("class GetBounceStats200ResponseStats {\n");
+            sb.Append("  Period: ").Append(Period).Append("\n");
+            sb.Append("  GroupBy: ").Append(GroupBy).Append("\n");
+            sb.Append("  Data: ").Append(Data).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -114,19 +114,19 @@ namespace MailOdds.Model
     }
 
     /// <summary>
-    /// A Json converter for type <see cref="GetBounceStats200Response" />
+    /// A Json converter for type <see cref="GetBounceStats200ResponseStats" />
     /// </summary>
-    public class GetBounceStats200ResponseJsonConverter : JsonConverter<GetBounceStats200Response>
+    public class GetBounceStats200ResponseStatsJsonConverter : JsonConverter<GetBounceStats200ResponseStats>
     {
         /// <summary>
-        /// Deserializes json to <see cref="GetBounceStats200Response" />
+        /// Deserializes json to <see cref="GetBounceStats200ResponseStats" />
         /// </summary>
         /// <param name="utf8JsonReader"></param>
         /// <param name="typeToConvert"></param>
         /// <param name="jsonSerializerOptions"></param>
         /// <returns></returns>
         /// <exception cref="JsonException"></exception>
-        public override GetBounceStats200Response Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
+        public override GetBounceStats200ResponseStats Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
         {
             int currentDepth = utf8JsonReader.CurrentDepth;
 
@@ -135,9 +135,9 @@ namespace MailOdds.Model
 
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
-            Option<string?> schemaVersion = default;
-            Option<string?> requestId = default;
-            Option<GetBounceStats200ResponseStats?> stats = default;
+            Option<string?> period = default;
+            Option<string?> groupBy = default;
+            Option<List<Object>?> data = default;
 
             while (utf8JsonReader.Read())
             {
@@ -154,14 +154,14 @@ namespace MailOdds.Model
 
                     switch (localVarJsonPropertyName)
                     {
-                        case "schema_version":
-                            schemaVersion = new Option<string?>(utf8JsonReader.GetString()!);
+                        case "period":
+                            period = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
-                        case "request_id":
-                            requestId = new Option<string?>(utf8JsonReader.GetString()!);
+                        case "group_by":
+                            groupBy = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
-                        case "stats":
-                            stats = new Option<GetBounceStats200ResponseStats?>(JsonSerializer.Deserialize<GetBounceStats200ResponseStats>(ref utf8JsonReader, jsonSerializerOptions)!);
+                        case "data":
+                            data = new Option<List<Object>?>(JsonSerializer.Deserialize<List<Object>>(ref utf8JsonReader, jsonSerializerOptions)!);
                             break;
                         default:
                             break;
@@ -169,61 +169,61 @@ namespace MailOdds.Model
                 }
             }
 
-            if (schemaVersion.IsSet && schemaVersion.Value == null)
-                throw new ArgumentNullException(nameof(schemaVersion), "Property is not nullable for class GetBounceStats200Response.");
+            if (period.IsSet && period.Value == null)
+                throw new ArgumentNullException(nameof(period), "Property is not nullable for class GetBounceStats200ResponseStats.");
 
-            if (requestId.IsSet && requestId.Value == null)
-                throw new ArgumentNullException(nameof(requestId), "Property is not nullable for class GetBounceStats200Response.");
+            if (groupBy.IsSet && groupBy.Value == null)
+                throw new ArgumentNullException(nameof(groupBy), "Property is not nullable for class GetBounceStats200ResponseStats.");
 
-            if (stats.IsSet && stats.Value == null)
-                throw new ArgumentNullException(nameof(stats), "Property is not nullable for class GetBounceStats200Response.");
+            if (data.IsSet && data.Value == null)
+                throw new ArgumentNullException(nameof(data), "Property is not nullable for class GetBounceStats200ResponseStats.");
 
-            return new GetBounceStats200Response(schemaVersion, requestId, stats);
+            return new GetBounceStats200ResponseStats(period, groupBy, data);
         }
 
         /// <summary>
-        /// Serializes a <see cref="GetBounceStats200Response" />
+        /// Serializes a <see cref="GetBounceStats200ResponseStats" />
         /// </summary>
         /// <param name="writer"></param>
-        /// <param name="getBounceStats200Response"></param>
+        /// <param name="getBounceStats200ResponseStats"></param>
         /// <param name="jsonSerializerOptions"></param>
         /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, GetBounceStats200Response getBounceStats200Response, JsonSerializerOptions jsonSerializerOptions)
+        public override void Write(Utf8JsonWriter writer, GetBounceStats200ResponseStats getBounceStats200ResponseStats, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
 
-            WriteProperties(writer, getBounceStats200Response, jsonSerializerOptions);
+            WriteProperties(writer, getBounceStats200ResponseStats, jsonSerializerOptions);
             writer.WriteEndObject();
         }
 
         /// <summary>
-        /// Serializes the properties of <see cref="GetBounceStats200Response" />
+        /// Serializes the properties of <see cref="GetBounceStats200ResponseStats" />
         /// </summary>
         /// <param name="writer"></param>
-        /// <param name="getBounceStats200Response"></param>
+        /// <param name="getBounceStats200ResponseStats"></param>
         /// <param name="jsonSerializerOptions"></param>
         /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, GetBounceStats200Response getBounceStats200Response, JsonSerializerOptions jsonSerializerOptions)
+        public void WriteProperties(Utf8JsonWriter writer, GetBounceStats200ResponseStats getBounceStats200ResponseStats, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (getBounceStats200Response.SchemaVersionOption.IsSet && getBounceStats200Response.SchemaVersion == null)
-                throw new ArgumentNullException(nameof(getBounceStats200Response.SchemaVersion), "Property is required for class GetBounceStats200Response.");
+            if (getBounceStats200ResponseStats.PeriodOption.IsSet && getBounceStats200ResponseStats.Period == null)
+                throw new ArgumentNullException(nameof(getBounceStats200ResponseStats.Period), "Property is required for class GetBounceStats200ResponseStats.");
 
-            if (getBounceStats200Response.RequestIdOption.IsSet && getBounceStats200Response.RequestId == null)
-                throw new ArgumentNullException(nameof(getBounceStats200Response.RequestId), "Property is required for class GetBounceStats200Response.");
+            if (getBounceStats200ResponseStats.GroupByOption.IsSet && getBounceStats200ResponseStats.GroupBy == null)
+                throw new ArgumentNullException(nameof(getBounceStats200ResponseStats.GroupBy), "Property is required for class GetBounceStats200ResponseStats.");
 
-            if (getBounceStats200Response.StatsOption.IsSet && getBounceStats200Response.Stats == null)
-                throw new ArgumentNullException(nameof(getBounceStats200Response.Stats), "Property is required for class GetBounceStats200Response.");
+            if (getBounceStats200ResponseStats.DataOption.IsSet && getBounceStats200ResponseStats.Data == null)
+                throw new ArgumentNullException(nameof(getBounceStats200ResponseStats.Data), "Property is required for class GetBounceStats200ResponseStats.");
 
-            if (getBounceStats200Response.SchemaVersionOption.IsSet)
-                writer.WriteString("schema_version", getBounceStats200Response.SchemaVersion);
+            if (getBounceStats200ResponseStats.PeriodOption.IsSet)
+                writer.WriteString("period", getBounceStats200ResponseStats.Period);
 
-            if (getBounceStats200Response.RequestIdOption.IsSet)
-                writer.WriteString("request_id", getBounceStats200Response.RequestId);
+            if (getBounceStats200ResponseStats.GroupByOption.IsSet)
+                writer.WriteString("group_by", getBounceStats200ResponseStats.GroupBy);
 
-            if (getBounceStats200Response.StatsOption.IsSet)
+            if (getBounceStats200ResponseStats.DataOption.IsSet)
             {
-                writer.WritePropertyName("stats");
-                JsonSerializer.Serialize(writer, getBounceStats200Response.Stats, jsonSerializerOptions);
+                writer.WritePropertyName("data");
+                JsonSerializer.Serialize(writer, getBounceStats200ResponseStats.Data, jsonSerializerOptions);
             }
         }
     }

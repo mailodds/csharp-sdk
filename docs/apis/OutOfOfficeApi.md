@@ -43,9 +43,9 @@ Check OOO status for up to 1000 email addresses at once. Requires Growth+ plan.
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Batch OOO check results |  -  |
+| **403** | Forbidden - Insufficient permissions or no credits |  -  |
 | **400** | Bad request |  -  |
 | **401** | Unauthorized - Invalid or missing API key |  -  |
-| **403** | Forbidden - Insufficient permissions or no credits |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -62,7 +62,7 @@ Clear out-of-office status for an email address. Requires Growth+ plan.
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **email** | **string** | Email address |  |
+| **email** | **string** |  |  |
 
 ### Return type
 
@@ -82,9 +82,9 @@ Clear out-of-office status for an email address. Requires Growth+ plan.
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | OOO status cleared |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **403** | Forbidden - Insufficient permissions or no credits |  -  |
 | **404** | Resource not found |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -101,7 +101,7 @@ Check if a specific email address is currently out-of-office. Requires Growth+ p
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **email** | **string** | Email address to check |  |
+| **email** | **string** |  |  |
 
 ### Return type
 
@@ -121,8 +121,8 @@ Check if a specific email address is currently out-of-office. Requires Growth+ p
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | OOO status |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **403** | Forbidden - Insufficient permissions or no credits |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -161,8 +161,8 @@ List contacts detected as out-of-office. Requires Growth+ plan.
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Paginated list of OOO contacts |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **403** | Forbidden - Insufficient permissions or no credits |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -179,7 +179,7 @@ Manually set or clear out-of-office status for an email. Requires Growth+ plan.
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **email** | **string** | Email address |  |
+| **email** | **string** |  |  |
 | **updateOooContactRequest** | [**UpdateOooContactRequest**](UpdateOooContactRequest.md) |  |  |
 
 ### Return type
@@ -200,8 +200,9 @@ Manually set or clear out-of-office status for an email. Requires Growth+ plan.
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | OOO contact updated |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **403** | Forbidden - Insufficient permissions or no credits |  -  |
+| **400** | Bad request |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 

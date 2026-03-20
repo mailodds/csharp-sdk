@@ -219,7 +219,7 @@ namespace MailOdds.Api
     /// <summary>
     /// The <see cref="IIntrospectTokenApiResponse"/>
     /// </summary>
-    public interface IIntrospectTokenApiResponse : MailOdds.Client.IApiResponse, IOk<MailOdds.Model.IntrospectToken200Response?>
+    public interface IIntrospectTokenApiResponse : MailOdds.Client.IApiResponse, IOk<MailOdds.Model.IntrospectToken200Response?>, IBadRequest<MailOdds.Model.ErrorResponse?>
     {
         /// <summary>
         /// Returns true if the response is 200 Ok
@@ -232,6 +232,12 @@ namespace MailOdds.Api
         /// </summary>
         /// <returns></returns>
         bool IsUnauthorized { get; }
+
+        /// <summary>
+        /// Returns true if the response is 400 BadRequest
+        /// </summary>
+        /// <returns></returns>
+        bool IsBadRequest { get; }
     }
 
     /// <summary>
@@ -249,7 +255,7 @@ namespace MailOdds.Api
     /// <summary>
     /// The <see cref="IRevokeTokenApiResponse"/>
     /// </summary>
-    public interface IRevokeTokenApiResponse : MailOdds.Client.IApiResponse
+    public interface IRevokeTokenApiResponse : MailOdds.Client.IApiResponse, IBadRequest<MailOdds.Model.ErrorResponse?>
     {
         /// <summary>
         /// Returns true if the response is 200 Ok
@@ -262,6 +268,12 @@ namespace MailOdds.Api
         /// </summary>
         /// <returns></returns>
         bool IsUnauthorized { get; }
+
+        /// <summary>
+        /// Returns true if the response is 400 BadRequest
+        /// </summary>
+        /// <returns></returns>
+        bool IsBadRequest { get; }
     }
 
     /// <summary>
@@ -583,10 +595,12 @@ namespace MailOdds.Api
 
                 using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
                 {
-                    Uri urlLocalVar = httpRequestMessageLocalVar.RequestUri = new Uri("https://api.mailodds.com");
-                    uriBuilderLocalVar.Host = urlLocalVar.Authority;
-                    uriBuilderLocalVar.Scheme = urlLocalVar.Scheme;
-                    uriBuilderLocalVar.Path = urlLocalVar.AbsolutePath;
+                    uriBuilderLocalVar.Host = HttpClient.BaseAddress!.Host;
+                    uriBuilderLocalVar.Port = HttpClient.BaseAddress.Port;
+                    uriBuilderLocalVar.Scheme = HttpClient.BaseAddress.Scheme;
+                    uriBuilderLocalVar.Path = HttpClient.BaseAddress.AbsolutePath == "/"
+                        ? "/oauth/token"
+                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/oauth/token");
 
                     MultipartContent multipartContentLocalVar = new MultipartContent();
 
@@ -857,10 +871,12 @@ namespace MailOdds.Api
             {
                 using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
                 {
-                    Uri urlLocalVar = httpRequestMessageLocalVar.RequestUri = new Uri("https://api.mailodds.com");
-                    uriBuilderLocalVar.Host = urlLocalVar.Authority;
-                    uriBuilderLocalVar.Scheme = urlLocalVar.Scheme;
-                    uriBuilderLocalVar.Path = urlLocalVar.AbsolutePath;
+                    uriBuilderLocalVar.Host = HttpClient.BaseAddress!.Host;
+                    uriBuilderLocalVar.Port = HttpClient.BaseAddress.Port;
+                    uriBuilderLocalVar.Scheme = HttpClient.BaseAddress.Scheme;
+                    uriBuilderLocalVar.Path = HttpClient.BaseAddress.AbsolutePath == "/"
+                        ? "/.well-known/jwks.json"
+                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/.well-known/jwks.json");
 
                     httpRequestMessageLocalVar.RequestUri = uriBuilderLocalVar.Uri;
 
@@ -1126,10 +1142,12 @@ namespace MailOdds.Api
 
                 using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
                 {
-                    Uri urlLocalVar = httpRequestMessageLocalVar.RequestUri = new Uri("https://api.mailodds.com");
-                    uriBuilderLocalVar.Host = urlLocalVar.Authority;
-                    uriBuilderLocalVar.Scheme = urlLocalVar.Scheme;
-                    uriBuilderLocalVar.Path = urlLocalVar.AbsolutePath;
+                    uriBuilderLocalVar.Host = HttpClient.BaseAddress!.Host;
+                    uriBuilderLocalVar.Port = HttpClient.BaseAddress.Port;
+                    uriBuilderLocalVar.Scheme = HttpClient.BaseAddress.Scheme;
+                    uriBuilderLocalVar.Path = HttpClient.BaseAddress.AbsolutePath == "/"
+                        ? "/oauth/introspect"
+                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/oauth/introspect");
 
                     MultipartContent multipartContentLocalVar = new MultipartContent();
 
@@ -1292,6 +1310,44 @@ namespace MailOdds.Api
             /// <returns></returns>
             public bool IsUnauthorized => 401 == (int)StatusCode;
 
+            /// <summary>
+            /// Returns true if the response is 400 BadRequest
+            /// </summary>
+            /// <returns></returns>
+            public bool IsBadRequest => 400 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 400 BadRequest
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.ErrorResponse? BadRequest()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsBadRequest
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 400 BadRequest and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryBadRequest([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = BadRequest();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)400);
+                }
+
+                return result != null;
+            }
+
             private void OnDeserializationErrorDefaultImplementation(Exception exception, HttpStatusCode httpStatusCode)
             {
                 bool suppressDefaultLog = false;
@@ -1376,10 +1432,12 @@ namespace MailOdds.Api
             {
                 using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
                 {
-                    Uri urlLocalVar = httpRequestMessageLocalVar.RequestUri = new Uri("https://api.mailodds.com");
-                    uriBuilderLocalVar.Host = urlLocalVar.Authority;
-                    uriBuilderLocalVar.Scheme = urlLocalVar.Scheme;
-                    uriBuilderLocalVar.Path = urlLocalVar.AbsolutePath;
+                    uriBuilderLocalVar.Host = HttpClient.BaseAddress!.Host;
+                    uriBuilderLocalVar.Port = HttpClient.BaseAddress.Port;
+                    uriBuilderLocalVar.Scheme = HttpClient.BaseAddress.Scheme;
+                    uriBuilderLocalVar.Path = HttpClient.BaseAddress.AbsolutePath == "/"
+                        ? "/.well-known/oauth-authorization-server"
+                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/.well-known/oauth-authorization-server");
 
                     httpRequestMessageLocalVar.RequestUri = uriBuilderLocalVar.Uri;
 
@@ -1645,10 +1703,12 @@ namespace MailOdds.Api
 
                 using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
                 {
-                    Uri urlLocalVar = httpRequestMessageLocalVar.RequestUri = new Uri("https://api.mailodds.com");
-                    uriBuilderLocalVar.Host = urlLocalVar.Authority;
-                    uriBuilderLocalVar.Scheme = urlLocalVar.Scheme;
-                    uriBuilderLocalVar.Path = urlLocalVar.AbsolutePath;
+                    uriBuilderLocalVar.Host = HttpClient.BaseAddress!.Host;
+                    uriBuilderLocalVar.Port = HttpClient.BaseAddress.Port;
+                    uriBuilderLocalVar.Scheme = HttpClient.BaseAddress.Scheme;
+                    uriBuilderLocalVar.Path = HttpClient.BaseAddress.AbsolutePath == "/"
+                        ? "/oauth/revoke"
+                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/oauth/revoke");
 
                     MultipartContent multipartContentLocalVar = new MultipartContent();
 
@@ -1679,6 +1739,15 @@ namespace MailOdds.Api
 
                     if (contentTypeLocalVar != null && httpRequestMessageLocalVar.Content != null)
                         httpRequestMessageLocalVar.Content.Headers.ContentType = new MediaTypeHeaderValue(contentTypeLocalVar);
+
+                    string[] acceptLocalVars = new string[] {
+                        "application/json"
+                    };
+
+                    string? acceptLocalVar = ClientUtils.SelectHeaderAccept(acceptLocalVars);
+
+                    if (acceptLocalVar != null)
+                        httpRequestMessageLocalVar.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(acceptLocalVar));
 
                     httpRequestMessageLocalVar.Method = HttpMethod.Post;
 
@@ -1769,6 +1838,44 @@ namespace MailOdds.Api
             /// </summary>
             /// <returns></returns>
             public bool IsUnauthorized => 401 == (int)StatusCode;
+
+            /// <summary>
+            /// Returns true if the response is 400 BadRequest
+            /// </summary>
+            /// <returns></returns>
+            public bool IsBadRequest => 400 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 400 BadRequest
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.ErrorResponse? BadRequest()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsBadRequest
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 400 BadRequest and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryBadRequest([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = BadRequest();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)400);
+                }
+
+                return result != null;
+            }
 
             private void OnDeserializationErrorDefaultImplementation(Exception exception, HttpStatusCode httpStatusCode)
             {

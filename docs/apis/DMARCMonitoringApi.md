@@ -84,8 +84,8 @@ Delete a DMARC domain and all its associated reports.
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Domain deleted |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **404** | Resource not found |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -123,8 +123,8 @@ Get a single DMARC domain with summary statistics including pass/fail rates.
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Domain with summary stats |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **404** | Resource not found |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -161,8 +161,8 @@ Get a recommendation for upgrading the domain's DMARC policy based on alignment 
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Policy recommendation |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **404** | Resource not found |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -202,8 +202,8 @@ Get sending IPs that have sent email for this domain with their DKIM/SPF alignme
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Sending sources with alignment status |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **404** | Resource not found |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -241,8 +241,8 @@ Get daily pass/fail trend data for DMARC authentication over the specified perio
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Daily trend data |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **404** | Resource not found |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -312,8 +312,8 @@ Check that the domain has the correct DMARC TXT record pointing to the MailOdds 
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Verification result |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **404** | Resource not found |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 

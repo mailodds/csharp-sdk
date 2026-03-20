@@ -1,12 +1,13 @@
-# MailOdds.Model.GetBounceStats200Response
+# MailOdds.Model.GetBounceStats200ResponseStats
+Bounce statistics with time-series data
 
 ## Properties
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**SchemaVersion** | **string** |  | [optional] 
-**RequestId** | **string** |  | [optional] 
-**Stats** | [**GetBounceStats200ResponseStats**](GetBounceStats200ResponseStats.md) |  | [optional] 
+**Period** | **string** |  | [optional] 
+**GroupBy** | **string** |  | [optional] 
+**Data** | **List&lt;Object&gt;** |  | [optional] 
 
 [[Back to Model list]](../../README.md#documentation-for-models) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to README]](../../README.md)
 

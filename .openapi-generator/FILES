@@ -121,6 +121,7 @@ docs/models/GetBlacklistHistory200ResponseChecksInner.md
 docs/models/GetBounceRecords200Response.md
 docs/models/GetBounceRecords200ResponseRecordsInner.md
 docs/models/GetBounceStats200Response.md
+docs/models/GetBounceStats200ResponseStats.md
 docs/models/GetBounceStatsSummary200Response.md
 docs/models/GetCampaignABResults200Response.md
 docs/models/GetCampaignABResults200ResponseVariantsInner.md
@@ -443,6 +444,7 @@ src/MailOdds/Model/GetBlacklistHistory200ResponseChecksInner.cs
 src/MailOdds/Model/GetBounceRecords200Response.cs
 src/MailOdds/Model/GetBounceRecords200ResponseRecordsInner.cs
 src/MailOdds/Model/GetBounceStats200Response.cs
+src/MailOdds/Model/GetBounceStats200ResponseStats.cs
 src/MailOdds/Model/GetBounceStatsSummary200Response.cs
 src/MailOdds/Model/GetCampaignABResults200Response.cs
 src/MailOdds/Model/GetCampaignABResults200ResponseVariantsInner.cs

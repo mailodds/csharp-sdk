@@ -42,6 +42,7 @@ Register a new session for receiving webhook events via SSE.
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **201** | Session created |  -  |
+| **400** | Bad request |  -  |
 | **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
@@ -59,7 +60,7 @@ Close a webhook CLI forwarding session.
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **sessionId** | **string** | Session ID |  |
+| **sessionId** | **string** |  |  |
 
 ### Return type
 
@@ -79,8 +80,8 @@ Close a webhook CLI forwarding session.
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Session closed |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **404** | Resource not found |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -134,7 +135,7 @@ Replay a historical webhook delivery to active CLI sessions.
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **deliveryId** | **int** | Delivery ID |  |
+| **deliveryId** | **int** |  |  |
 
 ### Return type
 
@@ -154,8 +155,8 @@ Replay a historical webhook delivery to active CLI sessions.
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Delivery replayed |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **404** | Resource not found |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 

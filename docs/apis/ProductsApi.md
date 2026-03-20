@@ -22,7 +22,7 @@ Push up to 100 products to a custom platform store. Creates new products or upda
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **storeId** | **string** | Store connection UUID |  |
+| **storeId** | **string** |  |  |
 | **batchProductsRequest** | [**BatchProductsRequest**](BatchProductsRequest.md) |  |  |
 
 ### Return type
@@ -43,9 +43,9 @@ Push up to 100 products to a custom platform store. Creates new products or upda
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Batch results |  -  |
+| **404** | Resource not found |  -  |
 | **400** | Bad request |  -  |
 | **401** | Unauthorized - Invalid or missing API key |  -  |
-| **404** | Resource not found |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -100,7 +100,7 @@ Get detailed information about a specific product.
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **productId** | **string** | Product UUID |  |
+| **productId** | **string** |  |  |
 
 ### Return type
 
@@ -120,8 +120,8 @@ Get detailed information about a specific product.
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Product details |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **404** | Resource not found |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 

@@ -34,38 +34,25 @@ namespace MailOdds.Model
         /// <summary>
         /// Initializes a new instance of the <see cref="SendingDomainIdentityScoreBreakdown" /> class.
         /// </summary>
-        /// <param name="dkim">dkim</param>
         /// <param name="spf">spf</param>
+        /// <param name="dkim">dkim</param>
         /// <param name="dmarc">dmarc</param>
-        /// <param name="mx">mx</param>
-        /// <param name="returnPath">returnPath</param>
+        /// <param name="bounce">bounce</param>
+        /// <param name="tracking">tracking</param>
         /// <param name="bimi">bimi</param>
         [JsonConstructor]
-        public SendingDomainIdentityScoreBreakdown(Option<IdentityScoreCheck?> dkim = default, Option<IdentityScoreCheck?> spf = default, Option<IdentityScoreCheck?> dmarc = default, Option<IdentityScoreCheck?> mx = default, Option<IdentityScoreCheck?> returnPath = default, Option<IdentityScoreCheck?> bimi = default)
+        public SendingDomainIdentityScoreBreakdown(Option<IdentityScoreCheck?> spf = default, Option<IdentityScoreCheck?> dkim = default, Option<IdentityScoreCheck?> dmarc = default, Option<IdentityScoreCheck?> bounce = default, Option<IdentityScoreCheck?> tracking = default, Option<IdentityScoreCheck?> bimi = default)
         {
-            DkimOption = dkim;
             SpfOption = spf;
+            DkimOption = dkim;
             DmarcOption = dmarc;
-            MxOption = mx;
-            ReturnPathOption = returnPath;
+            BounceOption = bounce;
+            TrackingOption = tracking;
             BimiOption = bimi;
             OnCreated();
         }
 
         partial void OnCreated();
-
-        /// <summary>
-        /// Used to track the state of Dkim
-        /// </summary>
-        [JsonIgnore]
-        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<IdentityScoreCheck?> DkimOption { get; private set; }
-
-        /// <summary>
-        /// Gets or Sets Dkim
-        /// </summary>
-        [JsonPropertyName("dkim")]
-        public IdentityScoreCheck? Dkim { get { return this.DkimOption; } set { this.DkimOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Spf
@@ -81,6 +68,19 @@ namespace MailOdds.Model
         public IdentityScoreCheck? Spf { get { return this.SpfOption; } set { this.SpfOption = new(value); } }
 
         /// <summary>
+        /// Used to track the state of Dkim
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<IdentityScoreCheck?> DkimOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets Dkim
+        /// </summary>
+        [JsonPropertyName("dkim")]
+        public IdentityScoreCheck? Dkim { get { return this.DkimOption; } set { this.DkimOption = new(value); } }
+
+        /// <summary>
         /// Used to track the state of Dmarc
         /// </summary>
         [JsonIgnore]
@@ -94,30 +94,30 @@ namespace MailOdds.Model
         public IdentityScoreCheck? Dmarc { get { return this.DmarcOption; } set { this.DmarcOption = new(value); } }
 
         /// <summary>
-        /// Used to track the state of Mx
+        /// Used to track the state of Bounce
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<IdentityScoreCheck?> MxOption { get; private set; }
+        public Option<IdentityScoreCheck?> BounceOption { get; private set; }
 
         /// <summary>
-        /// Gets or Sets Mx
+        /// Gets or Sets Bounce
         /// </summary>
-        [JsonPropertyName("mx")]
-        public IdentityScoreCheck? Mx { get { return this.MxOption; } set { this.MxOption = new(value); } }
+        [JsonPropertyName("bounce")]
+        public IdentityScoreCheck? Bounce { get { return this.BounceOption; } set { this.BounceOption = new(value); } }
 
         /// <summary>
-        /// Used to track the state of ReturnPath
+        /// Used to track the state of Tracking
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<IdentityScoreCheck?> ReturnPathOption { get; private set; }
+        public Option<IdentityScoreCheck?> TrackingOption { get; private set; }
 
         /// <summary>
-        /// Gets or Sets ReturnPath
+        /// Gets or Sets Tracking
         /// </summary>
-        [JsonPropertyName("return_path")]
-        public IdentityScoreCheck? ReturnPath { get { return this.ReturnPathOption; } set { this.ReturnPathOption = new(value); } }
+        [JsonPropertyName("tracking")]
+        public IdentityScoreCheck? Tracking { get { return this.TrackingOption; } set { this.TrackingOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Bimi
@@ -140,11 +140,11 @@ namespace MailOdds.Model
         {
             StringBuilder sb = new StringBuilder();
             sb.Append("class SendingDomainIdentityScoreBreakdown {\n");
-            sb.Append("  Dkim: ").Append(Dkim).Append("\n");
             sb.Append("  Spf: ").Append(Spf).Append("\n");
+            sb.Append("  Dkim: ").Append(Dkim).Append("\n");
             sb.Append("  Dmarc: ").Append(Dmarc).Append("\n");
-            sb.Append("  Mx: ").Append(Mx).Append("\n");
-            sb.Append("  ReturnPath: ").Append(ReturnPath).Append("\n");
+            sb.Append("  Bounce: ").Append(Bounce).Append("\n");
+            sb.Append("  Tracking: ").Append(Tracking).Append("\n");
             sb.Append("  Bimi: ").Append(Bimi).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
@@ -183,11 +183,11 @@ namespace MailOdds.Model
 
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
-            Option<IdentityScoreCheck?> dkim = default;
             Option<IdentityScoreCheck?> spf = default;
+            Option<IdentityScoreCheck?> dkim = default;
             Option<IdentityScoreCheck?> dmarc = default;
-            Option<IdentityScoreCheck?> mx = default;
-            Option<IdentityScoreCheck?> returnPath = default;
+            Option<IdentityScoreCheck?> bounce = default;
+            Option<IdentityScoreCheck?> tracking = default;
             Option<IdentityScoreCheck?> bimi = default;
 
             while (utf8JsonReader.Read())
@@ -205,20 +205,20 @@ namespace MailOdds.Model
 
                     switch (localVarJsonPropertyName)
                     {
-                        case "dkim":
-                            dkim = new Option<IdentityScoreCheck?>(JsonSerializer.Deserialize<IdentityScoreCheck>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
                         case "spf":
                             spf = new Option<IdentityScoreCheck?>(JsonSerializer.Deserialize<IdentityScoreCheck>(ref utf8JsonReader, jsonSerializerOptions)!);
+                            break;
+                        case "dkim":
+                            dkim = new Option<IdentityScoreCheck?>(JsonSerializer.Deserialize<IdentityScoreCheck>(ref utf8JsonReader, jsonSerializerOptions)!);
                             break;
                         case "dmarc":
                             dmarc = new Option<IdentityScoreCheck?>(JsonSerializer.Deserialize<IdentityScoreCheck>(ref utf8JsonReader, jsonSerializerOptions)!);
                             break;
-                        case "mx":
-                            mx = new Option<IdentityScoreCheck?>(JsonSerializer.Deserialize<IdentityScoreCheck>(ref utf8JsonReader, jsonSerializerOptions)!);
+                        case "bounce":
+                            bounce = new Option<IdentityScoreCheck?>(JsonSerializer.Deserialize<IdentityScoreCheck>(ref utf8JsonReader, jsonSerializerOptions)!);
                             break;
-                        case "return_path":
-                            returnPath = new Option<IdentityScoreCheck?>(JsonSerializer.Deserialize<IdentityScoreCheck>(ref utf8JsonReader, jsonSerializerOptions)!);
+                        case "tracking":
+                            tracking = new Option<IdentityScoreCheck?>(JsonSerializer.Deserialize<IdentityScoreCheck>(ref utf8JsonReader, jsonSerializerOptions)!);
                             break;
                         case "bimi":
                             bimi = new Option<IdentityScoreCheck?>(JsonSerializer.Deserialize<IdentityScoreCheck>(ref utf8JsonReader, jsonSerializerOptions)!);
@@ -229,25 +229,25 @@ namespace MailOdds.Model
                 }
             }
 
-            if (dkim.IsSet && dkim.Value == null)
-                throw new ArgumentNullException(nameof(dkim), "Property is not nullable for class SendingDomainIdentityScoreBreakdown.");
-
             if (spf.IsSet && spf.Value == null)
                 throw new ArgumentNullException(nameof(spf), "Property is not nullable for class SendingDomainIdentityScoreBreakdown.");
+
+            if (dkim.IsSet && dkim.Value == null)
+                throw new ArgumentNullException(nameof(dkim), "Property is not nullable for class SendingDomainIdentityScoreBreakdown.");
 
             if (dmarc.IsSet && dmarc.Value == null)
                 throw new ArgumentNullException(nameof(dmarc), "Property is not nullable for class SendingDomainIdentityScoreBreakdown.");
 
-            if (mx.IsSet && mx.Value == null)
-                throw new ArgumentNullException(nameof(mx), "Property is not nullable for class SendingDomainIdentityScoreBreakdown.");
+            if (bounce.IsSet && bounce.Value == null)
+                throw new ArgumentNullException(nameof(bounce), "Property is not nullable for class SendingDomainIdentityScoreBreakdown.");
 
-            if (returnPath.IsSet && returnPath.Value == null)
-                throw new ArgumentNullException(nameof(returnPath), "Property is not nullable for class SendingDomainIdentityScoreBreakdown.");
+            if (tracking.IsSet && tracking.Value == null)
+                throw new ArgumentNullException(nameof(tracking), "Property is not nullable for class SendingDomainIdentityScoreBreakdown.");
 
             if (bimi.IsSet && bimi.Value == null)
                 throw new ArgumentNullException(nameof(bimi), "Property is not nullable for class SendingDomainIdentityScoreBreakdown.");
 
-            return new SendingDomainIdentityScoreBreakdown(dkim, spf, dmarc, mx, returnPath, bimi);
+            return new SendingDomainIdentityScoreBreakdown(spf, dkim, dmarc, bounce, tracking, bimi);
         }
 
         /// <summary>
@@ -274,48 +274,48 @@ namespace MailOdds.Model
         /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, SendingDomainIdentityScoreBreakdown sendingDomainIdentityScoreBreakdown, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (sendingDomainIdentityScoreBreakdown.DkimOption.IsSet && sendingDomainIdentityScoreBreakdown.Dkim == null)
-                throw new ArgumentNullException(nameof(sendingDomainIdentityScoreBreakdown.Dkim), "Property is required for class SendingDomainIdentityScoreBreakdown.");
-
             if (sendingDomainIdentityScoreBreakdown.SpfOption.IsSet && sendingDomainIdentityScoreBreakdown.Spf == null)
                 throw new ArgumentNullException(nameof(sendingDomainIdentityScoreBreakdown.Spf), "Property is required for class SendingDomainIdentityScoreBreakdown.");
+
+            if (sendingDomainIdentityScoreBreakdown.DkimOption.IsSet && sendingDomainIdentityScoreBreakdown.Dkim == null)
+                throw new ArgumentNullException(nameof(sendingDomainIdentityScoreBreakdown.Dkim), "Property is required for class SendingDomainIdentityScoreBreakdown.");
 
             if (sendingDomainIdentityScoreBreakdown.DmarcOption.IsSet && sendingDomainIdentityScoreBreakdown.Dmarc == null)
                 throw new ArgumentNullException(nameof(sendingDomainIdentityScoreBreakdown.Dmarc), "Property is required for class SendingDomainIdentityScoreBreakdown.");
 
-            if (sendingDomainIdentityScoreBreakdown.MxOption.IsSet && sendingDomainIdentityScoreBreakdown.Mx == null)
-                throw new ArgumentNullException(nameof(sendingDomainIdentityScoreBreakdown.Mx), "Property is required for class SendingDomainIdentityScoreBreakdown.");
+            if (sendingDomainIdentityScoreBreakdown.BounceOption.IsSet && sendingDomainIdentityScoreBreakdown.Bounce == null)
+                throw new ArgumentNullException(nameof(sendingDomainIdentityScoreBreakdown.Bounce), "Property is required for class SendingDomainIdentityScoreBreakdown.");
 
-            if (sendingDomainIdentityScoreBreakdown.ReturnPathOption.IsSet && sendingDomainIdentityScoreBreakdown.ReturnPath == null)
-                throw new ArgumentNullException(nameof(sendingDomainIdentityScoreBreakdown.ReturnPath), "Property is required for class SendingDomainIdentityScoreBreakdown.");
+            if (sendingDomainIdentityScoreBreakdown.TrackingOption.IsSet && sendingDomainIdentityScoreBreakdown.Tracking == null)
+                throw new ArgumentNullException(nameof(sendingDomainIdentityScoreBreakdown.Tracking), "Property is required for class SendingDomainIdentityScoreBreakdown.");
 
             if (sendingDomainIdentityScoreBreakdown.BimiOption.IsSet && sendingDomainIdentityScoreBreakdown.Bimi == null)
                 throw new ArgumentNullException(nameof(sendingDomainIdentityScoreBreakdown.Bimi), "Property is required for class SendingDomainIdentityScoreBreakdown.");
 
-            if (sendingDomainIdentityScoreBreakdown.DkimOption.IsSet)
-            {
-                writer.WritePropertyName("dkim");
-                JsonSerializer.Serialize(writer, sendingDomainIdentityScoreBreakdown.Dkim, jsonSerializerOptions);
-            }
             if (sendingDomainIdentityScoreBreakdown.SpfOption.IsSet)
             {
                 writer.WritePropertyName("spf");
                 JsonSerializer.Serialize(writer, sendingDomainIdentityScoreBreakdown.Spf, jsonSerializerOptions);
+            }
+            if (sendingDomainIdentityScoreBreakdown.DkimOption.IsSet)
+            {
+                writer.WritePropertyName("dkim");
+                JsonSerializer.Serialize(writer, sendingDomainIdentityScoreBreakdown.Dkim, jsonSerializerOptions);
             }
             if (sendingDomainIdentityScoreBreakdown.DmarcOption.IsSet)
             {
                 writer.WritePropertyName("dmarc");
                 JsonSerializer.Serialize(writer, sendingDomainIdentityScoreBreakdown.Dmarc, jsonSerializerOptions);
             }
-            if (sendingDomainIdentityScoreBreakdown.MxOption.IsSet)
+            if (sendingDomainIdentityScoreBreakdown.BounceOption.IsSet)
             {
-                writer.WritePropertyName("mx");
-                JsonSerializer.Serialize(writer, sendingDomainIdentityScoreBreakdown.Mx, jsonSerializerOptions);
+                writer.WritePropertyName("bounce");
+                JsonSerializer.Serialize(writer, sendingDomainIdentityScoreBreakdown.Bounce, jsonSerializerOptions);
             }
-            if (sendingDomainIdentityScoreBreakdown.ReturnPathOption.IsSet)
+            if (sendingDomainIdentityScoreBreakdown.TrackingOption.IsSet)
             {
-                writer.WritePropertyName("return_path");
-                JsonSerializer.Serialize(writer, sendingDomainIdentityScoreBreakdown.ReturnPath, jsonSerializerOptions);
+                writer.WritePropertyName("tracking");
+                JsonSerializer.Serialize(writer, sendingDomainIdentityScoreBreakdown.Tracking, jsonSerializerOptions);
             }
             if (sendingDomainIdentityScoreBreakdown.BimiOption.IsSet)
             {

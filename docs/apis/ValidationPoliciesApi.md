@@ -49,10 +49,10 @@ Add a new rule to an existing policy.
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **201** | Rule added |  -  |
-| **400** | Bad request |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **403** | Rule limit exceeded |  -  |
 | **404** | Policy not found |  -  |
+| **400** | Bad request |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -89,9 +89,9 @@ Create a new validation policy with rules.
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **201** | Policy created |  -  |
+| **403** | Plan limit exceeded |  -  |
 | **400** | Bad request |  -  |
 | **401** | Unauthorized - Invalid or missing API key |  -  |
-| **403** | Plan limit exceeded |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -166,8 +166,8 @@ Delete a policy and all its rules.
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Policy deleted |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **404** | Policy not found |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -205,8 +205,8 @@ Delete a rule from a policy.
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Rule deleted |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **404** | Policy or rule not found |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -243,8 +243,8 @@ Get a single policy with its rules.
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Policy details |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **404** | Policy not found |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -351,9 +351,9 @@ Test how a policy would evaluate a validation result without affecting productio
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Test result |  -  |
+| **404** | Policy not found |  -  |
 | **400** | Bad request |  -  |
 | **401** | Unauthorized - Invalid or missing API key |  -  |
-| **404** | Policy not found |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -391,9 +391,9 @@ Update a policy's settings (name, enabled, default).
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Policy updated |  -  |
+| **404** | Policy not found |  -  |
 | **400** | Bad request |  -  |
 | **401** | Unauthorized - Invalid or missing API key |  -  |
-| **404** | Policy not found |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 

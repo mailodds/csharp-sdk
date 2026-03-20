@@ -7,17 +7,31 @@ Name | Type | Description | Notes
 **Id** | **string** | Campaign UUID | 
 **Name** | **string** | Campaign name | 
 **Status** | **string** |  | 
-**ListId** | **string** | Target subscriber list UUID | 
 **DomainId** | **string** | Sending domain UUID | 
-**FromEmail** | **string** |  | 
+**FromAddress** | **string** | Sender email address | 
 **CreatedAt** | **DateTime** |  | 
-**FromName** | **string** |  | [optional] 
+**AccountId** | **int** |  | [optional] 
+**Subject** | **string** |  | [optional] 
 **ReplyTo** | **string** |  | [optional] 
+**HtmlBody** | **string** |  | [optional] 
+**TextBody** | **string** |  | [optional] 
+**HtmlBodyDark** | **string** |  | [optional] 
+**TextBodyDark** | **string** |  | [optional] 
+**CampaignType** | **string** |  | [optional] 
+**AutoDetectSchema** | **bool** |  | [optional] 
+**PromoAnnotations** | **Object** |  | [optional] 
+**ThrowawayPolicy** | **string** |  | [optional] 
 **ScheduledAt** | **DateTime** |  | [optional] 
-**SentAt** | **DateTime** |  | [optional] 
-**CancelledAt** | **DateTime** |  | [optional] 
-**VariantCount** | **int** | Number of A/B variants | [optional] 
+**StartedAt** | **DateTime** |  | [optional] 
+**CompletedAt** | **DateTime** |  | [optional] 
+**RecipientCount** | **int** |  | [optional] 
+**IsAbTest** | **bool** |  | [optional] 
+**WinningVariantId** | **string** |  | [optional] 
+**AbTestConfig** | **Object** |  | [optional] 
+**ErrorMessage** | **string** |  | [optional] 
 **Stats** | [**CampaignStats**](CampaignStats.md) |  | [optional] 
+**OpenRate** | **decimal** |  | [optional] 
+**ClickRate** | **decimal** |  | [optional] 
 **UpdatedAt** | **DateTime** |  | [optional] 
 
 [[Back to Model list]](../../README.md#documentation-for-models) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to README]](../../README.md)

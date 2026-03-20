@@ -40,9 +40,9 @@ Send a single message to up to 100 recipients. Shares the same message body acro
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **202** | Batch accepted for delivery |  -  |
+| **403** | Forbidden - Insufficient permissions or no credits |  -  |
 | **400** | Bad request |  -  |
 | **401** | Unauthorized - Invalid or missing API key |  -  |
-| **403** | Forbidden - Insufficient permissions or no credits |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -79,9 +79,9 @@ Send a transactional email through the safety pipeline. Validates recipients, ch
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **202** | Email accepted for delivery |  -  |
+| **403** | Forbidden - Insufficient permissions or no credits |  -  |
 | **400** | Bad request |  -  |
 | **401** | Unauthorized - Invalid or missing API key |  -  |
-| **403** | Forbidden - Insufficient permissions or no credits |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 

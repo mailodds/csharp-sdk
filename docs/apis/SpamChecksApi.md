@@ -22,7 +22,7 @@ Delete a spam check result.
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **checkId** | **string** | Spam check ID |  |
+| **checkId** | **string** |  |  |
 
 ### Return type
 
@@ -42,8 +42,8 @@ Delete a spam check result.
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Spam check deleted |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **404** | Resource not found |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -60,7 +60,7 @@ Get the detailed result of a specific spam check.
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **checkId** | **string** | Spam check UUID |  |
+| **checkId** | **string** |  |  |
 
 ### Return type
 
@@ -80,8 +80,8 @@ Get the detailed result of a specific spam check.
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Spam check details |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **404** | Resource not found |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 

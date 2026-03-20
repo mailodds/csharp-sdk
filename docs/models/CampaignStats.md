@@ -1,5 +1,5 @@
 # MailOdds.Model.CampaignStats
-Delivery and engagement statistics. Present when the campaign has started sending.
+Delivery and engagement statistics.
 
 ## Properties
 
@@ -11,10 +11,9 @@ Name | Type | Description | Notes
 **Clicked** | **int** |  | [optional] 
 **Bounced** | **int** |  | [optional] 
 **Unsubscribed** | **int** |  | [optional] 
-**Complained** | **int** |  | [optional] 
-**DeliveryRate** | **decimal** |  | [optional] 
-**OpenRate** | **decimal** |  | [optional] 
-**ClickRate** | **decimal** |  | [optional] 
+**Suppressed** | **int** |  | [optional] 
+**Failed** | **int** |  | [optional] 
+**Conversions** | **int** |  | [optional] 
 
 [[Back to Model list]](../../README.md#documentation-for-models) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to README]](../../README.md)
 

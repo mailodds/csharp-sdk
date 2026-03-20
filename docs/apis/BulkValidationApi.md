@@ -49,8 +49,8 @@ Cancel a pending or processing job. Partial results are preserved.
 |-------------|-------------|------------------|
 | **200** | Job cancelled |  -  |
 | **400** | Bad request |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **404** | Resource not found |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -203,8 +203,8 @@ Permanently delete a completed or cancelled job and its results.
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Job deleted |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **404** | Resource not found |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -241,8 +241,8 @@ Get the status and details of a specific validation job.
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Job details |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **404** | Resource not found |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -283,8 +283,8 @@ Download validation results in JSON, CSV, or NDJSON format.
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Validation results |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **404** | Resource not found |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -321,8 +321,9 @@ Get a presigned URL for uploading large files (>10MB) directly to S3.
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Presigned upload credentials |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **503** | S3 not configured |  -  |
+| **400** | Bad request |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -378,7 +379,7 @@ Retry processing for a failed or cancelled validation job. Re-queues unprocessed
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **jobId** | **string** | Job ID |  |
+| **jobId** | **string** |  |  |
 
 ### Return type
 
@@ -399,8 +400,8 @@ Retry processing for a failed or cancelled validation job. Re-queues unprocessed
 |-------------|-------------|------------------|
 | **200** | Job retry initiated |  -  |
 | **400** | Bad request |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **404** | Resource not found |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 

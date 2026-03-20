@@ -43,9 +43,9 @@ Create a new metric threshold alert rule. Requires Growth+ plan.
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **201** | Alert rule created |  -  |
+| **403** | Forbidden - Insufficient permissions or no credits |  -  |
 | **400** | Bad request |  -  |
 | **401** | Unauthorized - Invalid or missing API key |  -  |
-| **403** | Forbidden - Insufficient permissions or no credits |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -62,7 +62,7 @@ Delete an alert rule. Requires Growth+ plan.
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **ruleId** | **string** | Alert rule ID |  |
+| **ruleId** | **string** |  |  |
 
 ### Return type
 
@@ -82,9 +82,9 @@ Delete an alert rule. Requires Growth+ plan.
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Alert rule deleted |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **403** | Forbidden - Insufficient permissions or no credits |  -  |
 | **404** | Resource not found |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -101,7 +101,7 @@ Get a single alert rule by ID. Requires Growth+ plan.
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **ruleId** | **string** | Alert rule ID |  |
+| **ruleId** | **string** |  |  |
 
 ### Return type
 
@@ -121,9 +121,9 @@ Get a single alert rule by ID. Requires Growth+ plan.
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Alert rule details |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **403** | Forbidden - Insufficient permissions or no credits |  -  |
 | **404** | Resource not found |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -156,8 +156,8 @@ This endpoint does not need any parameter.
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | List of alert rules |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **403** | Forbidden - Insufficient permissions or no credits |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -174,7 +174,7 @@ Update an existing alert rule. Requires Growth+ plan.
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **ruleId** | **string** | Alert rule ID |  |
+| **ruleId** | **string** |  |  |
 | **updateAlertRuleRequest** | [**UpdateAlertRuleRequest**](UpdateAlertRuleRequest.md) |  |  |
 
 ### Return type
@@ -195,10 +195,10 @@ Update an existing alert rule. Requires Growth+ plan.
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Alert rule updated |  -  |
-| **400** | Bad request |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **403** | Forbidden - Insufficient permissions or no credits |  -  |
 | **404** | Resource not found |  -  |
+| **400** | Bad request |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 

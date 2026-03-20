@@ -61,7 +61,7 @@ Permanently remove a blacklist monitor and its check history.
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **monitorId** | **string** | Monitor UUID |  |
+| **monitorId** | **string** |  |  |
 
 ### Return type
 
@@ -81,8 +81,8 @@ Permanently remove a blacklist monitor and its check history.
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Monitor deleted |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **404** | Resource not found |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -99,7 +99,7 @@ Get the listing and delisting timeline for a monitored IP or domain.
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **monitorId** | **string** | Monitor UUID |  |
+| **monitorId** | **string** |  |  |
 | **page** | **int** |  | [optional] [default to 1] |
 | **perPage** | **int** |  | [optional] [default to 20] |
 
@@ -121,8 +121,8 @@ Get the listing and delisting timeline for a monitored IP or domain.
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Check history |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **404** | Resource not found |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -172,7 +172,7 @@ Run an on-demand DNSBL check for a monitored IP or domain.
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **monitorId** | **string** | Monitor UUID |  |
+| **monitorId** | **string** |  |  |
 
 ### Return type
 
@@ -192,8 +192,8 @@ Run an on-demand DNSBL check for a monitored IP or domain.
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Check result |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **404** | Resource not found |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 

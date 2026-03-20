@@ -21,7 +21,7 @@ Get the detailed results of a specific server test.
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **testId** | **string** | Server test UUID |  |
+| **testId** | **string** |  |  |
 
 ### Return type
 
@@ -41,8 +41,8 @@ Get the detailed results of a specific server test.
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Server test details |  -  |
-| **401** | Unauthorized - Invalid or missing API key |  -  |
 | **404** | Resource not found |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 

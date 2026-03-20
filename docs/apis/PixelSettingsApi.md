@@ -73,9 +73,9 @@ Update the web pixel subscribe list configuration.
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Pixel settings updated |  -  |
+| **404** | Resource not found |  -  |
 | **400** | Bad request |  -  |
 | **401** | Unauthorized - Invalid or missing API key |  -  |
-| **404** | Resource not found |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 

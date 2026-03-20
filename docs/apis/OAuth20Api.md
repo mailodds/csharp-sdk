@@ -125,6 +125,7 @@ No authorization required
 |-------------|-------------|------------------|
 | **200** | Introspection result |  -  |
 | **401** | Invalid client credentials |  -  |
+| **400** | Bad request |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -189,7 +190,7 @@ No authorization required
 ### HTTP request headers
 
  - **Content-Type**: application/x-www-form-urlencoded
- - **Accept**: Not defined
+ - **Accept**: application/json
 
 
 ### HTTP response details
@@ -197,6 +198,7 @@ No authorization required
 |-------------|-------------|------------------|
 | **200** | Token revoked (or not found, per RFC 7009) |  -  |
 | **401** | Invalid client credentials |  -  |
+| **400** | Bad request |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
