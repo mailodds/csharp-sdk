@@ -302,7 +302,6 @@ docs/models/WebhookEvent.md
 docs/scripts/git_push.ps1
 docs/scripts/git_push.sh
 src/MailOdds.Test/Api/DependencyInjectionTests.cs
-src/MailOdds.Test/Model/OAuthClientRegistrationTests.cs
 src/MailOdds.Test/README.md
 src/MailOdds/Api/AgentControlPlaneApi.cs
 src/MailOdds/Api/AlertRulesApi.cs

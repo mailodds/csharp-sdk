@@ -38,12 +38,12 @@ namespace MailOdds.Model
         /// <param name="metric">Monitored metric name</param>
         /// <param name="threshold">Alert threshold value (0-1)</param>
         /// <param name="channel">Notification channel</param>
-        /// <param name="windowMinutes">Evaluation window in minutes</param>
+        /// <param name="windowMinutes">Evaluation window in minutes (15, 60, 1440, or 2880)</param>
         /// <param name="enabled">enabled</param>
         /// <param name="createdAt">createdAt</param>
         /// <param name="updatedAt">updatedAt</param>
         [JsonConstructor]
-        public AlertRule(Option<string?> id = default, Option<string?> metric = default, Option<decimal?> threshold = default, Option<string?> channel = default, Option<WindowMinutesEnum?> windowMinutes = default, Option<bool?> enabled = default, Option<DateTime?> createdAt = default, Option<DateTime?> updatedAt = default)
+        public AlertRule(Option<string?> id = default, Option<string?> metric = default, Option<decimal?> threshold = default, Option<string?> channel = default, Option<int?> windowMinutes = default, Option<bool?> enabled = default, Option<DateTime?> createdAt = default, Option<DateTime?> updatedAt = default)
         {
             IdOption = id;
             MetricOption = metric;
@@ -57,102 +57,6 @@ namespace MailOdds.Model
         }
 
         partial void OnCreated();
-
-        /// <summary>
-        /// Evaluation window in minutes
-        /// </summary>
-        /// <value>Evaluation window in minutes</value>
-        public enum WindowMinutesEnum
-        {
-            /// <summary>
-            /// Enum NUMBER_15 for value: 15
-            /// </summary>
-            NUMBER_15 = 15,
-
-            /// <summary>
-            /// Enum NUMBER_60 for value: 60
-            /// </summary>
-            NUMBER_60 = 60,
-
-            /// <summary>
-            /// Enum NUMBER_1440 for value: 1440
-            /// </summary>
-            NUMBER_1440 = 1440,
-
-            /// <summary>
-            /// Enum NUMBER_2880 for value: 2880
-            /// </summary>
-            NUMBER_2880 = 2880
-        }
-
-        /// <summary>
-        /// Returns a <see cref="WindowMinutesEnum"/>
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static WindowMinutesEnum WindowMinutesEnumFromString(string value)
-        {
-            if (value.Equals((15).ToString()))
-                return WindowMinutesEnum.NUMBER_15;
-
-            if (value.Equals((60).ToString()))
-                return WindowMinutesEnum.NUMBER_60;
-
-            if (value.Equals((1440).ToString()))
-                return WindowMinutesEnum.NUMBER_1440;
-
-            if (value.Equals((2880).ToString()))
-                return WindowMinutesEnum.NUMBER_2880;
-
-            throw new NotImplementedException($"Could not convert value to type WindowMinutesEnum: '{value}'");
-        }
-
-        /// <summary>
-        /// Returns a <see cref="WindowMinutesEnum"/>
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static WindowMinutesEnum? WindowMinutesEnumFromStringOrDefault(string value)
-        {
-            if (value.Equals((15).ToString()))
-                return WindowMinutesEnum.NUMBER_15;
-
-            if (value.Equals((60).ToString()))
-                return WindowMinutesEnum.NUMBER_60;
-
-            if (value.Equals((1440).ToString()))
-                return WindowMinutesEnum.NUMBER_1440;
-
-            if (value.Equals((2880).ToString()))
-                return WindowMinutesEnum.NUMBER_2880;
-
-            return null;
-        }
-
-        /// <summary>
-        /// Converts the <see cref="WindowMinutesEnum"/> to the json value
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static int WindowMinutesEnumToJsonValue(WindowMinutesEnum value)
-        {
-            return (int) value;
-        }
-
-        /// <summary>
-        /// Used to track the state of WindowMinutes
-        /// </summary>
-        [JsonIgnore]
-        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<WindowMinutesEnum?> WindowMinutesOption { get; private set; }
-
-        /// <summary>
-        /// Evaluation window in minutes
-        /// </summary>
-        /// <value>Evaluation window in minutes</value>
-        [JsonPropertyName("window_minutes")]
-        public WindowMinutesEnum? WindowMinutes { get { return this.WindowMinutesOption; } set { this.WindowMinutesOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Id
@@ -208,6 +112,20 @@ namespace MailOdds.Model
         /// <value>Notification channel</value>
         [JsonPropertyName("channel")]
         public string? Channel { get { return this.ChannelOption; } set { this.ChannelOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of WindowMinutes
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<int?> WindowMinutesOption { get; private set; }
+
+        /// <summary>
+        /// Evaluation window in minutes (15, 60, 1440, or 2880)
+        /// </summary>
+        /// <value>Evaluation window in minutes (15, 60, 1440, or 2880)</value>
+        [JsonPropertyName("window_minutes")]
+        public int? WindowMinutes { get { return this.WindowMinutesOption; } set { this.WindowMinutesOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Enabled
@@ -327,7 +245,7 @@ namespace MailOdds.Model
             Option<string?> metric = default;
             Option<decimal?> threshold = default;
             Option<string?> channel = default;
-            Option<AlertRule.WindowMinutesEnum?> windowMinutes = default;
+            Option<int?> windowMinutes = default;
             Option<bool?> enabled = default;
             Option<DateTime?> createdAt = default;
             Option<DateTime?> updatedAt = default;
@@ -360,7 +278,7 @@ namespace MailOdds.Model
                             channel = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         case "window_minutes":
-                            windowMinutes = new Option<AlertRule.WindowMinutesEnum?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (AlertRule.WindowMinutesEnum?)null : (AlertRule.WindowMinutesEnum)utf8JsonReader.GetInt32());
+                            windowMinutes = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
                             break;
                         case "enabled":
                             enabled = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
@@ -450,7 +368,7 @@ namespace MailOdds.Model
                 writer.WriteString("channel", alertRule.Channel);
 
             if (alertRule.WindowMinutesOption.IsSet)
-                writer.WriteNumber("window_minutes", AlertRule.WindowMinutesEnumToJsonValue(alertRule.WindowMinutesOption.Value!.Value));
+                writer.WriteNumber("window_minutes", alertRule.WindowMinutesOption.Value!.Value);
 
             if (alertRule.EnabledOption.IsSet)
                 writer.WriteBoolean("enabled", alertRule.EnabledOption.Value!.Value);

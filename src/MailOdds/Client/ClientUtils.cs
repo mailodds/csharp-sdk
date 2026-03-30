@@ -116,8 +116,6 @@ namespace MailOdds.Client
                 return AddBlacklistMonitorRequest.TargetTypeEnumToJsonValue(addBlacklistMonitorRequestTargetTypeEnum);
             if (obj is AddSuppressionRequestEntriesInner.TypeEnum addSuppressionRequestEntriesInnerTypeEnum)
                 return AddSuppressionRequestEntriesInner.TypeEnumToJsonValue(addSuppressionRequestEntriesInnerTypeEnum);
-            if (obj is AlertRule.WindowMinutesEnum alertRuleWindowMinutesEnum)
-                return AlertRule.WindowMinutesEnumToJsonValue(alertRuleWindowMinutesEnum).ToString();
             if (obj is BatchDeliverResponse.StatusEnum batchDeliverResponseStatusEnum)
                 return BatchDeliverResponse.StatusEnumToJsonValue(batchDeliverResponseStatusEnum);
             if (obj is BatchProductsRequestProductsInner.StockStatusEnum batchProductsRequestProductsInnerStockStatusEnum)
@@ -130,8 +128,6 @@ namespace MailOdds.Client
                 return Campaign.StatusEnumToJsonValue(campaignStatusEnum);
             if (obj is ClassifyContent200ResponseContentCheck.StatusEnum classifyContent200ResponseContentCheckStatusEnum)
                 return ClassifyContent200ResponseContentCheck.StatusEnumToJsonValue(classifyContent200ResponseContentCheckStatusEnum);
-            if (obj is CreateAlertRuleRequest.WindowMinutesEnum createAlertRuleRequestWindowMinutesEnum)
-                return CreateAlertRuleRequest.WindowMinutesEnumToJsonValue(createAlertRuleRequestWindowMinutesEnum).ToString();
             if (obj is CreatePolicyFromPresetRequest.PresetIdEnum createPolicyFromPresetRequestPresetIdEnum)
                 return CreatePolicyFromPresetRequest.PresetIdEnumToJsonValue(createPolicyFromPresetRequestPresetIdEnum);
             if (obj is CreateStoreRequest.PlatformEnum createStoreRequestPlatformEnum)
@@ -182,8 +178,6 @@ namespace MailOdds.Client
                 return TelemetrySummary.WindowEnumToJsonValue(telemetrySummaryWindowEnum);
             if (obj is TrackEventRequest.EventTypeEnum trackEventRequestEventTypeEnum)
                 return TrackEventRequest.EventTypeEnumToJsonValue(trackEventRequestEventTypeEnum);
-            if (obj is UpdateAlertRuleRequest.WindowMinutesEnum updateAlertRuleRequestWindowMinutesEnum)
-                return UpdateAlertRuleRequest.WindowMinutesEnumToJsonValue(updateAlertRuleRequestWindowMinutesEnum).ToString();
             if (obj is ValidateBatchRequest.DepthEnum validateBatchRequestDepthEnum)
                 return ValidateBatchRequest.DepthEnumToJsonValue(validateBatchRequestDepthEnum);
             if (obj is ValidateRequest.DepthEnum validateRequestDepthEnum)
