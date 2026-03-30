@@ -158,9 +158,6 @@ namespace MailOdds.Test.Api
             var pixelSettingsApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<IPixelSettingsApi>();
             Assert.True(pixelSettingsApi.HttpClient.BaseAddress != null);
 
-            var productsApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<IProductsApi>();
-            Assert.True(productsApi.HttpClient.BaseAddress != null);
-
             var reputationApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<IReputationApi>();
             Assert.True(reputationApi.HttpClient.BaseAddress != null);
 
@@ -181,9 +178,6 @@ namespace MailOdds.Test.Api
 
             var spamChecksApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<ISpamChecksApi>();
             Assert.True(spamChecksApi.HttpClient.BaseAddress != null);
-
-            var storeConnectionsApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<IStoreConnectionsApi>();
-            Assert.True(storeConnectionsApi.HttpClient.BaseAddress != null);
 
             var subscriberListsApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<ISubscriberListsApi>();
             Assert.True(subscriberListsApi.HttpClient.BaseAddress != null);
@@ -297,9 +291,6 @@ namespace MailOdds.Test.Api
             var pixelSettingsApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<IPixelSettingsApi>();
             Assert.True(pixelSettingsApi.HttpClient.BaseAddress != null);
 
-            var productsApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<IProductsApi>();
-            Assert.True(productsApi.HttpClient.BaseAddress != null);
-
             var reputationApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<IReputationApi>();
             Assert.True(reputationApi.HttpClient.BaseAddress != null);
 
@@ -320,9 +311,6 @@ namespace MailOdds.Test.Api
 
             var spamChecksApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<ISpamChecksApi>();
             Assert.True(spamChecksApi.HttpClient.BaseAddress != null);
-
-            var storeConnectionsApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<IStoreConnectionsApi>();
-            Assert.True(storeConnectionsApi.HttpClient.BaseAddress != null);
 
             var subscriberListsApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<ISubscriberListsApi>();
             Assert.True(subscriberListsApi.HttpClient.BaseAddress != null);
@@ -436,9 +424,6 @@ namespace MailOdds.Test.Api
             var pixelSettingsApi = _hostUsingAddWithAClient.Services.GetRequiredService<IPixelSettingsApi>();
             Assert.True(pixelSettingsApi.HttpClient.BaseAddress != null);
             
-            var productsApi = _hostUsingAddWithAClient.Services.GetRequiredService<IProductsApi>();
-            Assert.True(productsApi.HttpClient.BaseAddress != null);
-            
             var reputationApi = _hostUsingAddWithAClient.Services.GetRequiredService<IReputationApi>();
             Assert.True(reputationApi.HttpClient.BaseAddress != null);
             
@@ -459,9 +444,6 @@ namespace MailOdds.Test.Api
             
             var spamChecksApi = _hostUsingAddWithAClient.Services.GetRequiredService<ISpamChecksApi>();
             Assert.True(spamChecksApi.HttpClient.BaseAddress != null);
-            
-            var storeConnectionsApi = _hostUsingAddWithAClient.Services.GetRequiredService<IStoreConnectionsApi>();
-            Assert.True(storeConnectionsApi.HttpClient.BaseAddress != null);
             
             var subscriberListsApi = _hostUsingAddWithAClient.Services.GetRequiredService<ISubscriberListsApi>();
             Assert.True(subscriberListsApi.HttpClient.BaseAddress != null);
@@ -575,9 +557,6 @@ namespace MailOdds.Test.Api
             var pixelSettingsApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<IPixelSettingsApi>();
             Assert.True(pixelSettingsApi.HttpClient.BaseAddress != null);
 
-            var productsApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<IProductsApi>();
-            Assert.True(productsApi.HttpClient.BaseAddress != null);
-
             var reputationApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<IReputationApi>();
             Assert.True(reputationApi.HttpClient.BaseAddress != null);
 
@@ -598,9 +577,6 @@ namespace MailOdds.Test.Api
 
             var spamChecksApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<ISpamChecksApi>();
             Assert.True(spamChecksApi.HttpClient.BaseAddress != null);
-
-            var storeConnectionsApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<IStoreConnectionsApi>();
-            Assert.True(storeConnectionsApi.HttpClient.BaseAddress != null);
 
             var subscriberListsApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<ISubscriberListsApi>();
             Assert.True(subscriberListsApi.HttpClient.BaseAddress != null);

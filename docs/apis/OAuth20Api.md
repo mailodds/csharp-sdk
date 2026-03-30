@@ -1,12 +1,13 @@
 # MailOdds.Api.OAuth20Api
 
-All URIs are relative to *https://api.mailodds.com/v1*
+All URIs are relative to *https://api.mailodds.com*
 
 | Method | HTTP request | Description |
 |--------|--------------|-------------|
 | [**CreateToken**](OAuth20Api.md#createtoken) | **POST** /oauth/token | Create token |
 | [**GetJwks**](OAuth20Api.md#getjwks) | **GET** /.well-known/jwks.json | Get JSON Web Key Set |
 | [**IntrospectToken**](OAuth20Api.md#introspecttoken) | **POST** /oauth/introspect | Introspect token |
+| [**OauthRegisterClient**](OAuth20Api.md#oauthregisterclient) | **POST** /oauth/register | Register OAuth client |
 | [**OauthServerMetadata**](OAuth20Api.md#oauthservermetadata) | **GET** /.well-known/oauth-authorization-server | OAuth server metadata |
 | [**RevokeToken**](OAuth20Api.md#revoketoken) | **POST** /oauth/revoke | Revoke token |
 
@@ -126,6 +127,38 @@ No authorization required
 | **200** | Introspection result |  -  |
 | **401** | Invalid client credentials |  -  |
 | **400** | Bad request |  -  |
+
+[[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
+
+<a id="oauthregisterclient"></a>
+# **OauthRegisterClient**
+> OAuthClientRegistration OauthRegisterClient ()
+
+Register OAuth client
+
+Dynamic Client Registration (RFC 7591). Allows MCP clients to auto-register without user interaction.
+
+
+### Parameters
+This endpoint does not need any parameter.
+### Return type
+
+[**OAuthClientRegistration**](OAuthClientRegistration.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Registered client credentials |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 

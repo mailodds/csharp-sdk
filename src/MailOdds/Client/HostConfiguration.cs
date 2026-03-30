@@ -75,8 +75,6 @@ namespace MailOdds.Client
             _jsonOptions.Converters.Add(new BounceAnalysisResponseAnalysisJsonConverter());
             _jsonOptions.Converters.Add(new BounceAnalysisResponseAnalysisCategoriesJsonConverter());
             _jsonOptions.Converters.Add(new BounceAnalysisResponseAnalysisTopDomainsInnerJsonConverter());
-            _jsonOptions.Converters.Add(new BulkUpdateProducts200ResponseJsonConverter());
-            _jsonOptions.Converters.Add(new BulkUpdateProductsRequestJsonConverter());
             _jsonOptions.Converters.Add(new CampaignJsonConverter());
             _jsonOptions.Converters.Add(new CampaignResponseJsonConverter());
             _jsonOptions.Converters.Add(new CampaignStatsJsonConverter());
@@ -103,7 +101,6 @@ namespace MailOdds.Client
             _jsonOptions.Converters.Add(new CreatePolicyRequestJsonConverter());
             _jsonOptions.Converters.Add(new CreateSendingDomain201ResponseJsonConverter());
             _jsonOptions.Converters.Add(new CreateSendingDomainRequestJsonConverter());
-            _jsonOptions.Converters.Add(new CreateStore201ResponseJsonConverter());
             _jsonOptions.Converters.Add(new CreateStoreRequestJsonConverter());
             _jsonOptions.Converters.Add(new CreateToken200ResponseJsonConverter());
             _jsonOptions.Converters.Add(new CreateVariantRequestJsonConverter());
@@ -123,7 +120,6 @@ namespace MailOdds.Client
             _jsonOptions.Converters.Add(new DeliverRequestToInnerJsonConverter());
             _jsonOptions.Converters.Add(new DeliverResponseJsonConverter());
             _jsonOptions.Converters.Add(new DeliverResponseDeliveryJsonConverter());
-            _jsonOptions.Converters.Add(new DisconnectStore200ResponseJsonConverter());
             _jsonOptions.Converters.Add(new DmarcDomainJsonConverter());
             _jsonOptions.Converters.Add(new ErrorResponseJsonConverter());
             _jsonOptions.Converters.Add(new GetBlacklistHistory200ResponseJsonConverter());
@@ -176,7 +172,6 @@ namespace MailOdds.Client
             _jsonOptions.Converters.Add(new GetOooStatus200ResponseJsonConverter());
             _jsonOptions.Converters.Add(new GetPixelSettings200ResponseJsonConverter());
             _jsonOptions.Converters.Add(new GetPresignedUploadRequestJsonConverter());
-            _jsonOptions.Converters.Add(new GetProduct200ResponseJsonConverter());
             _jsonOptions.Converters.Add(new GetReplyForwarding200ResponseJsonConverter());
             _jsonOptions.Converters.Add(new GetReputation200ResponseJsonConverter());
             _jsonOptions.Converters.Add(new GetReputationTimeline200ResponseJsonConverter());
@@ -192,7 +187,6 @@ namespace MailOdds.Client
             _jsonOptions.Converters.Add(new GetSendingStats200ResponseJsonConverter());
             _jsonOptions.Converters.Add(new GetSendingStats200ResponseStatsJsonConverter());
             _jsonOptions.Converters.Add(new GetSubscribers200ResponseJsonConverter());
-            _jsonOptions.Converters.Add(new GetSyncJobErrors200ResponseJsonConverter());
             _jsonOptions.Converters.Add(new HealthCheck200ResponseJsonConverter());
             _jsonOptions.Converters.Add(new IdentityScoreCheckJsonConverter());
             _jsonOptions.Converters.Add(new ImportContactList200ResponseJsonConverter());
@@ -214,13 +208,12 @@ namespace MailOdds.Client
             _jsonOptions.Converters.Add(new ListSendingDomains200ResponseJsonConverter());
             _jsonOptions.Converters.Add(new ListServerTests200ResponseJsonConverter());
             _jsonOptions.Converters.Add(new ListSpamChecks200ResponseJsonConverter());
-            _jsonOptions.Converters.Add(new ListStores200ResponseJsonConverter());
-            _jsonOptions.Converters.Add(new ListSyncJobs200ResponseJsonConverter());
             _jsonOptions.Converters.Add(new ListWebhookDeliveries200ResponseJsonConverter());
             _jsonOptions.Converters.Add(new ListWebhookDeliveries200ResponseDeliveriesInnerJsonConverter());
             _jsonOptions.Converters.Add(new McpCapabilitiesJsonConverter());
             _jsonOptions.Converters.Add(new McpCapabilitiesPillarsInnerJsonConverter());
             _jsonOptions.Converters.Add(new McpCapabilitiesPillarsInnerToolsInnerJsonConverter());
+            _jsonOptions.Converters.Add(new OAuthClientRegistrationJsonConverter());
             _jsonOptions.Converters.Add(new OAuthServerMetadataJsonConverter());
             _jsonOptions.Converters.Add(new PaginationJsonConverter());
             _jsonOptions.Converters.Add(new PolicyJsonConverter());
@@ -242,7 +235,6 @@ namespace MailOdds.Client
             _jsonOptions.Converters.Add(new QueryContactList200ResponseEmailsInnerJsonConverter());
             _jsonOptions.Converters.Add(new QueryContactListRequestJsonConverter());
             _jsonOptions.Converters.Add(new QueryContactListRequestFiltersInnerJsonConverter());
-            _jsonOptions.Converters.Add(new QueryProducts200ResponseJsonConverter());
             _jsonOptions.Converters.Add(new RemoveSuppression200ResponseJsonConverter());
             _jsonOptions.Converters.Add(new RemoveSuppressionRequestJsonConverter());
             _jsonOptions.Converters.Add(new ReplayWebhookDelivery200ResponseJsonConverter());
@@ -297,7 +289,6 @@ namespace MailOdds.Client
             _jsonOptions.Converters.Add(new UpdatePixelSettingsRequestJsonConverter());
             _jsonOptions.Converters.Add(new UpdatePolicyRequestJsonConverter());
             _jsonOptions.Converters.Add(new UpdateReplyForwardingRequestJsonConverter());
-            _jsonOptions.Converters.Add(new UpdateStoreRequestJsonConverter());
             _jsonOptions.Converters.Add(new ValidateBatch200ResponseJsonConverter());
             _jsonOptions.Converters.Add(new ValidateBatch200ResponseSummaryJsonConverter());
             _jsonOptions.Converters.Add(new ValidateBatchRequestJsonConverter());
@@ -340,7 +331,6 @@ namespace MailOdds.Client
             _services.AddSingleton<OutOfOfficeApiEvents>();
             _services.AddSingleton<PipelineSimulationApiEvents>();
             _services.AddSingleton<PixelSettingsApiEvents>();
-            _services.AddSingleton<ProductsApiEvents>();
             _services.AddSingleton<ReputationApiEvents>();
             _services.AddSingleton<ReputationPoliciesApiEvents>();
             _services.AddSingleton<SenderHealthApiEvents>();
@@ -348,7 +338,6 @@ namespace MailOdds.Client
             _services.AddSingleton<SendingDomainsApiEvents>();
             _services.AddSingleton<ServerTestsApiEvents>();
             _services.AddSingleton<SpamChecksApiEvents>();
-            _services.AddSingleton<StoreConnectionsApiEvents>();
             _services.AddSingleton<SubscriberListsApiEvents>();
             _services.AddSingleton<SuppressionListsApiEvents>();
             _services.AddSingleton<SystemApiEvents>();
@@ -401,7 +390,6 @@ namespace MailOdds.Client
             builders.Add(_services.AddHttpClient<IOutOfOfficeApi, OutOfOfficeApi>(client));
             builders.Add(_services.AddHttpClient<IPipelineSimulationApi, PipelineSimulationApi>(client));
             builders.Add(_services.AddHttpClient<IPixelSettingsApi, PixelSettingsApi>(client));
-            builders.Add(_services.AddHttpClient<IProductsApi, ProductsApi>(client));
             builders.Add(_services.AddHttpClient<IReputationApi, ReputationApi>(client));
             builders.Add(_services.AddHttpClient<IReputationPoliciesApi, ReputationPoliciesApi>(client));
             builders.Add(_services.AddHttpClient<ISenderHealthApi, SenderHealthApi>(client));
@@ -409,7 +397,6 @@ namespace MailOdds.Client
             builders.Add(_services.AddHttpClient<ISendingDomainsApi, SendingDomainsApi>(client));
             builders.Add(_services.AddHttpClient<IServerTestsApi, ServerTestsApi>(client));
             builders.Add(_services.AddHttpClient<ISpamChecksApi, SpamChecksApi>(client));
-            builders.Add(_services.AddHttpClient<IStoreConnectionsApi, StoreConnectionsApi>(client));
             builders.Add(_services.AddHttpClient<ISubscriberListsApi, SubscriberListsApi>(client));
             builders.Add(_services.AddHttpClient<ISuppressionListsApi, SuppressionListsApi>(client));
             builders.Add(_services.AddHttpClient<ISystemApi, SystemApi>(client));

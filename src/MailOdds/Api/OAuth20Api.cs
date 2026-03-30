@@ -124,6 +124,27 @@ namespace MailOdds.Api
         Task<IIntrospectTokenApiResponse?> IntrospectTokenOrDefaultAsync(string token, Option<string> tokenTypeHint = default, Option<string> clientId = default, Option<string> clientSecret = default, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Register OAuth client
+        /// </summary>
+        /// <remarks>
+        /// Dynamic Client Registration (RFC 7591). Allows MCP clients to auto-register without user interaction.
+        /// </remarks>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IOauthRegisterClientApiResponse"/>&gt;</returns>
+        Task<IOauthRegisterClientApiResponse> OauthRegisterClientAsync(System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Register OAuth client
+        /// </summary>
+        /// <remarks>
+        /// Dynamic Client Registration (RFC 7591). Allows MCP clients to auto-register without user interaction.
+        /// </remarks>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IOauthRegisterClientApiResponse"/>?&gt;</returns>
+        Task<IOauthRegisterClientApiResponse?> OauthRegisterClientOrDefaultAsync(System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// OAuth server metadata
         /// </summary>
         /// <remarks>
@@ -241,6 +262,18 @@ namespace MailOdds.Api
     }
 
     /// <summary>
+    /// The <see cref="IOauthRegisterClientApiResponse"/>
+    /// </summary>
+    public interface IOauthRegisterClientApiResponse : MailOdds.Client.IApiResponse, IOk<MailOdds.Model.OAuthClientRegistration?>
+    {
+        /// <summary>
+        /// Returns true if the response is 200 Ok
+        /// </summary>
+        /// <returns></returns>
+        bool IsOk { get; }
+    }
+
+    /// <summary>
     /// The <see cref="IOauthServerMetadataApiResponse"/>
     /// </summary>
     public interface IOauthServerMetadataApiResponse : MailOdds.Client.IApiResponse, IOk<MailOdds.Model.OAuthServerMetadata?>
@@ -339,6 +372,26 @@ namespace MailOdds.Api
         internal void ExecuteOnErrorIntrospectToken(Exception exception)
         {
             OnErrorIntrospectToken?.Invoke(this, new ExceptionEventArgs(exception));
+        }
+
+        /// <summary>
+        /// The event raised after the server response
+        /// </summary>
+        public event EventHandler<ApiResponseEventArgs>? OnOauthRegisterClient;
+
+        /// <summary>
+        /// The event raised after an error querying the server
+        /// </summary>
+        public event EventHandler<ExceptionEventArgs>? OnErrorOauthRegisterClient;
+
+        internal void ExecuteOnOauthRegisterClient(OAuth20Api.OauthRegisterClientApiResponse apiResponse)
+        {
+            OnOauthRegisterClient?.Invoke(this, new ApiResponseEventArgs(apiResponse));
+        }
+
+        internal void ExecuteOnErrorOauthRegisterClient(Exception exception)
+        {
+            OnErrorOauthRegisterClient?.Invoke(this, new ExceptionEventArgs(exception));
         }
 
         /// <summary>
@@ -1343,6 +1396,224 @@ namespace MailOdds.Api
                 } catch (Exception e)
                 {
                     OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)400);
+                }
+
+                return result != null;
+            }
+
+            private void OnDeserializationErrorDefaultImplementation(Exception exception, HttpStatusCode httpStatusCode)
+            {
+                bool suppressDefaultLog = false;
+                OnDeserializationError(ref suppressDefaultLog, exception, httpStatusCode);
+                if (!suppressDefaultLog)
+                    Logger.LogError(exception, "An error occurred while deserializing the {code} response.", httpStatusCode);
+            }
+
+            partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="apiResponseLocalVar"></param>
+        private void AfterOauthRegisterClientDefaultImplementation(IOauthRegisterClientApiResponse apiResponseLocalVar)
+        {
+            bool suppressDefaultLog = false;
+            AfterOauthRegisterClient(ref suppressDefaultLog, apiResponseLocalVar);
+            if (!suppressDefaultLog)
+                Logger.LogInformation("{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="suppressDefaultLog"></param>
+        /// <param name="apiResponseLocalVar"></param>
+        partial void AfterOauthRegisterClient(ref bool suppressDefaultLog, IOauthRegisterClientApiResponse apiResponseLocalVar);
+
+        /// <summary>
+        /// Logs exceptions that occur while retrieving the server response
+        /// </summary>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        private void OnErrorOauthRegisterClientDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar)
+        {
+            bool suppressDefaultLogLocalVar = false;
+            OnErrorOauthRegisterClient(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar);
+            if (!suppressDefaultLogLocalVar)
+                Logger.LogError(exceptionLocalVar, "An error occurred while sending the request to the server.");
+        }
+
+        /// <summary>
+        /// A partial method that gives developers a way to provide customized exception handling
+        /// </summary>
+        /// <param name="suppressDefaultLogLocalVar"></param>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        partial void OnErrorOauthRegisterClient(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar);
+
+        /// <summary>
+        /// Register OAuth client Dynamic Client Registration (RFC 7591). Allows MCP clients to auto-register without user interaction.
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IOauthRegisterClientApiResponse"/>&gt;</returns>
+        public async Task<IOauthRegisterClientApiResponse?> OauthRegisterClientOrDefaultAsync(System.Threading.CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                return await OauthRegisterClientAsync(cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Register OAuth client Dynamic Client Registration (RFC 7591). Allows MCP clients to auto-register without user interaction.
+        /// </summary>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IOauthRegisterClientApiResponse"/>&gt;</returns>
+        public async Task<IOauthRegisterClientApiResponse> OauthRegisterClientAsync(System.Threading.CancellationToken cancellationToken = default)
+        {
+            UriBuilder uriBuilderLocalVar = new UriBuilder();
+
+            try
+            {
+                using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
+                {
+                    uriBuilderLocalVar.Host = HttpClient.BaseAddress!.Host;
+                    uriBuilderLocalVar.Port = HttpClient.BaseAddress.Port;
+                    uriBuilderLocalVar.Scheme = HttpClient.BaseAddress.Scheme;
+                    uriBuilderLocalVar.Path = HttpClient.BaseAddress.AbsolutePath == "/"
+                        ? "/oauth/register"
+                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/oauth/register");
+
+                    httpRequestMessageLocalVar.RequestUri = uriBuilderLocalVar.Uri;
+
+                    string[] acceptLocalVars = new string[] {
+                        "application/json"
+                    };
+
+                    string? acceptLocalVar = ClientUtils.SelectHeaderAccept(acceptLocalVars);
+
+                    if (acceptLocalVar != null)
+                        httpRequestMessageLocalVar.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(acceptLocalVar));
+
+                    httpRequestMessageLocalVar.Method = HttpMethod.Post;
+
+                    DateTime requestedAtLocalVar = DateTime.UtcNow;
+
+                    using (HttpResponseMessage httpResponseMessageLocalVar = await HttpClient.SendAsync(httpRequestMessageLocalVar, cancellationToken).ConfigureAwait(false))
+                    {
+                        ILogger<OauthRegisterClientApiResponse> apiResponseLoggerLocalVar = LoggerFactory.CreateLogger<OauthRegisterClientApiResponse>();
+                        OauthRegisterClientApiResponse apiResponseLocalVar;
+
+                        switch ((int)httpResponseMessageLocalVar.StatusCode) {
+                            default: {
+                                string responseContentLocalVar = await httpResponseMessageLocalVar.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/oauth/register", requestedAtLocalVar, _jsonSerializerOptions);
+
+                                break;
+                            }
+                        }
+
+                        AfterOauthRegisterClientDefaultImplementation(apiResponseLocalVar);
+
+                        Events.ExecuteOnOauthRegisterClient(apiResponseLocalVar);
+
+                        return apiResponseLocalVar;
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                OnErrorOauthRegisterClientDefaultImplementation(e, "/oauth/register", uriBuilderLocalVar.Path);
+                Events.ExecuteOnErrorOauthRegisterClient(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// The <see cref="OauthRegisterClientApiResponse"/>
+        /// </summary>
+        public partial class OauthRegisterClientApiResponse : MailOdds.Client.ApiResponse, IOauthRegisterClientApiResponse
+        {
+            /// <summary>
+            /// The logger
+            /// </summary>
+            public ILogger<OauthRegisterClientApiResponse> Logger { get; }
+
+            /// <summary>
+            /// The <see cref="OauthRegisterClientApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="rawContent"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public OauthRegisterClientApiResponse(ILogger<OauthRegisterClientApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, string rawContent, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, rawContent, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            /// <summary>
+            /// The <see cref="OauthRegisterClientApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="contentStream"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public OauthRegisterClientApiResponse(ILogger<OauthRegisterClientApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, System.IO.Stream contentStream, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, contentStream, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            partial void OnCreated(global::System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage);
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public bool IsOk => 200 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.OAuthClientRegistration? Ok()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsOk
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.OAuthClientRegistration>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryOk([NotNullWhen(true)]out MailOdds.Model.OAuthClientRegistration? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Ok();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)200);
                 }
 
                 return result != null;

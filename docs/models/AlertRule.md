@@ -6,7 +6,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Id** | **string** |  | [optional] 
 **Metric** | **string** | Monitored metric name | [optional] 
-**Threshold** | **decimal** | Alert threshold value | [optional] 
+**Threshold** | **decimal** | Alert threshold value (0-1) | [optional] 
 **Channel** | **string** | Notification channel | [optional] 
 **WindowMinutes** | **int** | Evaluation window in minutes | [optional] 
 **Enabled** | **bool** |  | [optional] 

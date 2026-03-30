@@ -34,15 +34,30 @@ namespace MailOdds.Model
         /// <summary>
         /// Initializes a new instance of the <see cref="DeleteWebhookCliSession200Response" /> class.
         /// </summary>
+        /// <param name="deleted">deleted</param>
         /// <param name="status">status</param>
         [JsonConstructor]
-        public DeleteWebhookCliSession200Response(Option<string?> status = default)
+        public DeleteWebhookCliSession200Response(Option<bool?> deleted = default, Option<string?> status = default)
         {
+            DeletedOption = deleted;
             StatusOption = status;
             OnCreated();
         }
 
         partial void OnCreated();
+
+        /// <summary>
+        /// Used to track the state of Deleted
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<bool?> DeletedOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets Deleted
+        /// </summary>
+        [JsonPropertyName("deleted")]
+        public bool? Deleted { get { return this.DeletedOption; } set { this.DeletedOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Status
@@ -65,6 +80,7 @@ namespace MailOdds.Model
         {
             StringBuilder sb = new StringBuilder();
             sb.Append("class DeleteWebhookCliSession200Response {\n");
+            sb.Append("  Deleted: ").Append(Deleted).Append("\n");
             sb.Append("  Status: ").Append(Status).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
@@ -103,6 +119,7 @@ namespace MailOdds.Model
 
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
+            Option<bool?> deleted = default;
             Option<string?> status = default;
 
             while (utf8JsonReader.Read())
@@ -120,6 +137,9 @@ namespace MailOdds.Model
 
                     switch (localVarJsonPropertyName)
                     {
+                        case "deleted":
+                            deleted = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
+                            break;
                         case "status":
                             status = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
@@ -129,10 +149,13 @@ namespace MailOdds.Model
                 }
             }
 
+            if (deleted.IsSet && deleted.Value == null)
+                throw new ArgumentNullException(nameof(deleted), "Property is not nullable for class DeleteWebhookCliSession200Response.");
+
             if (status.IsSet && status.Value == null)
                 throw new ArgumentNullException(nameof(status), "Property is not nullable for class DeleteWebhookCliSession200Response.");
 
-            return new DeleteWebhookCliSession200Response(status);
+            return new DeleteWebhookCliSession200Response(deleted, status);
         }
 
         /// <summary>
@@ -161,6 +184,9 @@ namespace MailOdds.Model
         {
             if (deleteWebhookCliSession200Response.StatusOption.IsSet && deleteWebhookCliSession200Response.Status == null)
                 throw new ArgumentNullException(nameof(deleteWebhookCliSession200Response.Status), "Property is required for class DeleteWebhookCliSession200Response.");
+
+            if (deleteWebhookCliSession200Response.DeletedOption.IsSet)
+                writer.WriteBoolean("deleted", deleteWebhookCliSession200Response.DeletedOption.Value!.Value);
 
             if (deleteWebhookCliSession200Response.StatusOption.IsSet)
                 writer.WriteString("status", deleteWebhookCliSession200Response.Status);

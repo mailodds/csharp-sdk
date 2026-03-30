@@ -31,7 +31,6 @@ docs/apis/OAuth20Api.md
 docs/apis/OutOfOfficeApi.md
 docs/apis/PipelineSimulationApi.md
 docs/apis/PixelSettingsApi.md
-docs/apis/ProductsApi.md
 docs/apis/ReputationApi.md
 docs/apis/ReputationPoliciesApi.md
 docs/apis/SenderHealthApi.md
@@ -39,7 +38,6 @@ docs/apis/SendingDelegationsApi.md
 docs/apis/SendingDomainsApi.md
 docs/apis/ServerTestsApi.md
 docs/apis/SpamChecksApi.md
-docs/apis/StoreConnectionsApi.md
 docs/apis/SubscriberListsApi.md
 docs/apis/SuppressionListsApi.md
 docs/apis/SystemApi.md
@@ -77,8 +75,6 @@ docs/models/BounceAnalysisResponse.md
 docs/models/BounceAnalysisResponseAnalysis.md
 docs/models/BounceAnalysisResponseAnalysisCategories.md
 docs/models/BounceAnalysisResponseAnalysisTopDomainsInner.md
-docs/models/BulkUpdateProducts200Response.md
-docs/models/BulkUpdateProductsRequest.md
 docs/models/Campaign.md
 docs/models/CampaignResponse.md
 docs/models/CampaignStats.md
@@ -105,7 +101,6 @@ docs/models/CreatePolicyFromPresetRequest.md
 docs/models/CreatePolicyRequest.md
 docs/models/CreateSendingDomain201Response.md
 docs/models/CreateSendingDomainRequest.md
-docs/models/CreateStore201Response.md
 docs/models/CreateStoreRequest.md
 docs/models/CreateToken200Response.md
 docs/models/CreateVariantRequest.md
@@ -125,7 +120,6 @@ docs/models/DeliverRequestStructuredData.md
 docs/models/DeliverRequestToInner.md
 docs/models/DeliverResponse.md
 docs/models/DeliverResponseDelivery.md
-docs/models/DisconnectStore200Response.md
 docs/models/DmarcDomain.md
 docs/models/ErrorResponse.md
 docs/models/GetBlacklistHistory200Response.md
@@ -178,7 +172,6 @@ docs/models/GetMessageEvents200ResponseSummary.md
 docs/models/GetOooStatus200Response.md
 docs/models/GetPixelSettings200Response.md
 docs/models/GetPresignedUploadRequest.md
-docs/models/GetProduct200Response.md
 docs/models/GetReplyForwarding200Response.md
 docs/models/GetReputation200Response.md
 docs/models/GetReputationTimeline200Response.md
@@ -194,7 +187,6 @@ docs/models/GetSendingDomainIdentityScore200Response.md
 docs/models/GetSendingStats200Response.md
 docs/models/GetSendingStats200ResponseStats.md
 docs/models/GetSubscribers200Response.md
-docs/models/GetSyncJobErrors200Response.md
 docs/models/HealthCheck200Response.md
 docs/models/IdentityScoreCheck.md
 docs/models/ImportContactList200Response.md
@@ -216,13 +208,12 @@ docs/models/ListOooContacts200Response.md
 docs/models/ListSendingDomains200Response.md
 docs/models/ListServerTests200Response.md
 docs/models/ListSpamChecks200Response.md
-docs/models/ListStores200Response.md
-docs/models/ListSyncJobs200Response.md
 docs/models/ListWebhookDeliveries200Response.md
 docs/models/ListWebhookDeliveries200ResponseDeliveriesInner.md
 docs/models/McpCapabilities.md
 docs/models/McpCapabilitiesPillarsInner.md
 docs/models/McpCapabilitiesPillarsInnerToolsInner.md
+docs/models/OAuthClientRegistration.md
 docs/models/OAuthServerMetadata.md
 docs/models/Pagination.md
 docs/models/Policy.md
@@ -244,7 +235,6 @@ docs/models/QueryContactList200Response.md
 docs/models/QueryContactList200ResponseEmailsInner.md
 docs/models/QueryContactListRequest.md
 docs/models/QueryContactListRequestFiltersInner.md
-docs/models/QueryProducts200Response.md
 docs/models/RemoveSuppression200Response.md
 docs/models/RemoveSuppressionRequest.md
 docs/models/ReplayWebhookDelivery200Response.md
@@ -299,7 +289,6 @@ docs/models/UpdateOooContactRequest.md
 docs/models/UpdatePixelSettingsRequest.md
 docs/models/UpdatePolicyRequest.md
 docs/models/UpdateReplyForwardingRequest.md
-docs/models/UpdateStoreRequest.md
 docs/models/ValidateBatch200Response.md
 docs/models/ValidateBatch200ResponseSummary.md
 docs/models/ValidateBatchRequest.md
@@ -313,6 +302,7 @@ docs/models/WebhookEvent.md
 docs/scripts/git_push.ps1
 docs/scripts/git_push.sh
 src/MailOdds.Test/Api/DependencyInjectionTests.cs
+src/MailOdds.Test/Model/OAuthClientRegistrationTests.cs
 src/MailOdds.Test/README.md
 src/MailOdds/Api/AgentControlPlaneApi.cs
 src/MailOdds/Api/AlertRulesApi.cs
@@ -344,7 +334,6 @@ src/MailOdds/Api/OAuth20Api.cs
 src/MailOdds/Api/OutOfOfficeApi.cs
 src/MailOdds/Api/PipelineSimulationApi.cs
 src/MailOdds/Api/PixelSettingsApi.cs
-src/MailOdds/Api/ProductsApi.cs
 src/MailOdds/Api/ReputationApi.cs
 src/MailOdds/Api/ReputationPoliciesApi.cs
 src/MailOdds/Api/SenderHealthApi.cs
@@ -352,7 +341,6 @@ src/MailOdds/Api/SendingDelegationsApi.cs
 src/MailOdds/Api/SendingDomainsApi.cs
 src/MailOdds/Api/ServerTestsApi.cs
 src/MailOdds/Api/SpamChecksApi.cs
-src/MailOdds/Api/StoreConnectionsApi.cs
 src/MailOdds/Api/SubscriberListsApi.cs
 src/MailOdds/Api/SuppressionListsApi.cs
 src/MailOdds/Api/SystemApi.cs
@@ -412,8 +400,6 @@ src/MailOdds/Model/BounceAnalysisResponse.cs
 src/MailOdds/Model/BounceAnalysisResponseAnalysis.cs
 src/MailOdds/Model/BounceAnalysisResponseAnalysisCategories.cs
 src/MailOdds/Model/BounceAnalysisResponseAnalysisTopDomainsInner.cs
-src/MailOdds/Model/BulkUpdateProducts200Response.cs
-src/MailOdds/Model/BulkUpdateProductsRequest.cs
 src/MailOdds/Model/Campaign.cs
 src/MailOdds/Model/CampaignResponse.cs
 src/MailOdds/Model/CampaignStats.cs
@@ -440,7 +426,6 @@ src/MailOdds/Model/CreatePolicyFromPresetRequest.cs
 src/MailOdds/Model/CreatePolicyRequest.cs
 src/MailOdds/Model/CreateSendingDomain201Response.cs
 src/MailOdds/Model/CreateSendingDomainRequest.cs
-src/MailOdds/Model/CreateStore201Response.cs
 src/MailOdds/Model/CreateStoreRequest.cs
 src/MailOdds/Model/CreateToken200Response.cs
 src/MailOdds/Model/CreateVariantRequest.cs
@@ -460,7 +445,6 @@ src/MailOdds/Model/DeliverRequestStructuredData.cs
 src/MailOdds/Model/DeliverRequestToInner.cs
 src/MailOdds/Model/DeliverResponse.cs
 src/MailOdds/Model/DeliverResponseDelivery.cs
-src/MailOdds/Model/DisconnectStore200Response.cs
 src/MailOdds/Model/DmarcDomain.cs
 src/MailOdds/Model/ErrorResponse.cs
 src/MailOdds/Model/GetBlacklistHistory200Response.cs
@@ -513,7 +497,6 @@ src/MailOdds/Model/GetMessageEvents200ResponseSummary.cs
 src/MailOdds/Model/GetOooStatus200Response.cs
 src/MailOdds/Model/GetPixelSettings200Response.cs
 src/MailOdds/Model/GetPresignedUploadRequest.cs
-src/MailOdds/Model/GetProduct200Response.cs
 src/MailOdds/Model/GetReplyForwarding200Response.cs
 src/MailOdds/Model/GetReputation200Response.cs
 src/MailOdds/Model/GetReputationTimeline200Response.cs
@@ -529,7 +512,6 @@ src/MailOdds/Model/GetSendingDomainIdentityScore200Response.cs
 src/MailOdds/Model/GetSendingStats200Response.cs
 src/MailOdds/Model/GetSendingStats200ResponseStats.cs
 src/MailOdds/Model/GetSubscribers200Response.cs
-src/MailOdds/Model/GetSyncJobErrors200Response.cs
 src/MailOdds/Model/HealthCheck200Response.cs
 src/MailOdds/Model/IdentityScoreCheck.cs
 src/MailOdds/Model/ImportContactList200Response.cs
@@ -551,13 +533,12 @@ src/MailOdds/Model/ListOooContacts200Response.cs
 src/MailOdds/Model/ListSendingDomains200Response.cs
 src/MailOdds/Model/ListServerTests200Response.cs
 src/MailOdds/Model/ListSpamChecks200Response.cs
-src/MailOdds/Model/ListStores200Response.cs
-src/MailOdds/Model/ListSyncJobs200Response.cs
 src/MailOdds/Model/ListWebhookDeliveries200Response.cs
 src/MailOdds/Model/ListWebhookDeliveries200ResponseDeliveriesInner.cs
 src/MailOdds/Model/McpCapabilities.cs
 src/MailOdds/Model/McpCapabilitiesPillarsInner.cs
 src/MailOdds/Model/McpCapabilitiesPillarsInnerToolsInner.cs
+src/MailOdds/Model/OAuthClientRegistration.cs
 src/MailOdds/Model/OAuthServerMetadata.cs
 src/MailOdds/Model/Pagination.cs
 src/MailOdds/Model/Policy.cs
@@ -579,7 +560,6 @@ src/MailOdds/Model/QueryContactList200Response.cs
 src/MailOdds/Model/QueryContactList200ResponseEmailsInner.cs
 src/MailOdds/Model/QueryContactListRequest.cs
 src/MailOdds/Model/QueryContactListRequestFiltersInner.cs
-src/MailOdds/Model/QueryProducts200Response.cs
 src/MailOdds/Model/RemoveSuppression200Response.cs
 src/MailOdds/Model/RemoveSuppressionRequest.cs
 src/MailOdds/Model/ReplayWebhookDelivery200Response.cs
@@ -634,7 +614,6 @@ src/MailOdds/Model/UpdateOooContactRequest.cs
 src/MailOdds/Model/UpdatePixelSettingsRequest.cs
 src/MailOdds/Model/UpdatePolicyRequest.cs
 src/MailOdds/Model/UpdateReplyForwardingRequest.cs
-src/MailOdds/Model/UpdateStoreRequest.cs
 src/MailOdds/Model/ValidateBatch200Response.cs
 src/MailOdds/Model/ValidateBatch200ResponseSummary.cs
 src/MailOdds/Model/ValidateBatchRequest.cs
