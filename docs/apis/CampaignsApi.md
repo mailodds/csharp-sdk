@@ -7,6 +7,7 @@ All URIs are relative to *https://api.mailodds.com*
 | [**CancelCampaign**](CampaignsApi.md#cancelcampaign) | **POST** /v1/campaigns/{campaign_id}/cancel | Cancel a campaign |
 | [**CreateCampaign**](CampaignsApi.md#createcampaign) | **POST** /v1/campaigns | Create a campaign |
 | [**CreateCampaignVariant**](CampaignsApi.md#createcampaignvariant) | **POST** /v1/campaigns/{campaign_id}/variants | Create A/B variant |
+| [**DeleteCampaign**](CampaignsApi.md#deletecampaign) | **DELETE** /v1/campaigns/{campaign_id} | Delete a campaign |
 | [**GetCampaign**](CampaignsApi.md#getcampaign) | **GET** /v1/campaigns/{campaign_id} | Get campaign with stats |
 | [**ListCampaigns**](CampaignsApi.md#listcampaigns) | **GET** /v1/campaigns | List campaigns |
 | [**ScheduleCampaign**](CampaignsApi.md#schedulecampaign) | **POST** /v1/campaigns/{campaign_id}/schedule | Schedule a campaign |
@@ -126,6 +127,44 @@ Add an A/B test variant to a campaign. Each variant has its own subject, body, a
 | **201** | Variant created |  -  |
 | **404** | Resource not found |  -  |
 | **400** | Bad request |  -  |
+| **401** | Unauthorized - Invalid or missing API key |  -  |
+
+[[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
+
+<a id="deletecampaign"></a>
+# **DeleteCampaign**
+> DeletePolicyRule200Response DeleteCampaign (string campaignId)
+
+Delete a campaign
+
+Permanently delete a campaign. Only campaigns in draft, sent, failed, or cancelled status can be deleted.
+
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **campaignId** | **string** | Campaign UUID |  |
+
+### Return type
+
+[**DeletePolicyRule200Response**](DeletePolicyRule200Response.md)
+
+### Authorization
+
+[BearerAuth](../README.md#BearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Campaign deleted |  -  |
+| **404** | Resource not found |  -  |
 | **401** | Unauthorized - Invalid or missing API key |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)

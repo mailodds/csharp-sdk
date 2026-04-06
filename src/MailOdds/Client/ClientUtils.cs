@@ -128,6 +128,8 @@ namespace MailOdds.Client
                 return Campaign.StatusEnumToJsonValue(campaignStatusEnum);
             if (obj is ClassifyContent200ResponseContentCheck.StatusEnum classifyContent200ResponseContentCheckStatusEnum)
                 return ClassifyContent200ResponseContentCheck.StatusEnumToJsonValue(classifyContent200ResponseContentCheckStatusEnum);
+            if (obj is ConnectDnsProviderRequest.ProviderEnum connectDnsProviderRequestProviderEnum)
+                return ConnectDnsProviderRequest.ProviderEnumToJsonValue(connectDnsProviderRequestProviderEnum);
             if (obj is CreatePolicyFromPresetRequest.PresetIdEnum createPolicyFromPresetRequestPresetIdEnum)
                 return CreatePolicyFromPresetRequest.PresetIdEnumToJsonValue(createPolicyFromPresetRequestPresetIdEnum);
             if (obj is CreateStoreRequest.PlatformEnum createStoreRequestPlatformEnum)

@@ -107,6 +107,9 @@ namespace MailOdds.Test.Api
             var dMARCMonitoringApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<IDMARCMonitoringApi>();
             Assert.True(dMARCMonitoringApi.HttpClient.BaseAddress != null);
 
+            var dNSProviderApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<IDNSProviderApi>();
+            Assert.True(dNSProviderApi.HttpClient.BaseAddress != null);
+
             var deliverabilityAdvisorApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<IDeliverabilityAdvisorApi>();
             Assert.True(deliverabilityAdvisorApi.HttpClient.BaseAddress != null);
 
@@ -179,6 +182,9 @@ namespace MailOdds.Test.Api
             var spamChecksApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<ISpamChecksApi>();
             Assert.True(spamChecksApi.HttpClient.BaseAddress != null);
 
+            var storefrontDomainsApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<IStorefrontDomainsApi>();
+            Assert.True(storefrontDomainsApi.HttpClient.BaseAddress != null);
+
             var subscriberListsApi = _hostUsingConfigureWithAClient.Services.GetRequiredService<ISubscriberListsApi>();
             Assert.True(subscriberListsApi.HttpClient.BaseAddress != null);
 
@@ -239,6 +245,9 @@ namespace MailOdds.Test.Api
 
             var dMARCMonitoringApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<IDMARCMonitoringApi>();
             Assert.True(dMARCMonitoringApi.HttpClient.BaseAddress != null);
+
+            var dNSProviderApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<IDNSProviderApi>();
+            Assert.True(dNSProviderApi.HttpClient.BaseAddress != null);
 
             var deliverabilityAdvisorApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<IDeliverabilityAdvisorApi>();
             Assert.True(deliverabilityAdvisorApi.HttpClient.BaseAddress != null);
@@ -312,6 +321,9 @@ namespace MailOdds.Test.Api
             var spamChecksApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<ISpamChecksApi>();
             Assert.True(spamChecksApi.HttpClient.BaseAddress != null);
 
+            var storefrontDomainsApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<IStorefrontDomainsApi>();
+            Assert.True(storefrontDomainsApi.HttpClient.BaseAddress != null);
+
             var subscriberListsApi = _hostUsingConfigureWithoutAClient.Services.GetRequiredService<ISubscriberListsApi>();
             Assert.True(subscriberListsApi.HttpClient.BaseAddress != null);
 
@@ -372,6 +384,9 @@ namespace MailOdds.Test.Api
             
             var dMARCMonitoringApi = _hostUsingAddWithAClient.Services.GetRequiredService<IDMARCMonitoringApi>();
             Assert.True(dMARCMonitoringApi.HttpClient.BaseAddress != null);
+            
+            var dNSProviderApi = _hostUsingAddWithAClient.Services.GetRequiredService<IDNSProviderApi>();
+            Assert.True(dNSProviderApi.HttpClient.BaseAddress != null);
             
             var deliverabilityAdvisorApi = _hostUsingAddWithAClient.Services.GetRequiredService<IDeliverabilityAdvisorApi>();
             Assert.True(deliverabilityAdvisorApi.HttpClient.BaseAddress != null);
@@ -445,6 +460,9 @@ namespace MailOdds.Test.Api
             var spamChecksApi = _hostUsingAddWithAClient.Services.GetRequiredService<ISpamChecksApi>();
             Assert.True(spamChecksApi.HttpClient.BaseAddress != null);
             
+            var storefrontDomainsApi = _hostUsingAddWithAClient.Services.GetRequiredService<IStorefrontDomainsApi>();
+            Assert.True(storefrontDomainsApi.HttpClient.BaseAddress != null);
+            
             var subscriberListsApi = _hostUsingAddWithAClient.Services.GetRequiredService<ISubscriberListsApi>();
             Assert.True(subscriberListsApi.HttpClient.BaseAddress != null);
             
@@ -505,6 +523,9 @@ namespace MailOdds.Test.Api
 
             var dMARCMonitoringApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<IDMARCMonitoringApi>();
             Assert.True(dMARCMonitoringApi.HttpClient.BaseAddress != null);
+
+            var dNSProviderApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<IDNSProviderApi>();
+            Assert.True(dNSProviderApi.HttpClient.BaseAddress != null);
 
             var deliverabilityAdvisorApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<IDeliverabilityAdvisorApi>();
             Assert.True(deliverabilityAdvisorApi.HttpClient.BaseAddress != null);
@@ -577,6 +598,9 @@ namespace MailOdds.Test.Api
 
             var spamChecksApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<ISpamChecksApi>();
             Assert.True(spamChecksApi.HttpClient.BaseAddress != null);
+
+            var storefrontDomainsApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<IStorefrontDomainsApi>();
+            Assert.True(storefrontDomainsApi.HttpClient.BaseAddress != null);
 
             var subscriberListsApi = _hostUsingAddWithoutAClient.Services.GetRequiredService<ISubscriberListsApi>();
             Assert.True(subscriberListsApi.HttpClient.BaseAddress != null);

@@ -84,6 +84,7 @@ namespace MailOdds.Client
             _jsonOptions.Converters.Add(new ClassifyContent200ResponseContentCheckJsonConverter());
             _jsonOptions.Converters.Add(new ClassifyContentRequestJsonConverter());
             _jsonOptions.Converters.Add(new ConfirmSubscription200ResponseJsonConverter());
+            _jsonOptions.Converters.Add(new ConnectDnsProviderRequestJsonConverter());
             _jsonOptions.Converters.Add(new ContactListJsonConverter());
             _jsonOptions.Converters.Add(new CorrectInboundMessageRequestJsonConverter());
             _jsonOptions.Converters.Add(new CreateAlertRule201ResponseJsonConverter());
@@ -102,6 +103,7 @@ namespace MailOdds.Client
             _jsonOptions.Converters.Add(new CreateSendingDomain201ResponseJsonConverter());
             _jsonOptions.Converters.Add(new CreateSendingDomainRequestJsonConverter());
             _jsonOptions.Converters.Add(new CreateStoreRequestJsonConverter());
+            _jsonOptions.Converters.Add(new CreateStorefrontDomainRequestJsonConverter());
             _jsonOptions.Converters.Add(new CreateToken200ResponseJsonConverter());
             _jsonOptions.Converters.Add(new CreateVariantRequestJsonConverter());
             _jsonOptions.Converters.Add(new CreateWebhookCliSession201ResponseJsonConverter());
@@ -314,6 +316,7 @@ namespace MailOdds.Client
             _services.AddSingleton<ContentClassificationApiEvents>();
             _services.AddSingleton<DKIMManagementApiEvents>();
             _services.AddSingleton<DMARCMonitoringApiEvents>();
+            _services.AddSingleton<DNSProviderApiEvents>();
             _services.AddSingleton<DeliverabilityAdvisorApiEvents>();
             _services.AddSingleton<DomainInsightsApiEvents>();
             _services.AddSingleton<EmailSendingApiEvents>();
@@ -338,6 +341,7 @@ namespace MailOdds.Client
             _services.AddSingleton<SendingDomainsApiEvents>();
             _services.AddSingleton<ServerTestsApiEvents>();
             _services.AddSingleton<SpamChecksApiEvents>();
+            _services.AddSingleton<StorefrontDomainsApiEvents>();
             _services.AddSingleton<SubscriberListsApiEvents>();
             _services.AddSingleton<SuppressionListsApiEvents>();
             _services.AddSingleton<SystemApiEvents>();
@@ -373,6 +377,7 @@ namespace MailOdds.Client
             builders.Add(_services.AddHttpClient<IContentClassificationApi, ContentClassificationApi>(client));
             builders.Add(_services.AddHttpClient<IDKIMManagementApi, DKIMManagementApi>(client));
             builders.Add(_services.AddHttpClient<IDMARCMonitoringApi, DMARCMonitoringApi>(client));
+            builders.Add(_services.AddHttpClient<IDNSProviderApi, DNSProviderApi>(client));
             builders.Add(_services.AddHttpClient<IDeliverabilityAdvisorApi, DeliverabilityAdvisorApi>(client));
             builders.Add(_services.AddHttpClient<IDomainInsightsApi, DomainInsightsApi>(client));
             builders.Add(_services.AddHttpClient<IEmailSendingApi, EmailSendingApi>(client));
@@ -397,6 +402,7 @@ namespace MailOdds.Client
             builders.Add(_services.AddHttpClient<ISendingDomainsApi, SendingDomainsApi>(client));
             builders.Add(_services.AddHttpClient<IServerTestsApi, ServerTestsApi>(client));
             builders.Add(_services.AddHttpClient<ISpamChecksApi, SpamChecksApi>(client));
+            builders.Add(_services.AddHttpClient<IStorefrontDomainsApi, StorefrontDomainsApi>(client));
             builders.Add(_services.AddHttpClient<ISubscriberListsApi, SubscriberListsApi>(client));
             builders.Add(_services.AddHttpClient<ISuppressionListsApi, SuppressionListsApi>(client));
             builders.Add(_services.AddHttpClient<ISystemApi, SystemApi>(client));

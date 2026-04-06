@@ -14,6 +14,7 @@ docs/apis/ContactListsApi.md
 docs/apis/ContentClassificationApi.md
 docs/apis/DKIMManagementApi.md
 docs/apis/DMARCMonitoringApi.md
+docs/apis/DNSProviderApi.md
 docs/apis/DeliverabilityAdvisorApi.md
 docs/apis/DomainInsightsApi.md
 docs/apis/EmailSendingApi.md
@@ -38,6 +39,7 @@ docs/apis/SendingDelegationsApi.md
 docs/apis/SendingDomainsApi.md
 docs/apis/ServerTestsApi.md
 docs/apis/SpamChecksApi.md
+docs/apis/StorefrontDomainsApi.md
 docs/apis/SubscriberListsApi.md
 docs/apis/SuppressionListsApi.md
 docs/apis/SystemApi.md
@@ -84,6 +86,7 @@ docs/models/ClassifyContent200Response.md
 docs/models/ClassifyContent200ResponseContentCheck.md
 docs/models/ClassifyContentRequest.md
 docs/models/ConfirmSubscription200Response.md
+docs/models/ConnectDnsProviderRequest.md
 docs/models/ContactList.md
 docs/models/CorrectInboundMessageRequest.md
 docs/models/CreateAlertRule201Response.md
@@ -102,6 +105,7 @@ docs/models/CreatePolicyRequest.md
 docs/models/CreateSendingDomain201Response.md
 docs/models/CreateSendingDomainRequest.md
 docs/models/CreateStoreRequest.md
+docs/models/CreateStorefrontDomainRequest.md
 docs/models/CreateToken200Response.md
 docs/models/CreateVariantRequest.md
 docs/models/CreateWebhookCliSession201Response.md
@@ -301,7 +305,11 @@ docs/models/ValidationResultSuppression.md
 docs/models/WebhookEvent.md
 docs/scripts/git_push.ps1
 docs/scripts/git_push.sh
+src/MailOdds.Test/Api/DNSProviderApiTests.cs
 src/MailOdds.Test/Api/DependencyInjectionTests.cs
+src/MailOdds.Test/Api/StorefrontDomainsApiTests.cs
+src/MailOdds.Test/Model/ConnectDnsProviderRequestTests.cs
+src/MailOdds.Test/Model/CreateStorefrontDomainRequestTests.cs
 src/MailOdds.Test/README.md
 src/MailOdds/Api/AgentControlPlaneApi.cs
 src/MailOdds/Api/AlertRulesApi.cs
@@ -315,6 +323,7 @@ src/MailOdds/Api/ContactListsApi.cs
 src/MailOdds/Api/ContentClassificationApi.cs
 src/MailOdds/Api/DKIMManagementApi.cs
 src/MailOdds/Api/DMARCMonitoringApi.cs
+src/MailOdds/Api/DNSProviderApi.cs
 src/MailOdds/Api/DeliverabilityAdvisorApi.cs
 src/MailOdds/Api/DomainInsightsApi.cs
 src/MailOdds/Api/EmailSendingApi.cs
@@ -340,6 +349,7 @@ src/MailOdds/Api/SendingDelegationsApi.cs
 src/MailOdds/Api/SendingDomainsApi.cs
 src/MailOdds/Api/ServerTestsApi.cs
 src/MailOdds/Api/SpamChecksApi.cs
+src/MailOdds/Api/StorefrontDomainsApi.cs
 src/MailOdds/Api/SubscriberListsApi.cs
 src/MailOdds/Api/SuppressionListsApi.cs
 src/MailOdds/Api/SystemApi.cs
@@ -408,6 +418,7 @@ src/MailOdds/Model/ClassifyContent200Response.cs
 src/MailOdds/Model/ClassifyContent200ResponseContentCheck.cs
 src/MailOdds/Model/ClassifyContentRequest.cs
 src/MailOdds/Model/ConfirmSubscription200Response.cs
+src/MailOdds/Model/ConnectDnsProviderRequest.cs
 src/MailOdds/Model/ContactList.cs
 src/MailOdds/Model/CorrectInboundMessageRequest.cs
 src/MailOdds/Model/CreateAlertRule201Response.cs
@@ -426,6 +437,7 @@ src/MailOdds/Model/CreatePolicyRequest.cs
 src/MailOdds/Model/CreateSendingDomain201Response.cs
 src/MailOdds/Model/CreateSendingDomainRequest.cs
 src/MailOdds/Model/CreateStoreRequest.cs
+src/MailOdds/Model/CreateStorefrontDomainRequest.cs
 src/MailOdds/Model/CreateToken200Response.cs
 src/MailOdds/Model/CreateVariantRequest.cs
 src/MailOdds/Model/CreateWebhookCliSession201Response.cs

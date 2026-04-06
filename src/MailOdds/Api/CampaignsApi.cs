@@ -108,6 +108,29 @@ namespace MailOdds.Api
         Task<ICreateCampaignVariantApiResponse?> CreateCampaignVariantOrDefaultAsync(string campaignId, CreateVariantRequest createVariantRequest, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Delete a campaign
+        /// </summary>
+        /// <remarks>
+        /// Permanently delete a campaign. Only campaigns in draft, sent, failed, or cancelled status can be deleted.
+        /// </remarks>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="campaignId">Campaign UUID</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IDeleteCampaignApiResponse"/>&gt;</returns>
+        Task<IDeleteCampaignApiResponse> DeleteCampaignAsync(string campaignId, System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Delete a campaign
+        /// </summary>
+        /// <remarks>
+        /// Permanently delete a campaign. Only campaigns in draft, sent, failed, or cancelled status can be deleted.
+        /// </remarks>
+        /// <param name="campaignId">Campaign UUID</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IDeleteCampaignApiResponse"/>?&gt;</returns>
+        Task<IDeleteCampaignApiResponse?> DeleteCampaignOrDefaultAsync(string campaignId, System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Get campaign with stats
         /// </summary>
         /// <remarks>
@@ -297,6 +320,30 @@ namespace MailOdds.Api
     }
 
     /// <summary>
+    /// The <see cref="IDeleteCampaignApiResponse"/>
+    /// </summary>
+    public interface IDeleteCampaignApiResponse : MailOdds.Client.IApiResponse, IOk<MailOdds.Model.DeletePolicyRule200Response?>, INotFound<MailOdds.Model.ErrorResponse?>, IUnauthorized<MailOdds.Model.ErrorResponse?>
+    {
+        /// <summary>
+        /// Returns true if the response is 200 Ok
+        /// </summary>
+        /// <returns></returns>
+        bool IsOk { get; }
+
+        /// <summary>
+        /// Returns true if the response is 404 NotFound
+        /// </summary>
+        /// <returns></returns>
+        bool IsNotFound { get; }
+
+        /// <summary>
+        /// Returns true if the response is 401 Unauthorized
+        /// </summary>
+        /// <returns></returns>
+        bool IsUnauthorized { get; }
+    }
+
+    /// <summary>
     /// The <see cref="IGetCampaignApiResponse"/>
     /// </summary>
     public interface IGetCampaignApiResponse : MailOdds.Client.IApiResponse, IOk<MailOdds.Model.CampaignResponse?>, INotFound<MailOdds.Model.ErrorResponse?>, IUnauthorized<MailOdds.Model.ErrorResponse?>
@@ -461,6 +508,26 @@ namespace MailOdds.Api
         internal void ExecuteOnErrorCreateCampaignVariant(Exception exception)
         {
             OnErrorCreateCampaignVariant?.Invoke(this, new ExceptionEventArgs(exception));
+        }
+
+        /// <summary>
+        /// The event raised after the server response
+        /// </summary>
+        public event EventHandler<ApiResponseEventArgs>? OnDeleteCampaign;
+
+        /// <summary>
+        /// The event raised after an error querying the server
+        /// </summary>
+        public event EventHandler<ExceptionEventArgs>? OnErrorDeleteCampaign;
+
+        internal void ExecuteOnDeleteCampaign(CampaignsApi.DeleteCampaignApiResponse apiResponse)
+        {
+            OnDeleteCampaign?.Invoke(this, new ApiResponseEventArgs(apiResponse));
+        }
+
+        internal void ExecuteOnErrorDeleteCampaign(Exception exception)
+        {
+            OnErrorDeleteCampaign?.Invoke(this, new ExceptionEventArgs(exception));
         }
 
         /// <summary>
@@ -1673,6 +1740,335 @@ namespace MailOdds.Api
                 } catch (Exception e)
                 {
                     OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)400);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public bool IsUnauthorized => 401 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.ErrorResponse? Unauthorized()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsUnauthorized
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryUnauthorized([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Unauthorized();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)401);
+                }
+
+                return result != null;
+            }
+
+            private void OnDeserializationErrorDefaultImplementation(Exception exception, HttpStatusCode httpStatusCode)
+            {
+                bool suppressDefaultLog = false;
+                OnDeserializationError(ref suppressDefaultLog, exception, httpStatusCode);
+                if (!suppressDefaultLog)
+                    Logger.LogError(exception, "An error occurred while deserializing the {code} response.", httpStatusCode);
+            }
+
+            partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
+        }
+
+        partial void FormatDeleteCampaign(ref string campaignId);
+
+        /// <summary>
+        /// Validates the request parameters
+        /// </summary>
+        /// <param name="campaignId"></param>
+        /// <returns></returns>
+        private void ValidateDeleteCampaign(string campaignId)
+        {
+            if (campaignId == null)
+                throw new ArgumentNullException(nameof(campaignId));
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="apiResponseLocalVar"></param>
+        /// <param name="campaignId"></param>
+        private void AfterDeleteCampaignDefaultImplementation(IDeleteCampaignApiResponse apiResponseLocalVar, string campaignId)
+        {
+            bool suppressDefaultLog = false;
+            AfterDeleteCampaign(ref suppressDefaultLog, apiResponseLocalVar, campaignId);
+            if (!suppressDefaultLog)
+                Logger.LogInformation("{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="suppressDefaultLog"></param>
+        /// <param name="apiResponseLocalVar"></param>
+        /// <param name="campaignId"></param>
+        partial void AfterDeleteCampaign(ref bool suppressDefaultLog, IDeleteCampaignApiResponse apiResponseLocalVar, string campaignId);
+
+        /// <summary>
+        /// Logs exceptions that occur while retrieving the server response
+        /// </summary>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        /// <param name="campaignId"></param>
+        private void OnErrorDeleteCampaignDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string campaignId)
+        {
+            bool suppressDefaultLogLocalVar = false;
+            OnErrorDeleteCampaign(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, campaignId);
+            if (!suppressDefaultLogLocalVar)
+                Logger.LogError(exceptionLocalVar, "An error occurred while sending the request to the server.");
+        }
+
+        /// <summary>
+        /// A partial method that gives developers a way to provide customized exception handling
+        /// </summary>
+        /// <param name="suppressDefaultLogLocalVar"></param>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        /// <param name="campaignId"></param>
+        partial void OnErrorDeleteCampaign(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string campaignId);
+
+        /// <summary>
+        /// Delete a campaign Permanently delete a campaign. Only campaigns in draft, sent, failed, or cancelled status can be deleted.
+        /// </summary>
+        /// <param name="campaignId">Campaign UUID</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IDeleteCampaignApiResponse"/>&gt;</returns>
+        public async Task<IDeleteCampaignApiResponse?> DeleteCampaignOrDefaultAsync(string campaignId, System.Threading.CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                return await DeleteCampaignAsync(campaignId, cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Delete a campaign Permanently delete a campaign. Only campaigns in draft, sent, failed, or cancelled status can be deleted.
+        /// </summary>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="campaignId">Campaign UUID</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IDeleteCampaignApiResponse"/>&gt;</returns>
+        public async Task<IDeleteCampaignApiResponse> DeleteCampaignAsync(string campaignId, System.Threading.CancellationToken cancellationToken = default)
+        {
+            UriBuilder uriBuilderLocalVar = new UriBuilder();
+
+            try
+            {
+                ValidateDeleteCampaign(campaignId);
+
+                FormatDeleteCampaign(ref campaignId);
+
+                using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
+                {
+                    uriBuilderLocalVar.Host = HttpClient.BaseAddress!.Host;
+                    uriBuilderLocalVar.Port = HttpClient.BaseAddress.Port;
+                    uriBuilderLocalVar.Scheme = HttpClient.BaseAddress.Scheme;
+                    uriBuilderLocalVar.Path = HttpClient.BaseAddress.AbsolutePath == "/"
+                        ? "/v1/campaigns/{campaign_id}"
+                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/v1/campaigns/{campaign_id}");
+                    uriBuilderLocalVar.Path = uriBuilderLocalVar.Path.Replace("%7Bcampaign_id%7D", Uri.EscapeDataString(campaignId.ToString()));
+
+                    List<TokenBase> tokenBaseLocalVars = new List<TokenBase>();
+                    httpRequestMessageLocalVar.RequestUri = uriBuilderLocalVar.Uri;
+
+                    BearerToken bearerTokenLocalVar1 = (BearerToken) await BearerTokenProvider.GetAsync(cancellation: cancellationToken).ConfigureAwait(false);
+
+                    tokenBaseLocalVars.Add(bearerTokenLocalVar1);
+
+                    bearerTokenLocalVar1.UseInHeader(httpRequestMessageLocalVar, "");
+
+                    string[] acceptLocalVars = new string[] {
+                        "application/json"
+                    };
+
+                    string? acceptLocalVar = ClientUtils.SelectHeaderAccept(acceptLocalVars);
+
+                    if (acceptLocalVar != null)
+                        httpRequestMessageLocalVar.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(acceptLocalVar));
+
+                    httpRequestMessageLocalVar.Method = HttpMethod.Delete;
+
+                    DateTime requestedAtLocalVar = DateTime.UtcNow;
+
+                    using (HttpResponseMessage httpResponseMessageLocalVar = await HttpClient.SendAsync(httpRequestMessageLocalVar, cancellationToken).ConfigureAwait(false))
+                    {
+                        ILogger<DeleteCampaignApiResponse> apiResponseLoggerLocalVar = LoggerFactory.CreateLogger<DeleteCampaignApiResponse>();
+                        DeleteCampaignApiResponse apiResponseLocalVar;
+
+                        switch ((int)httpResponseMessageLocalVar.StatusCode) {
+                            default: {
+                                string responseContentLocalVar = await httpResponseMessageLocalVar.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/v1/campaigns/{campaign_id}", requestedAtLocalVar, _jsonSerializerOptions);
+
+                                break;
+                            }
+                        }
+
+                        AfterDeleteCampaignDefaultImplementation(apiResponseLocalVar, campaignId);
+
+                        Events.ExecuteOnDeleteCampaign(apiResponseLocalVar);
+
+                        if (apiResponseLocalVar.StatusCode == (HttpStatusCode) 429)
+                            foreach(TokenBase tokenBaseLocalVar in tokenBaseLocalVars)
+                                tokenBaseLocalVar.BeginRateLimit();
+
+                        return apiResponseLocalVar;
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                OnErrorDeleteCampaignDefaultImplementation(e, "/v1/campaigns/{campaign_id}", uriBuilderLocalVar.Path, campaignId);
+                Events.ExecuteOnErrorDeleteCampaign(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// The <see cref="DeleteCampaignApiResponse"/>
+        /// </summary>
+        public partial class DeleteCampaignApiResponse : MailOdds.Client.ApiResponse, IDeleteCampaignApiResponse
+        {
+            /// <summary>
+            /// The logger
+            /// </summary>
+            public ILogger<DeleteCampaignApiResponse> Logger { get; }
+
+            /// <summary>
+            /// The <see cref="DeleteCampaignApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="rawContent"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public DeleteCampaignApiResponse(ILogger<DeleteCampaignApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, string rawContent, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, rawContent, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            /// <summary>
+            /// The <see cref="DeleteCampaignApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="contentStream"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public DeleteCampaignApiResponse(ILogger<DeleteCampaignApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, System.IO.Stream contentStream, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, contentStream, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            partial void OnCreated(global::System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage);
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public bool IsOk => 200 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.DeletePolicyRule200Response? Ok()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsOk
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.DeletePolicyRule200Response>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryOk([NotNullWhen(true)]out MailOdds.Model.DeletePolicyRule200Response? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Ok();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)200);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 404 NotFound
+            /// </summary>
+            /// <returns></returns>
+            public bool IsNotFound => 404 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 404 NotFound
+            /// </summary>
+            /// <returns></returns>
+            public MailOdds.Model.ErrorResponse? NotFound()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsNotFound
+                    ? System.Text.Json.JsonSerializer.Deserialize<MailOdds.Model.ErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 404 NotFound and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryNotFound([NotNullWhen(true)]out MailOdds.Model.ErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = NotFound();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)404);
                 }
 
                 return result != null;
